@@ -9,3 +9,4 @@ C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Domain\obj\Debug\net8.0\WMS.Domain.dl
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Domain\obj\Debug\net8.0\refint\WMS.Domain.dll
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Domain\obj\Debug\net8.0\WMS.Domain.pdb
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Domain\obj\Debug\net8.0\ref\WMS.Domain.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Domain\obj\Debug\net8.0\WMS.Domain.sourcelink.json
