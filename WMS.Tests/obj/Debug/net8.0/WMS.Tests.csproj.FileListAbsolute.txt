@@ -27,7 +27,6 @@ C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\Microsoft.Test
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\Microsoft.VisualStudio.TestPlatform.Common.dll
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\Newtonsoft.Json.dll
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\NuGet.Frameworks.dll
-C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\System.Diagnostics.DiagnosticSource.dll
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\xunit.abstractions.dll
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\xunit.assert.dll
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\xunit.core.dll
@@ -113,3 +112,11 @@ C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\obj\Debug\net8.0\ref\WMS.Tests.
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\WMS.Domain.dll
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\WMS.Domain.pdb
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\obj\Debug\net8.0\WMS.Tests.sourcelink.json
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\BCrypt-Net-Next.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\Castle.Core.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\Moq.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\System.Diagnostics.EventLog.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Diagnostics.EventLog.Messages.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Diagnostics.EventLog.dll
