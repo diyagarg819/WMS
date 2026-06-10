@@ -1,11 +1,54 @@
-* {
-  font-family: 'Inter', sans-serif;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif; 
+  background-color: #f8fafc; /* Modern light slate background */
+  color: #334155; 
 }
 
-body {
-  background-color: #F0F2F5;
-  color: #111827;
+/* Global Responsive & Spacing Utilities */
+* {
+  box-sizing: border-box;
+}
+
+.responsive-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+@media (max-width: 768px) {
+  .responsive-container {
+    padding: 16px;
+  }
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.gap-16 {
+  gap: 16px;
 }
