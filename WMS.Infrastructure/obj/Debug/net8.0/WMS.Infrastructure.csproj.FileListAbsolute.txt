@@ -11,3 +11,10 @@ C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Infrastructure\obj\Debug\net8.0\refin
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Infrastructure\obj\Debug\net8.0\WMS.Infrastructure.pdb
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Infrastructure\obj\Debug\net8.0\WMS.Infrastructure.genruntimeconfig.cache
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Infrastructure\obj\Debug\net8.0\ref\WMS.Infrastructure.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Infrastructure\bin\Debug\net8.0\WMS.Application.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Infrastructure\bin\Debug\net8.0\WMS.Domain.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Infrastructure\bin\Debug\net8.0\WMS.Domain.pdb
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Infrastructure\bin\Debug\net8.0\WMS.Application.pdb
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Infrastructure\obj\Debug\net8.0\WMS.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Infrastructure\obj\Debug\net8.0\WMS.Infrastructure.sourcelink.json
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Infrastructure\obj\Debug\net8.0\WMS.Infr.677E6FEF.Up2Date

@@ -9,7 +9,6 @@ C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\WMS.Tests.runt
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\WMS.Tests.dll
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\WMS.Tests.pdb
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\AutoMapper.dll
-C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\Microsoft.VisualStudio.CodeCoverage.Shim.dll
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
@@ -111,3 +110,6 @@ C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\obj\Debug\net8.0\refint\WMS.Tes
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\obj\Debug\net8.0\WMS.Tests.pdb
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\obj\Debug\net8.0\WMS.Tests.genruntimeconfig.cache
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\obj\Debug\net8.0\ref\WMS.Tests.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\WMS.Domain.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\bin\Debug\net8.0\WMS.Domain.pdb
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Tests\obj\Debug\net8.0\WMS.Tests.sourcelink.json
