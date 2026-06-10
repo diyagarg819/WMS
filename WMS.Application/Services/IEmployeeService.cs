@@ -19,13 +19,13 @@ namespace WMS.Application.Services
         Task<EmployeeDetailDto?> GetEmployeeByIdAsync(int employeeId);
 
         // Create a new employee (Admin only)
-        Task<EmployeeDetailDto?> CreateEmployeeAsync(CreateEmployeeDto request);
+        Task<EmployeeDetailDto?> CreateEmployeeAsync(CreateEmployeeDto request, int userId);
 
         // Update an employee — full update (Admin only)
-        Task<bool> UpdateEmployeeAsync(int employeeId, UpdateEmployeeDto request);
+        Task<bool> UpdateEmployeeAsync(int employeeId, UpdateEmployeeDto request, int userId);
 
         // Update own profile — limited to PhoneNumber only (all roles)
-        Task<bool> UpdateMyProfileAsync(int employeeId, UpdateMyProfileDto request);
+        Task<bool> UpdateMyProfileAsync(int employeeId, UpdateMyProfileDto request, int userId);
 
         // Soft delete an employee (Admin only)
         Task<bool> DeleteEmployeeAsync(int employeeId, int deletedByUserId);

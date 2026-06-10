@@ -68,7 +68,8 @@ namespace WMS.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateEmployeeDto request)
         {
-            var created = await _employeeService.CreateEmployeeAsync(request);
+            int userId = GetUserIdFromToken();
+            var created = await _employeeService.CreateEmployeeAsync(request, userId);
 
             if (created == null)
                 return Conflict(new ApiResponse<object>(false, "Email already in use or validation failed"));
@@ -81,7 +82,8 @@ namespace WMS.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateEmployeeDto request)
         {
-            var success = await _employeeService.UpdateEmployeeAsync(id, request);
+            int userId = GetUserIdFromToken();
+            var success = await _employeeService.UpdateEmployeeAsync(id, request, userId);
 
             if (!success)
                 return Conflict(new ApiResponse<object>(false, "Employee not found, email in use, or validation failed"));
@@ -97,7 +99,7 @@ namespace WMS.Api.Controllers
             if (employeeId == null)
                 return Unauthorized(new ApiResponse<object>(false, "Unable to identify user"));
 
-            var success = await _employeeService.UpdateMyProfileAsync(employeeId.Value, request);
+            var success = await _employeeService.UpdateMyProfileAsync(employeeId.Value, request, employeeId.Value);
 
             if (!success)
                 return NotFound(new ApiResponse<object>(false, "Profile not found"));

@@ -5,8 +5,8 @@ C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Domain\obj\Debug\net8.0\WMS.Domain.Ge
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Domain\obj\Debug\net8.0\WMS.Domain.AssemblyInfoInputs.cache
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Domain\obj\Debug\net8.0\WMS.Domain.AssemblyInfo.cs
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Domain\obj\Debug\net8.0\WMS.Domain.csproj.CoreCompileInputs.cache
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Domain\obj\Debug\net8.0\WMS.Domain.sourcelink.json
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Domain\obj\Debug\net8.0\WMS.Domain.dll
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Domain\obj\Debug\net8.0\refint\WMS.Domain.dll
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Domain\obj\Debug\net8.0\WMS.Domain.pdb
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Domain\obj\Debug\net8.0\ref\WMS.Domain.dll
-C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Domain\obj\Debug\net8.0\WMS.Domain.sourcelink.json

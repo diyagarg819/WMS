@@ -69,7 +69,7 @@ namespace WMS.Application.Services
         }
 
         // Create a new employee — validates email uniqueness and age >= 18
-        public async Task<EmployeeDetailDto?> CreateEmployeeAsync(CreateEmployeeDto request)
+        public async Task<EmployeeDetailDto?> CreateEmployeeAsync(CreateEmployeeDto request, int userId)
         {
             // Check if the email is already in use
             bool emailExists = await _employeeRepository.EmailExistsAsync(request.Email);
@@ -102,7 +102,7 @@ namespace WMS.Application.Services
                 CreatedOn = DateTime.Now
             };
 
-            var createdEmployee = await _employeeRepository.AddAsync(employee);
+            var createdEmployee = await _employeeRepository.AddAsync(employee, userId);
 
             _logger.LogInformation("Employee created: {EmployeeId} — {FirstName} {LastName}",
                 createdEmployee.EmployeeId, createdEmployee.FirstName, createdEmployee.LastName);
@@ -113,7 +113,7 @@ namespace WMS.Application.Services
         }
 
         // Update an employee — Admin can update all fields
-        public async Task<bool> UpdateEmployeeAsync(int employeeId, UpdateEmployeeDto request)
+        public async Task<bool> UpdateEmployeeAsync(int employeeId, UpdateEmployeeDto request, int userId)
         {
             var employee = await _employeeRepository.GetByIdAsync(employeeId);
             if (employee == null)
@@ -148,14 +148,14 @@ namespace WMS.Application.Services
             employee.Status = request.Status ?? employee.Status;
             employee.UpdatedOn = DateTime.Now;
 
-            await _employeeRepository.UpdateAsync(employee);
+            await _employeeRepository.UpdateAsync(employee, userId);
 
             _logger.LogInformation("Employee updated: {EmployeeId}", employeeId);
             return true;
         }
 
         // Update own profile — employees can only change their PhoneNumber
-        public async Task<bool> UpdateMyProfileAsync(int employeeId, UpdateMyProfileDto request)
+        public async Task<bool> UpdateMyProfileAsync(int employeeId, UpdateMyProfileDto request, int userId)
         {
             var employee = await _employeeRepository.GetByIdAsync(employeeId);
             if (employee == null)
@@ -164,7 +164,7 @@ namespace WMS.Application.Services
             employee.PhoneNumber = request.PhoneNumber;
             employee.UpdatedOn = DateTime.Now;
 
-            await _employeeRepository.UpdateAsync(employee);
+            await _employeeRepository.UpdateAsync(employee, userId);
 
             _logger.LogInformation("Employee updated own profile: {EmployeeId}", employeeId);
             return true;

@@ -19,10 +19,10 @@ namespace WMS.Domain.Interfaces
         Task<bool> EmailExistsAsync(string email, int? excludeEmployeeId = null);
 
         // Add a new employee
-        Task<Employee> AddAsync(Employee employee);
-
+        Task<Employee> AddAsync(Employee employee, int createdByUserId);
+        
         // Update an existing employee
-        Task UpdateAsync(Employee employee);
+        Task UpdateAsync(Employee employee, int updatedByUserId);
 
         // Soft delete — set Status to 'Inactive' and write an audit log entry
         Task DeleteAsync(Employee employee, int deletedByUserId);

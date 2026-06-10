@@ -101,7 +101,7 @@ namespace WMS.Tests.Services
                 DOB = new DateTime(2000, 1, 1), DOJ = DateTime.Now
             };
 
-            _mockRepository.Setup(r => r.AddAsync(It.IsAny<Employee>())).ReturnsAsync(createdEmployee);
+            _mockRepository.Setup(r => r.AddAsync(It.IsAny<Employee>(), It.IsAny<int>())).ReturnsAsync(createdEmployee);
             _mockRepository.Setup(r => r.GetByIdAsync(5)).ReturnsAsync(createdEmployee);
 
             var request = new CreateEmployeeDto
@@ -112,7 +112,7 @@ namespace WMS.Tests.Services
             };
 
             // Act
-            var result = await _employeeService.CreateEmployeeAsync(request);
+            var result = await _employeeService.CreateEmployeeAsync(request, 1);
 
             // Assert
             Assert.NotNull(result);
@@ -133,7 +133,7 @@ namespace WMS.Tests.Services
             };
 
             // Act
-            var result = await _employeeService.CreateEmployeeAsync(request);
+            var result = await _employeeService.CreateEmployeeAsync(request, 1);
 
             // Assert
             Assert.Null(result);
@@ -153,7 +153,7 @@ namespace WMS.Tests.Services
             };
 
             // Act
-            var result = await _employeeService.CreateEmployeeAsync(request);
+            var result = await _employeeService.CreateEmployeeAsync(request, 1);
 
             // Assert — under 18, should be rejected
             Assert.Null(result);
@@ -174,7 +174,7 @@ namespace WMS.Tests.Services
 
             _mockRepository.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(existing);
             _mockRepository.Setup(r => r.EmailExistsAsync("new@wms.com", 1)).ReturnsAsync(false);
-            _mockRepository.Setup(r => r.UpdateAsync(It.IsAny<Employee>())).Returns(Task.CompletedTask);
+            _mockRepository.Setup(r => r.UpdateAsync(It.IsAny<Employee>(), It.IsAny<int>())).Returns(Task.CompletedTask);
 
             var request = new UpdateEmployeeDto
             {
@@ -184,7 +184,7 @@ namespace WMS.Tests.Services
             };
 
             // Act
-            var result = await _employeeService.UpdateEmployeeAsync(1, request);
+            var result = await _employeeService.UpdateEmployeeAsync(1, request, 1);
 
             // Assert
             Assert.True(result);
@@ -202,7 +202,7 @@ namespace WMS.Tests.Services
                 DOB = new DateTime(1990, 1, 1), DOJ = new DateTime(2020, 1, 1)
             };
 
-            var result = await _employeeService.UpdateEmployeeAsync(999, request);
+            var result = await _employeeService.UpdateEmployeeAsync(999, request, 1);
 
             Assert.False(result);
         }
@@ -250,11 +250,11 @@ namespace WMS.Tests.Services
             };
 
             _mockRepository.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(employee);
-            _mockRepository.Setup(r => r.UpdateAsync(It.IsAny<Employee>())).Returns(Task.CompletedTask);
+            _mockRepository.Setup(r => r.UpdateAsync(It.IsAny<Employee>(), It.IsAny<int>())).Returns(Task.CompletedTask);
 
             var request = new UpdateMyProfileDto { PhoneNumber = "9999999999" };
 
-            var result = await _employeeService.UpdateMyProfileAsync(1, request);
+            var result = await _employeeService.UpdateMyProfileAsync(1, request, 1);
 
             Assert.True(result);
         }

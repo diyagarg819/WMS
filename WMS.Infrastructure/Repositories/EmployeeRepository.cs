@@ -74,18 +74,60 @@ namespace WMS.Infrastructure.Repositories
         }
 
         // Add a new employee record
-        public async Task<Employee> AddAsync(Employee employee)
+        public async Task<Employee> AddAsync(Employee employee, int createdByUserId)
         {
-            await _context.Employees.AddAsync(employee);
-            await _context.SaveChangesAsync();
-            return employee;
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                await _context.Employees.AddAsync(employee);
+                await _context.SaveChangesAsync();
+
+                await _context.AuditLogs.AddAsync(new AuditLog
+                {
+                    Action = "Create Employee",
+                    EntityName = "Employee",
+                    RecordId = employee.EmployeeId,
+                    CreatedBY = createdByUserId,
+                    CreatedOn = DateTime.Now
+                });
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return employee;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         // Update an existing employee record
-        public async Task UpdateAsync(Employee employee)
+        public async Task UpdateAsync(Employee employee, int updatedByUserId)
         {
-            _context.Employees.Update(employee);
-            await _context.SaveChangesAsync();
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                _context.Employees.Update(employee);
+                
+                await _context.AuditLogs.AddAsync(new AuditLog
+                {
+                    Action = "Update Employee",
+                    EntityName = "Employee",
+                    RecordId = employee.EmployeeId,
+                    CreatedBY = updatedByUserId,
+                    CreatedOn = DateTime.Now
+                });
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         // Soft delete — set Status to 'Inactive' and add an AuditLog entry
