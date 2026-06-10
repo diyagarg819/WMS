@@ -61,10 +61,12 @@ builder.Services.AddCors(options =>
 // Repositories — Infrastructure implements, Domain defines the interface
 builder.Services.AddScoped<IUserLoginRepository, UserLoginRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 
 // Services — Application layer, depend only on repository interfaces
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
