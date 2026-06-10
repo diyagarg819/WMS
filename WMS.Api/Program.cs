@@ -60,9 +60,11 @@ builder.Services.AddCors(options =>
 // ── Dependency Injection ──────────────────────────────────────────────
 // Repositories — Infrastructure implements, Domain defines the interface
 builder.Services.AddScoped<IUserLoginRepository, UserLoginRepository>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
 // Services — Application layer, depend only on repository interfaces
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
