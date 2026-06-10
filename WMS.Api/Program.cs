@@ -62,11 +62,13 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IUserLoginRepository, UserLoginRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+builder.Services.AddScoped<ILeaveRepository, LeaveRepository>();
 
 // Services — Application layer, depend only on repository interfaces
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IAttendanceService, AttendanceService>();
+builder.Services.AddScoped<ILeaveService, LeaveService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

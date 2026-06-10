@@ -62,7 +62,7 @@ namespace WMS.Api.Controllers
             var result = await _attendanceService.GetTodayStatusAsync(empId);
 
             if (result == null)
-                return Ok(new ApiResponse<object?>(true, "Not checked in today", null));
+                return Ok(new ApiResponse<object?>(true, "Not checked in today"));
 
             return Ok(new ApiResponse<AttendanceRecordDto>(true, "Today's attendance", result));
         }
