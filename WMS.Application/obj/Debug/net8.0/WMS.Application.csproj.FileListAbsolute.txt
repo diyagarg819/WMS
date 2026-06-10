@@ -1,0 +1,12 @@
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Application\bin\Debug\net8.0\WMS.Application.deps.json
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Application\bin\Debug\net8.0\WMS.Application.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Application\bin\Debug\net8.0\WMS.Application.pdb
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Application\obj\Debug\net8.0\WMS.Application.csproj.AssemblyReference.cache
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Application\obj\Debug\net8.0\WMS.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Application\obj\Debug\net8.0\WMS.Application.AssemblyInfoInputs.cache
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Application\obj\Debug\net8.0\WMS.Application.AssemblyInfo.cs
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Application\obj\Debug\net8.0\WMS.Application.csproj.CoreCompileInputs.cache
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Application\obj\Debug\net8.0\WMS.Application.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Application\obj\Debug\net8.0\refint\WMS.Application.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Application\obj\Debug\net8.0\WMS.Application.pdb
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Application\obj\Debug\net8.0\ref\WMS.Application.dll
