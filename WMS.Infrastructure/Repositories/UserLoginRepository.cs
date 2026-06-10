@@ -28,16 +28,6 @@ namespace WMS.Infrastructure.Repositories
             return user;
         }
 
-        // Find a user by their current refresh token — include Role for token regeneration
-        public async Task<UserLogin?> GetByRefreshTokenAsync(string refreshToken)
-        {
-            var user = await _context.UserLogins
-                .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
-
-            return user;
-        }
-
         // Find a user by their primary key
         public async Task<UserLogin?> GetByIdAsync(int userId)
         {

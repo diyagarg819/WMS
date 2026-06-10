@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using WMS.Application.Common;
 using WMS.Application.DTOs.Auth;
 using WMS.Application.Services;
@@ -8,9 +9,9 @@ using WMS.Application.Services;
 namespace WMS.Api.Controllers
 {
     /// <summary>
-    /// Handles authentication: login, token refresh, logout, token revocation, and user creation.
-    /// Login and refresh endpoints are public. All others require authentication.
-    /// There is NO register endpoint — this is an enterprise system where Admin creates logins.
+    /// Handles authentication: login, logout, and user creation.
+    /// Login is public and rate-limited. All other endpoints require authentication.
+    /// Uses HttpOnly cookies for JWT to prevent XSS attacks.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
@@ -25,9 +26,10 @@ namespace WMS.Api.Controllers
             _logger = logger;
         }
 
-        // POST /api/auth/login — public, returns access + refresh tokens
+        // POST /api/auth/login — public, returns a JWT token in an HttpOnly cookie
         [AllowAnonymous]
         [HttpPost("login")]
+        [EnableRateLimiting("LoginPolicy")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
             var loginResult = await _authService.LoginAsync(request);
@@ -37,44 +39,50 @@ namespace WMS.Api.Controllers
                 return Unauthorized(new ApiResponse<object>(false, "Invalid username or password"));
             }
 
+            // Set the JWT as an HttpOnly, Secure cookie
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true, // Ensure we are on HTTPS or localhost
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddSeconds(loginResult.ExpiresIn)
+            };
+
+            Response.Cookies.Append("jwt", loginResult.AccessToken, cookieOptions);
+
             return Ok(new ApiResponse<LoginResponseDto>(true, "Login successful", loginResult));
         }
 
-        // POST /api/auth/refresh — public, body: { refreshToken }, returns new tokens
-        [AllowAnonymous]
-        [HttpPost("refresh")]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto request)
-        {
-            var refreshResult = await _authService.RefreshTokenAsync(request.RefreshToken);
-
-            if (refreshResult == null)
-            {
-                return Unauthorized(new ApiResponse<object>(false, "Invalid or expired refresh token"));
-            }
-
-            return Ok(new ApiResponse<LoginResponseDto>(true, "Token refreshed successfully", refreshResult));
-        }
-
-        // POST /api/auth/logout — authenticated, clears refresh token for the current user
+        // POST /api/auth/logout — authenticated, logs out the current user
         [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            // Read the user ID from the JWT claims — never trust the request body for identity
+            // Clear the cookie
+            Response.Cookies.Delete("jwt");
+
+            // Read the user ID from the JWT claims
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
             {
-                return Unauthorized(new ApiResponse<object>(false, "Unable to identify user from token"));
+                // Even if we can't find the user ID, we already cleared the cookie
+                return Ok(new ApiResponse<object>(true, "Logged out successfully"));
             }
 
-            var logoutSuccess = await _authService.LogoutAsync(userId);
-
-            if (!logoutSuccess)
-            {
-                return NotFound(new ApiResponse<object>(false, "User not found"));
-            }
+            await _authService.LogoutAsync(userId);
 
             return Ok(new ApiResponse<object>(true, "Logged out successfully"));
+        }
+
+        // GET /api/auth/me — authenticated, returns current user info based on cookie
+        [Authorize]
+        [HttpGet("me")]
+        public IActionResult GetCurrentUser()
+        {
+            var role = User.FindFirst(ClaimTypes.Role)?.Value ?? "Employee";
+            var username = User.FindFirst(ClaimTypes.Name)?.Value ?? "Unknown";
+
+            return Ok(new ApiResponse<object>(true, "User is authenticated", new { Role = role, Username = username }));
         }
 
         // POST /api/auth/revoke/{id} — Admin only, revoke any user's tokens
@@ -101,7 +109,6 @@ namespace WMS.Api.Controllers
 
             if (!createSuccess)
             {
-                // Could be: employee not found, or username already taken
                 return Conflict(new ApiResponse<object>(false, "Employee not found or username already taken"));
             }
 

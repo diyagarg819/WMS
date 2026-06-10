@@ -191,21 +191,21 @@ namespace WMS.Infrastructure.Migrations
                         new
                         {
                             DepartmentId = 1,
-                            CreatedOn = new DateTime(2026, 6, 10, 9, 12, 24, 225, DateTimeKind.Local).AddTicks(2319),
+                            CreatedOn = new DateTime(2026, 6, 10, 20, 11, 12, 751, DateTimeKind.Local).AddTicks(6417),
                             DepartmentName = "Engineering",
                             Description = "Software development and engineering"
                         },
                         new
                         {
                             DepartmentId = 2,
-                            CreatedOn = new DateTime(2026, 6, 10, 9, 12, 24, 225, DateTimeKind.Local).AddTicks(2335),
+                            CreatedOn = new DateTime(2026, 6, 10, 20, 11, 12, 751, DateTimeKind.Local).AddTicks(6434),
                             DepartmentName = "Human Resources",
                             Description = "Employee relations and HR operations"
                         },
                         new
                         {
                             DepartmentId = 3,
-                            CreatedOn = new DateTime(2026, 6, 10, 9, 12, 24, 225, DateTimeKind.Local).AddTicks(2337),
+                            CreatedOn = new DateTime(2026, 6, 10, 20, 11, 12, 751, DateTimeKind.Local).AddTicks(6436),
                             DepartmentName = "Finance",
                             Description = "Financial planning and accounting"
                         });
@@ -471,12 +471,6 @@ namespace WMS.Infrastructure.Migrations
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("RefreshTokenExpiry")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");

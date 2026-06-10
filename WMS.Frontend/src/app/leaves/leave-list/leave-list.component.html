@@ -1,0 +1,169 @@
+<div class="page-container" [class.panel-open]="showFormPanel || showActionPanel">
+  <div class="page-header">
+    <div class="header-titles">
+      <h1>Leaves</h1>
+      <p *ngIf="authService.getRole() === 'Employee'">Manage your leave applications.</p>
+      <p *ngIf="authService.getRole() !== 'Employee'">Review and approve team leave requests.</p>
+    </div>
+    <div class="header-actions" *ngIf="authService.getRole() === 'Employee'">
+      <button mat-raised-button color="primary" (click)="openApplyPanel()">
+        <mat-icon>add</mat-icon>
+        Apply Leave
+      </button>
+    </div>
+  </div>
+
+  <app-notification-banner
+    [type]="bannerType"
+    [message]="bannerMessage"
+    [visible]="showBanner"
+    (dismissed)="showBanner = false">
+  </app-notification-banner>
+
+  <div class="card table-card">
+    <div class="filters-container">
+      <div class="search-box">
+        <mat-icon>search</mat-icon>
+        <input type="text" placeholder="Search leaves..." (input)="onSearch($event)">
+      </div>
+      
+      <div class="status-filter">
+        <mat-form-field appearance="outline" class="status-field">
+          <mat-label>Status</mat-label>
+          <mat-select [(ngModel)]="filter.status" (selectionChange)="onFilterChange()">
+            <mat-option [value]="undefined">All</mat-option>
+            <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <div class="loading-shade" *ngIf="isLoading">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+
+      <table mat-table [dataSource]="records" class="w-100">
+        <!-- Employee Name Column -->
+        <ng-container matColumnDef="employeeName">
+          <th mat-header-cell *matHeaderCellDef> Employee </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="employee-cell">
+              <mat-icon class="avatar-icon">account_circle</mat-icon>
+              <span>{{ element.employeeName }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Leave Type Column -->
+        <ng-container matColumnDef="leaveType">
+          <th mat-header-cell *matHeaderCellDef> Type </th>
+          <td mat-cell *matCellDef="let element"> {{ element.leaveType }} </td>
+        </ng-container>
+
+        <!-- Dates Column -->
+        <ng-container matColumnDef="dates">
+          <th mat-header-cell *matHeaderCellDef> Dates </th>
+          <td mat-cell *matCellDef="let element"> 
+            {{ element.fromDate | date:'mediumDate' }} - {{ element.toDate | date:'mediumDate' }} 
+          </td>
+        </ng-container>
+
+        <!-- Reason Column -->
+        <ng-container matColumnDef="reason">
+          <th mat-header-cell *matHeaderCellDef> Reason </th>
+          <td mat-cell *matCellDef="let element"> {{ element.reason || '--' }} </td>
+        </ng-container>
+        
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> Status </th>
+          <td mat-cell *matCellDef="let element"> 
+            <span class="badge" 
+                  [ngClass]="{'active': element.status === 'Approved', 
+                              'danger': element.status === 'Rejected', 
+                              'warning': element.status === 'Pending'}">
+              {{ element.status }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Applied On Column -->
+        <ng-container matColumnDef="appliedOn">
+          <th mat-header-cell *matHeaderCellDef> Applied On </th>
+          <td mat-cell *matCellDef="let element"> {{ element.appliedOn | date:'mediumDate' }} </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let element">
+            <!-- Employee Action: Cancel -->
+            <ng-container *ngIf="authService.getRole() === 'Employee'">
+              <div *ngIf="deletingLeaveId !== element.leaveId">
+                <button mat-button color="warn" 
+                        *ngIf="element.status === 'Pending'" 
+                        (click)="confirmCancel(element.leaveId)">
+                  Cancel
+                </button>
+              </div>
+              <div class="inline-confirm" *ngIf="deletingLeaveId === element.leaveId">
+                <span class="confirm-text">Cancel?</span>
+                <button mat-icon-button color="warn" (click)="executeCancel(element.leaveId)"><mat-icon>check</mat-icon></button>
+                <button mat-icon-button (click)="cancelDeletion()"><mat-icon>close</mat-icon></button>
+              </div>
+            </ng-container>
+            
+            <!-- Manager/Admin Action: Review -->
+            <ng-container *ngIf="authService.getRole() !== 'Employee'">
+              <button mat-button color="primary" 
+                      *ngIf="element.status === 'Pending'" 
+                      (click)="openActionPanel(element)">
+                Review
+              </button>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="row-hover"></tr>
+        
+        <!-- Empty row -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell empty-cell" [attr.colspan]="displayedColumns.length">
+            No leave records found.
+          </td>
+        </tr>
+      </table>
+
+      <mat-paginator 
+        [length]="totalRecords"
+        [pageSize]="filter.pageSize"
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        (page)="onPageChange($event)">
+      </mat-paginator>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop -->
+<div class="panel-backdrop" *ngIf="showFormPanel || showActionPanel" (click)="closePanels()"></div>
+
+<!-- Slide Panel for Applying Leave -->
+<app-slide-panel [isOpen]="showFormPanel">
+  <app-leave-form-panel 
+    *ngIf="showFormPanel"
+    (closePanel)="closePanels()"
+    (actionComplete)="onActionComplete($event)">
+  </app-leave-form-panel>
+</app-slide-panel>
+
+<!-- Slide Panel for Approving/Rejecting Leave -->
+<app-slide-panel [isOpen]="showActionPanel">
+  <app-leave-action-panel 
+    *ngIf="showActionPanel"
+    [leave]="selectedLeave"
+    (closePanel)="closePanels()"
+    (actionComplete)="onActionComplete($event)">
+  </app-leave-action-panel>
+</app-slide-panel>

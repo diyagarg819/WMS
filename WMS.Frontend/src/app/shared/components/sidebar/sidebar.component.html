@@ -1,0 +1,42 @@
+<div class="sidebar-header">
+  <mat-icon class="logo-icon">domain</mat-icon>
+  <h2>WMS</h2>
+</div>
+
+<mat-nav-list class="sidebar-nav">
+  <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link">
+    <mat-icon matListItemIcon>dashboard</mat-icon>
+    <div matListItemTitle>Dashboard</div>
+  </a>
+
+  <!-- Admin & Manager Only -->
+  <a mat-list-item routerLink="/employees" routerLinkActive="active-link" *ngIf="authService.getRole() !== Role.Employee">
+    <mat-icon matListItemIcon>people</mat-icon>
+    <div matListItemTitle>Employees</div>
+  </a>
+
+  <a mat-list-item routerLink="/attendance" routerLinkActive="active-link">
+    <mat-icon matListItemIcon>access_time</mat-icon>
+    <div matListItemTitle>Attendance</div>
+  </a>
+
+  <a mat-list-item routerLink="/leaves" routerLinkActive="active-link">
+    <mat-icon matListItemIcon>event_busy</mat-icon>
+    <div matListItemTitle>Leaves</div>
+  </a>
+
+  <a mat-list-item routerLink="/departments" routerLinkActive="active-link" *ngIf="authService.getRole() !== Role.Employee">
+    <mat-icon matListItemIcon>apartment</mat-icon>
+    <div matListItemTitle>Departments</div>
+  </a>
+
+  <a mat-list-item routerLink="/projects" routerLinkActive="active-link" *ngIf="authService.getRole() !== Role.Employee">
+    <mat-icon matListItemIcon>work</mat-icon>
+    <div matListItemTitle>Projects</div>
+  </a>
+
+  <a mat-list-item routerLink="/audit-logs" routerLinkActive="active-link" *ngIf="authService.getRole() === Role.Admin">
+    <mat-icon matListItemIcon>history</mat-icon>
+    <div matListItemTitle>Audit Logs</div>
+  </a>
+</mat-nav-list>

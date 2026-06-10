@@ -1,0 +1,109 @@
+<div class="panel-header">
+  <h2>Daily Attendance</h2>
+  <button mat-icon-button (click)="onCancel()" aria-label="Close panel">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="panel-content">
+  <div *ngIf="isLoading" class="loading-state">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading today's status...</p>
+  </div>
+
+  <div *ngIf="errorMessage && !isLoading" class="error-banner">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div *ngIf="!isLoading">
+    <!-- State 1: Not checked in yet -->
+    <div *ngIf="!todayStatus" class="attendance-state checkin-state">
+      <div class="state-icon bg-indigo">
+        <mat-icon>login</mat-icon>
+      </div>
+      <h3>Good Morning!</h3>
+      <p>You haven't checked in yet today.</p>
+
+      <form [formGroup]="checkInForm" class="action-form">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Work Mode</mat-label>
+          <mat-select formControlName="workMode">
+            <mat-option *ngFor="let mode of workModes" [value]="mode">{{ mode }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="checkInForm.get('workMode')?.hasError('required')">
+            Work mode is required
+          </mat-error>
+        </mat-form-field>
+      </form>
+    </div>
+
+    <!-- State 2: Checked in, but not checked out -->
+    <div *ngIf="todayStatus && !todayStatus.checkOut" class="attendance-state checkout-state">
+      <div class="state-icon bg-green">
+        <mat-icon>how_to_reg</mat-icon>
+      </div>
+      <h3>Checked In</h3>
+      
+      <div class="status-details">
+        <div class="detail-row">
+          <span>Time:</span>
+          <strong>{{ todayStatus.checkIn | date:'shortTime' }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Mode:</span>
+          <strong>{{ todayStatus.workMode }}</strong>
+        </div>
+      </div>
+      
+      <p>Ready to wrap up for the day?</p>
+    </div>
+
+    <!-- State 3: Already checked out -->
+    <div *ngIf="todayStatus && todayStatus.checkOut" class="attendance-state completed-state">
+      <div class="state-icon bg-blue">
+        <mat-icon>task_alt</mat-icon>
+      </div>
+      <h3>Day Completed</h3>
+      
+      <div class="status-details">
+        <div class="detail-row">
+          <span>Check In:</span>
+          <strong>{{ todayStatus.checkIn | date:'shortTime' }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Check Out:</span>
+          <strong>{{ todayStatus.checkOut | date:'shortTime' }}</strong>
+        </div>
+        <div class="detail-row">
+          <span>Total Hours:</span>
+          <strong>{{ todayStatus.totalHours | number:'1.1-2' }} hrs</strong>
+        </div>
+      </div>
+      
+      <p class="success-text">You have completed your hours for today.</p>
+    </div>
+  </div>
+</div>
+
+<div class="panel-footer" *ngIf="!isLoading">
+  <button mat-button (click)="onCancel()" [disabled]="isSaving">Close</button>
+  
+  <button mat-raised-button color="primary" 
+          *ngIf="!todayStatus" 
+          (click)="onCheckIn()" 
+          [disabled]="checkInForm.invalid || isSaving">
+    <mat-icon *ngIf="!isSaving">login</mat-icon>
+    <mat-spinner diameter="20" *ngIf="isSaving" class="btn-spinner"></mat-spinner>
+    {{ isSaving ? 'Checking In...' : 'Check In' }}
+  </button>
+  
+  <button mat-raised-button color="warn" 
+          *ngIf="todayStatus && !todayStatus.checkOut" 
+          (click)="onCheckOut()" 
+          [disabled]="isSaving">
+    <mat-icon *ngIf="!isSaving">logout</mat-icon>
+    <mat-spinner diameter="20" *ngIf="isSaving" class="btn-spinner"></mat-spinner>
+    {{ isSaving ? 'Checking Out...' : 'Check Out' }}
+  </button>
+</div>

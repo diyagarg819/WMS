@@ -1,0 +1,87 @@
+<div class="panel-header">
+  <h2>Project Details</h2>
+  <button mat-icon-button (click)="onCancel()" aria-label="Close panel">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="panel-content">
+  <div *ngIf="errorMessage" class="error-banner">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div *ngIf="project" class="details-wrapper">
+    <div class="detail-section">
+      <h3>Overview</h3>
+      <div class="detail-row">
+        <span>Project Name:</span>
+        <strong>{{ project.projectName }}</strong>
+      </div>
+      <div class="detail-row">
+        <span>Status:</span>
+        <span class="badge" [ngClass]="{'active': project.status === 'Active', 'completed': project.status === 'Completed'}">
+          {{ project.status }}
+        </span>
+      </div>
+      <div class="detail-row">
+        <span>Timeline:</span>
+        <strong>
+          {{ project.startDate ? (project.startDate | date:'mediumDate') : 'TBD' }} - 
+          {{ project.endDate ? (project.endDate | date:'mediumDate') : 'TBD' }}
+        </strong>
+      </div>
+    </div>
+
+    <div class="detail-section allocations-section">
+      <div class="section-header">
+        <h3>Team Allocations</h3>
+        <button mat-button color="primary" *ngIf="canManageAllocations() && !showAssignForm" (click)="toggleAssignForm()">
+          + Assign
+        </button>
+      </div>
+
+      <div class="assign-form" *ngIf="showAssignForm">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Select Employee</mat-label>
+          <mat-select [(ngModel)]="selectedEmpId">
+            <mat-option *ngFor="let emp of employees" [value]="emp.empId">
+              {{ emp.firstName }} {{ emp.lastName }} ({{ emp.role }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="form-actions">
+          <button mat-button (click)="toggleAssignForm()" [disabled]="isSaving">Cancel</button>
+          <button mat-raised-button color="primary" (click)="assignEmployee()" [disabled]="!selectedEmpId || isSaving">
+            <mat-spinner diameter="20" *ngIf="isSaving" class="btn-spinner"></mat-spinner>
+            Assign
+          </button>
+        </div>
+      </div>
+
+      <div class="allocations-list" *ngIf="project.allocations?.length; else noAllocations">
+        <div class="allocation-item" *ngFor="let alloc of project.allocations">
+          <div class="alloc-info">
+            <mat-icon class="avatar">account_circle</mat-icon>
+            <div class="alloc-text">
+              <span class="alloc-name">{{ alloc.employeeName }}</span>
+              <span class="alloc-date">Assigned: {{ alloc.assignedOn | date:'shortDate' }}</span>
+            </div>
+          </div>
+          <button mat-icon-button color="warn" matTooltip="Remove Allocation" 
+                  *ngIf="canManageAllocations()" 
+                  (click)="removeAllocation(alloc.allocationId)" 
+                  [disabled]="isSaving">
+            <mat-icon>remove_circle_outline</mat-icon>
+          </button>
+        </div>
+      </div>
+      
+      <ng-template #noAllocations>
+        <div class="empty-state">
+          No employees assigned yet.
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,122 @@
+<div class="page-container" [class.panel-open]="showFormPanel || showDetailPanel">
+  <div class="page-header">
+    <div class="header-titles">
+      <h1>Projects</h1>
+      <p>View and manage projects and allocations.</p>
+    </div>
+    <div class="header-actions" *ngIf="canManageProjects()">
+      <button mat-raised-button color="primary" (click)="openCreatePanel()">
+        <mat-icon>add</mat-icon>
+        New Project
+      </button>
+    </div>
+  </div>
+
+  <app-notification-banner
+    [type]="bannerType"
+    [message]="bannerMessage"
+    [visible]="showBanner"
+    (dismissed)="showBanner = false">
+  </app-notification-banner>
+
+  <div class="card table-card">
+    <div class="filters-container">
+      <div class="search-box">
+        <mat-icon>search</mat-icon>
+        <input type="text" placeholder="Search projects..." (input)="onSearch($event)">
+      </div>
+    </div>
+
+    <div class="table-container">
+      <div class="loading-shade" *ngIf="isLoading">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+
+      <table mat-table [dataSource]="projects" class="w-100">
+        <!-- Project Name Column -->
+        <ng-container matColumnDef="projectName">
+          <th mat-header-cell *matHeaderCellDef> Project Name </th>
+          <td mat-cell *matCellDef="let element"> 
+            <strong>{{ element.projectName }}</strong> 
+          </td>
+        </ng-container>
+
+        <!-- Dates Column -->
+        <ng-container matColumnDef="dates">
+          <th mat-header-cell *matHeaderCellDef> Timeline </th>
+          <td mat-cell *matCellDef="let element"> 
+            {{ element.startDate ? (element.startDate | date:'mediumDate') : 'TBD' }} - 
+            {{ element.endDate ? (element.endDate | date:'mediumDate') : 'TBD' }} 
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> Status </th>
+          <td mat-cell *matCellDef="let element"> 
+            <span class="badge" 
+                  [ngClass]="{'active': element.status === 'Active', 
+                              'completed': element.status === 'Completed', 
+                              'onhold': element.status === 'On-Hold'}">
+              {{ element.status }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-button color="primary" (click)="openDetailPanel(element)">
+              Details
+            </button>
+            <button mat-icon-button color="accent" *ngIf="canManageProjects()" (click)="openEditPanel(element)">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="row-hover"></tr>
+        
+        <!-- Empty row -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell empty-cell" [attr.colspan]="displayedColumns.length">
+            No projects found.
+          </td>
+        </tr>
+      </table>
+
+      <mat-paginator 
+        [length]="totalRecords"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        (page)="onPageChange($event)">
+      </mat-paginator>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop -->
+<div class="panel-backdrop" *ngIf="showFormPanel || showDetailPanel" (click)="closePanels()"></div>
+
+<!-- Slide Panel for Project Form -->
+<app-slide-panel [isOpen]="showFormPanel">
+  <app-project-form-panel 
+    *ngIf="showFormPanel"
+    [mode]="formMode"
+    [project]="selectedProject"
+    (closePanel)="closePanels()"
+    (actionComplete)="onFormComplete($event)">
+  </app-project-form-panel>
+</app-slide-panel>
+
+<!-- Slide Panel for Project Details & Allocations -->
+<app-slide-panel [isOpen]="showDetailPanel">
+  <app-project-detail-panel 
+    *ngIf="showDetailPanel"
+    [project]="selectedProject"
+    (closePanel)="closePanels()"
+    (actionComplete)="onDetailActionComplete($event)">
+  </app-project-detail-panel>
+</app-slide-panel>

@@ -1,0 +1,117 @@
+<div class="page-container">
+  
+  <div class="page-header">
+    <div class="header-titles">
+      <h1>Employees</h1>
+      <p>Manage workforce data, roles, and departmental assignments.</p>
+    </div>
+    <div class="header-actions">
+      <mat-form-field appearance="outline" class="search-input">
+        <mat-label>Search employees...</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [formControl]="searchControl">
+      </mat-form-field>
+      <button mat-flat-button color="primary" (click)="openAddForm()">
+        <mat-icon>person_add</mat-icon> Add Employee
+      </button>
+    </div>
+  </div>
+
+  <!-- Centralized Inline Notification Banner -->
+  <app-notification-banner
+    [type]="bannerType"
+    [message]="bannerMessage"
+    [visible]="bannerVisible"
+    (dismissed)="bannerVisible = false">
+  </app-notification-banner>
+
+  <div class="table-container card">
+    <table mat-table [dataSource]="employees" class="w-100">
+
+      <ng-container matColumnDef="employeeId">
+        <th mat-header-cell *matHeaderCellDef> ID </th>
+        <td mat-cell *matCellDef="let emp"> #{{emp.employeeId}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Name </th>
+        <td mat-cell *matCellDef="let emp"> 
+          <strong>{{emp.firstName}} {{emp.lastName}}</strong>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef> Email </th>
+        <td mat-cell *matCellDef="let emp"> {{emp.email}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="department">
+        <th mat-header-cell *matHeaderCellDef> Department </th>
+        <td mat-cell *matCellDef="let emp"> 
+          <mat-chip-set>
+            <mat-chip>{{emp.departmentId}}</mat-chip>
+          </mat-chip-set>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef> Role </th>
+        <td mat-cell *matCellDef="let emp"> {{emp.roleId}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Status </th>
+        <td mat-cell *matCellDef="let emp"> 
+          <span class="status-badge" [ngClass]="emp.status.toLowerCase()">
+            {{emp.status}}
+          </span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+          class="interactive-row"
+          (click)="openDetailPanel(row)"></tr>
+
+      <!-- No Data / Loading -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="6" style="text-align: center; padding: 48px;">
+          <mat-spinner diameter="32" *ngIf="isLoading" style="margin: 0 auto;"></mat-spinner>
+          <span *ngIf="!isLoading">No employees found.</span>
+        </td>
+      </tr>
+    </table>
+
+    <mat-paginator 
+      [length]="totalItems"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[10, 25, 50]"
+      (page)="onPageChange($event)">
+    </mat-paginator>
+  </div>
+
+  <!-- Slide Panel Overlay Background -->
+  <div class="panel-overlay" *ngIf="isDetailPanelOpen || isFormPanelOpen" (click)="closePanel()"></div>
+
+  <!-- Right Slide Panel System -->
+  <div class="slide-panel" [class.open]="isDetailPanelOpen || isFormPanelOpen">
+    
+    <app-employee-detail-panel 
+      *ngIf="isDetailPanelOpen"
+      [employee]="selectedEmployee"
+      (close)="closePanel()"
+      (edit)="openEditForm($event)"
+      (deleted)="handleDelete($event)">
+    </app-employee-detail-panel>
+
+    <app-employee-form-panel
+      *ngIf="isFormPanelOpen"
+      [mode]="formMode"
+      [employee]="selectedEmployee"
+      (close)="closePanel()"
+      (saved)="handleFormSubmit($event)">
+    </app-employee-form-panel>
+
+  </div>
+
+</div>

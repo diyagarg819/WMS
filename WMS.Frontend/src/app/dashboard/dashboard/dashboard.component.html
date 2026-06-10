@@ -1,0 +1,112 @@
+<div class="page-container">
+  <div class="page-header">
+    <div class="header-titles">
+      <h1>Dashboard</h1>
+      <p>Overview of workforce performance and system status.</p>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span>Loading dashboard...</span>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-container">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage && dashboardData" class="dashboard-content">
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <mat-card class="kpi-card">
+        <mat-card-content class="kpi-content">
+          <div class="kpi-info">
+            <span class="kpi-label">Total Employees</span>
+            <span class="kpi-value">{{ dashboardData.kpis.totalEmployees }}</span>
+          </div>
+          <div class="kpi-icon-wrapper bg-indigo">
+            <mat-icon>people</mat-icon>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <mat-card-content class="kpi-content">
+          <div class="kpi-info">
+            <span class="kpi-label">Present Today</span>
+            <span class="kpi-value">{{ dashboardData.kpis.attendanceCountToday }}</span>
+          </div>
+          <div class="kpi-icon-wrapper bg-green">
+            <mat-icon>how_to_reg</mat-icon>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <mat-card-content class="kpi-content">
+          <div class="kpi-info">
+            <span class="kpi-label">Pending Leaves</span>
+            <span class="kpi-value">{{ dashboardData.kpis.pendingLeaveCount }}</span>
+          </div>
+          <div class="kpi-icon-wrapper bg-orange">
+            <mat-icon>pending_actions</mat-icon>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card">
+        <mat-card-content class="kpi-content">
+          <div class="kpi-info">
+            <span class="kpi-label">Active Projects</span>
+            <span class="kpi-value">{{ dashboardData.kpis.activeProjectCount }}</span>
+          </div>
+          <div class="kpi-icon-wrapper bg-blue">
+            <mat-icon>work</mat-icon>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="main-grid">
+      <!-- Chart Section -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>Attendance Trends</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="chart-container">
+          <canvas #chartCanvas></canvas>
+          <div *ngIf="!dashboardData.charts || dashboardData.charts.length === 0" class="no-data">
+            No chart data available.
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Announcements Section -->
+      <mat-card class="announcements-card">
+        <mat-card-header>
+          <mat-card-title>Recent Announcements</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="announcements-list">
+            <div class="announcement-item" *ngFor="let ann of dashboardData.announcements">
+              <div class="ann-header">
+                <span class="ann-title">{{ ann.title }}</span>
+                <span class="ann-date">{{ ann.createdOn | date:'mediumDate' }}</span>
+              </div>
+              <p class="ann-message">{{ ann.message }}</p>
+              <div class="ann-footer">
+                <mat-icon>person</mat-icon>
+                <span>{{ ann.creatorName }}</span>
+              </div>
+            </div>
+            
+            <div *ngIf="!dashboardData.announcements || dashboardData.announcements.length === 0" class="no-data">
+              No recent announcements.
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

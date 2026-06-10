@@ -1,0 +1,12 @@
+.app-toolbar {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  z-index: 10;
+  position: relative;
+  background-color: var(--toolbar-bg) !important;
+  color: var(--toolbar-text) !important;
+  transition: background-color 0.3s ease;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}

@@ -1,0 +1,87 @@
+<div class="panel-container" *ngIf="employee">
+  <div class="panel-header">
+    <button mat-icon-button (click)="close.emit()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <h2>Employee Details</h2>
+    <span class="spacer"></span>
+    <button mat-stroked-button color="primary" (click)="onEdit()">
+      <mat-icon>edit</mat-icon> Edit
+    </button>
+  </div>
+
+  <div class="panel-content">
+    <div class="profile-header">
+      <div class="avatar">
+        {{ employee.firstName.charAt(0) }}{{ employee.lastName.charAt(0) }}
+      </div>
+      <div>
+        <h3>{{ employee.firstName }} {{ employee.lastName }}</h3>
+        <p>{{ employee.email }}</p>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="detail-grid">
+      <div class="detail-item">
+        <label>Employee ID</label>
+        <span>#{{ employee.employeeId }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Status</label>
+        <span class="status-badge" [ngClass]="employee.status.toLowerCase()">{{ employee.status }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Phone Number</label>
+        <span>{{ employee.phoneNumber || 'N/A' }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Gender</label>
+        <span>{{ employee.gender }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Department ID</label>
+        <span>{{ employee.departmentId }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Role ID</label>
+        <span>{{ employee.roleId }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Date of Birth</label>
+        <span>{{ employee.dob | date:'mediumDate' }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Date of Joining</label>
+        <span>{{ employee.doj | date:'mediumDate' }}</span>
+      </div>
+    </div>
+
+    <mat-divider style="margin: 24px 0;"></mat-divider>
+
+    <!-- Inline Delete Confirmation Architecture -->
+    <div class="danger-zone">
+      <h3>Danger Zone</h3>
+      
+      <div *ngIf="!showDeleteConfirm">
+        <button mat-stroked-button color="warn" (click)="showDeleteConfirm = true">
+          <mat-icon>delete</mat-icon> Delete Employee
+        </button>
+      </div>
+
+      <div class="confirm-box" *ngIf="showDeleteConfirm">
+        <mat-icon color="warn">warning</mat-icon>
+        <p>Are you sure you want to permanently delete this employee? This action cannot be undone.</p>
+        <div class="confirm-actions">
+          <button mat-button (click)="showDeleteConfirm = false" [disabled]="isDeleting">Cancel</button>
+          <button mat-flat-button color="warn" (click)="onDeleteConfirm()" [disabled]="isDeleting">
+            <mat-spinner diameter="20" *ngIf="isDeleting" style="margin-right: 8px; display: inline-block; vertical-align: middle;"></mat-spinner>
+            {{ isDeleting ? 'Deleting...' : 'Yes, Delete' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

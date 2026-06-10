@@ -1,0 +1,7 @@
+<div class="banner-wrapper" *ngIf="visible" [ngClass]="type">
+  <mat-icon class="banner-icon">{{ getIcon() }}</mat-icon>
+  <span class="banner-message">{{ message }}</span>
+  <button mat-icon-button class="close-btn" (click)="onDismiss()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>

@@ -1,0 +1,98 @@
+.page-container {
+  position: relative;
+  height: 100%;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+
+  .header-titles {
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-color);
+    }
+    p {
+      margin: 4px 0 0 0;
+      color: var(--text-secondary);
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .search-input {
+      width: 300px;
+      margin-bottom: -1.34375em;
+    }
+  }
+}
+
+.interactive-row {
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: var(--hover-bg);
+  }
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+
+  &.active {
+    background-color: var(--badge-active-bg);
+    color: var(--badge-active-text);
+  }
+  &.inactive {
+    background-color: var(--badge-inactive-bg);
+    color: var(--badge-inactive-text);
+  }
+}
+
+/* Slide Panel CSS Architecture */
+.panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.3s ease;
+}
+
+.slide-panel {
+  position: fixed;
+  top: 0;
+  right: -600px;
+  width: 100%;
+  max-width: 550px;
+  height: 100vh;
+  background-color: var(--card-bg);
+  box-shadow: -10px 0 30px rgba(0,0,0,0.2);
+  z-index: 1001;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  color: var(--text-color);
+
+  &.open {
+    right: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

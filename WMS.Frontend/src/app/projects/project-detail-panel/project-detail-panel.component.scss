@@ -1,0 +1,186 @@
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-color);
+  
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-color);
+  }
+}
+
+.panel-content {
+  padding: 24px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: var(--danger-bg);
+  color: var(--danger-text);
+  border-radius: 6px;
+  margin-bottom: 24px;
+}
+
+.details-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.detail-section {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  
+  h3 {
+    margin: 0 0 16px 0;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+  }
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+
+  h3 {
+    margin: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  button {
+    height: 32px;
+    line-height: 32px;
+  }
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  span {
+    color: var(--text-secondary);
+  }
+  
+  strong {
+    color: var(--text-color);
+  }
+}
+
+.badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+  
+  &.active {
+    background-color: var(--badge-active-bg);
+    color: var(--badge-active-text);
+  }
+  
+  &.completed {
+    background-color: var(--banner-success-bg);
+    color: var(--banner-success-text);
+  }
+}
+
+/* Allocations specific styling */
+
+.assign-form {
+  background-color: var(--input-bg);
+  padding: 16px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+  }
+}
+
+.allocations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.allocation-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--card-bg);
+  
+  .alloc-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    
+    .avatar {
+      color: var(--text-secondary);
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+    }
+    
+    .alloc-text {
+      display: flex;
+      flex-direction: column;
+      
+      .alloc-name {
+        font-weight: 600;
+        color: var(--text-color);
+      }
+      
+      .alloc-date {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+      }
+    }
+  }
+}
+
+.empty-state {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.btn-spinner {
+  margin-right: 8px;
+  display: inline-block;
+}

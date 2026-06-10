@@ -1,0 +1,63 @@
+<div class="panel-header">
+  <h2>Review Leave Request</h2>
+  <button mat-icon-button (click)="onCancel()" aria-label="Close panel">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="panel-content">
+  <div *ngIf="errorMessage" class="error-banner">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div *ngIf="leave" class="leave-details">
+    <div class="detail-section">
+      <h3>Employee Information</h3>
+      <div class="detail-row">
+        <span>Employee:</span>
+        <strong>{{ leave.employeeName }}</strong>
+      </div>
+      <div class="detail-row">
+        <span>Applied On:</span>
+        <strong>{{ leave.appliedOn | date:'mediumDate' }}</strong>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h3>Leave Details</h3>
+      <div class="detail-row">
+        <span>Type:</span>
+        <strong>{{ leave.leaveType }}</strong>
+      </div>
+      <div class="detail-row">
+        <span>From:</span>
+        <strong>{{ leave.fromDate | date:'mediumDate' }}</strong>
+      </div>
+      <div class="detail-row">
+        <span>To:</span>
+        <strong>{{ leave.toDate | date:'mediumDate' }}</strong>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h3>Reason</h3>
+      <p class="reason-text">{{ leave.reason || 'No reason provided.' }}</p>
+    </div>
+  </div>
+</div>
+
+<div class="panel-footer">
+  <button mat-button (click)="onCancel()" [disabled]="isSaving">Close</button>
+  
+  <div class="action-buttons" *ngIf="leave && leave.status === 'Pending'">
+    <button mat-raised-button color="warn" (click)="rejectLeave()" [disabled]="isSaving">
+      <mat-icon *ngIf="!isSaving">close</mat-icon>
+      Reject
+    </button>
+    <button mat-raised-button color="primary" class="bg-success" (click)="approveLeave()" [disabled]="isSaving">
+      <mat-icon *ngIf="!isSaving">check</mat-icon>
+      Approve
+    </button>
+  </div>
+</div>

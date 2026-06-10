@@ -1,18 +1,332 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global Theme Variables */
+:root {
+  --bg-color: #f8fafc;
+  --text-color: #1e293b;
+  --text-secondary: #64748b;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+  --hover-bg: rgba(67, 56, 202, 0.08);
 
-html, body { height: 100%; }
-body { 
-  margin: 0; 
-  font-family: Roboto, "Helvetica Neue", sans-serif; 
-  background-color: #f8fafc; /* Modern light slate background */
-  color: #334155; 
+  /* Status badges */
+  --badge-active-bg: #dcfce7;
+  --badge-active-text: #166534;
+  --badge-inactive-bg: #f1f5f9;
+  --badge-inactive-text: #475569;
+
+  /* Danger zone */
+  --danger-bg: #FEF2F2;
+  --danger-border: #FCA5A5;
+  --danger-text: #991B1B;
+
+  /* Error banner */
+  --error-banner-bg: #FEF2F2;
+  --error-banner-text: #EF4444;
+
+  /* Notification banners */
+  --banner-success-bg: #F0FDF4;
+  --banner-success-text: #166534;
+  --banner-error-bg: #FEF2F2;
+  --banner-error-text: #991B1B;
+  --banner-warning-bg: #FFFBEB;
+  --banner-warning-text: #92400E;
+  --banner-info-bg: #EFF6FF;
+  --banner-info-text: #1E40AF;
+
+  /* Sidebar */
+  --sidenav-bg: #ffffff;
+  --toolbar-bg: #4338ca;
+  --toolbar-text: #ffffff;
+
+  /* Form fields */
+  --input-bg: transparent;
+  --input-border: rgba(0, 0, 0, 0.38);
+  --input-text: #1e293b;
+  --input-label: #64748b;
 }
 
-/* Global Responsive & Spacing Utilities */
+body.dark-theme {
+  --bg-color: #0f172a;
+  --text-color: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --card-bg: #1e293b;
+  --border-color: #334155;
+  --hover-bg: rgba(129, 140, 248, 0.12);
+
+  /* Status badges */
+  --badge-active-bg: rgba(22, 163, 74, 0.2);
+  --badge-active-text: #4ade80;
+  --badge-inactive-bg: rgba(100, 116, 139, 0.2);
+  --badge-inactive-text: #94a3b8;
+
+  /* Danger zone */
+  --danger-bg: rgba(239, 68, 68, 0.1);
+  --danger-border: rgba(239, 68, 68, 0.3);
+  --danger-text: #fca5a5;
+
+  /* Error banner */
+  --error-banner-bg: rgba(239, 68, 68, 0.1);
+  --error-banner-text: #fca5a5;
+
+  /* Notification banners */
+  --banner-success-bg: rgba(34, 197, 94, 0.1);
+  --banner-success-text: #4ade80;
+  --banner-error-bg: rgba(239, 68, 68, 0.1);
+  --banner-error-text: #fca5a5;
+  --banner-warning-bg: rgba(245, 158, 11, 0.1);
+  --banner-warning-text: #fbbf24;
+  --banner-info-bg: rgba(59, 130, 246, 0.1);
+  --banner-info-text: #93c5fd;
+
+  /* Sidebar */
+  --sidenav-bg: #1e293b;
+  --toolbar-bg: #1e293b;
+  --toolbar-text: #e2e8f0;
+
+  /* Form fields */
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --input-border: rgba(255, 255, 255, 0.25);
+  --input-text: #e2e8f0;
+  --input-label: #94a3b8;
+
+  /* ─── Material Component Overrides ─── */
+
+  /* Cards */
+  .mat-mdc-card {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+  }
+
+  .mat-mdc-card-title, .mat-mdc-card-subtitle {
+    color: var(--text-color) !important;
+  }
+
+  /* Tables */
+  .mat-mdc-table {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+  }
+
+  .mat-mdc-header-cell, .mat-mdc-cell {
+    color: var(--text-color) !important;
+    border-bottom-color: var(--border-color) !important;
+  }
+
+  .mat-mdc-header-row {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+  }
+
+  .mat-mdc-row:hover {
+    background-color: var(--hover-bg) !important;
+  }
+
+  /* Paginator */
+  .mat-mdc-paginator {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+  }
+
+  .mat-mdc-paginator-container {
+    color: var(--text-color) !important;
+  }
+
+  .mat-mdc-paginator-range-label {
+    color: var(--text-secondary) !important;
+  }
+
+  /* Form Fields */
+  .mat-mdc-form-field {
+    color: var(--text-color) !important;
+  }
+
+  .mdc-text-field--outlined .mdc-notched-outline__leading,
+  .mdc-text-field--outlined .mdc-notched-outline__trailing,
+  .mdc-text-field--outlined .mdc-notched-outline__notch {
+    border-color: var(--input-border) !important;
+  }
+
+  .mat-mdc-form-field-flex {
+    background-color: var(--input-bg) !important;
+  }
+
+  .mat-mdc-input-element, .mat-mdc-select-value {
+    color: var(--input-text) !important;
+  }
+
+  .mat-mdc-floating-label, .mdc-floating-label,
+  .mat-mdc-form-field-label {
+    color: var(--input-label) !important;
+  }
+
+  .mat-mdc-form-field-icon-suffix .mat-icon {
+    color: var(--text-secondary) !important;
+  }
+
+  /* Select Panels & Menu Panels */
+  .mat-mdc-select-panel, .mat-mdc-menu-panel {
+    background-color: var(--card-bg) !important;
+  }
+
+  .mat-mdc-option {
+    color: var(--text-color) !important;
+  }
+
+  .mat-mdc-option:hover {
+    background-color: var(--hover-bg) !important;
+  }
+
+  .mat-mdc-menu-item {
+    color: var(--text-color) !important;
+  }
+
+  .mat-mdc-menu-item .mat-icon {
+    color: var(--text-color) !important;
+  }
+
+  /* Toolbar / Navbar */
+  .mat-toolbar, .mat-toolbar.mat-primary {
+    background-color: var(--toolbar-bg) !important;
+    color: var(--toolbar-text) !important;
+  }
+
+  .mat-toolbar .mat-icon,
+  .mat-toolbar .mat-mdc-button,
+  .mat-toolbar .mat-mdc-icon-button {
+    color: var(--toolbar-text) !important;
+  }
+
+  /* Sidenav — THE WHITE LINE FIX */
+  .mat-sidenav-container, .mat-drawer-container {
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
+  }
+
+  .mat-sidenav-content, .mat-drawer-content {
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
+  }
+
+  .mat-sidenav, .mat-drawer {
+    background-color: var(--sidenav-bg) !important;
+    color: var(--text-color) !important;
+    border-right-color: var(--border-color) !important;
+  }
+
+  /* Nav List items */
+  .mat-mdc-list-item, .mat-mdc-list-item .mdc-list-item__primary-text {
+    color: var(--text-color) !important;
+  }
+
+  .mat-mdc-list-item .mat-icon {
+    color: var(--text-secondary) !important;
+  }
+
+  .mat-mdc-list-item:hover {
+    background-color: var(--hover-bg) !important;
+  }
+
+  /* Dialog */
+  .mat-mdc-dialog-surface {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+  }
+
+  /* Chips */
+  .mat-mdc-chip {
+    background-color: rgba(129, 140, 248, 0.15) !important;
+    color: #a5b4fc !important;
+  }
+
+  /* Datepicker */
+  .mat-datepicker-content {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+  }
+
+  .mat-calendar-body-cell-content {
+    color: var(--text-color) !important;
+  }
+
+  /* Buttons */
+  .mat-mdc-button, .mat-mdc-outlined-button {
+    color: var(--text-color) !important;
+  }
+
+  .mat-mdc-icon-button {
+    color: var(--text-color) !important;
+  }
+
+  /* Divider */
+  .mat-divider {
+    border-top-color: var(--border-color) !important;
+  }
+
+  /* Tooltip */
+  .mat-mdc-tooltip .mdc-tooltip__surface {
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+  }
+
+  /* Card shadow override */
+  .card {
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.5);
+  }
+
+  /* Login page overrides */
+  .login-form-wrapper {
+    background-color: var(--card-bg) !important;
+  }
+
+  /* Scrollbar styling for dark mode */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg-color);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+  }
+
+  /* Strong text — ensure all h1-h6 inherit */
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text-color) !important;
+  }
+
+  p {
+    color: var(--text-color);
+  }
+
+  strong {
+    color: var(--text-color);
+  }
+
+  /* Mat progress spinner */
+  .mat-mdc-progress-spinner circle {
+    stroke: var(--text-color) !important;
+  }
+}
+
+
+/* ─── Base Styles ─── */
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 * {
   box-sizing: border-box;
 }
 
+
+/* ─── Utility Classes ─── */
 .responsive-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -26,29 +340,16 @@ body {
 }
 
 .card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 8px;
   box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
   padding: 24px;
   margin-bottom: 24px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.d-flex {
-  display: flex;
-}
-
-.flex-column {
-  flex-direction: column;
-}
-
-.justify-content-between {
-  justify-content: space-between;
-}
-
-.align-items-center {
-  align-items: center;
-}
-
-.gap-16 {
-  gap: 16px;
-}
+.d-flex { display: flex; }
+.flex-column { flex-direction: column; }
+.justify-content-between { justify-content: space-between; }
+.align-items-center { align-items: center; }
+.gap-16 { gap: 16px; }

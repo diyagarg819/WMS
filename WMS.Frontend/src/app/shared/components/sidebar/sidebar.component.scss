@@ -1,0 +1,33 @@
+.sidebar-header {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+
+  h2 {
+    margin: 0;
+    margin-left: 12px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-color);
+  }
+
+  .logo-icon {
+    color: #818cf8;
+  }
+}
+
+.sidebar-nav {
+  padding-top: 16px;
+
+  .active-link {
+    background-color: var(--hover-bg);
+    color: #818cf8;
+
+    mat-icon {
+      color: #818cf8;
+    }
+  }
+}

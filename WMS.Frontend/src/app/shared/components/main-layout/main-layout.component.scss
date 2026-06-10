@@ -1,0 +1,17 @@
+.sidenav-container {
+  height: 100vh;
+  background-color: var(--bg-color) !important;
+}
+
+.app-sidenav {
+  width: 260px;
+  background-color: var(--sidenav-bg) !important;
+  border-right: 1px solid var(--border-color) !important;
+}
+
+.main-content {
+  padding-top: 24px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: calc(100vh - 64px);
+}

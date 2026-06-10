@@ -1,0 +1,95 @@
+<div class="panel-container">
+  <div class="panel-header">
+    <button mat-icon-button (click)="close.emit()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <h2>{{ mode === 'add' ? 'Add New Employee' : 'Edit Employee' }}</h2>
+  </div>
+
+  <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" class="panel-form">
+    <div class="form-content">
+      
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="firstName" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lastName" required>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Email Address</mat-label>
+        <input matInput type="email" formControlName="email" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Phone Number</mat-label>
+        <input matInput formControlName="phoneNumber">
+      </mat-form-field>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Gender</mat-label>
+          <mat-select formControlName="gender" required>
+            <mat-option value="Male">Male</mat-option>
+            <mat-option value="Female">Female</mat-option>
+            <mat-option value="Other">Other</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status" required>
+            <mat-option value="Active">Active</mat-option>
+            <mat-option value="Inactive">Inactive</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Date of Birth</mat-label>
+          <input matInput [matDatepicker]="dobPicker" formControlName="dob" required>
+          <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
+          <mat-datepicker #dobPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Date of Joining</mat-label>
+          <input matInput [matDatepicker]="dojPicker" formControlName="doj" required>
+          <mat-datepicker-toggle matSuffix [for]="dojPicker"></mat-datepicker-toggle>
+          <mat-datepicker #dojPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Department ID</mat-label>
+          <mat-select formControlName="departmentId" required>
+            <mat-option *ngFor="let dept of departments" [value]="dept">Dept #{{dept}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Role ID</mat-label>
+          <mat-select formControlName="roleId" required>
+            <mat-option *ngFor="let role of roles" [value]="role">Role #{{role}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+    </div>
+
+    <div class="form-actions">
+      <button mat-button type="button" (click)="close.emit()">Cancel</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="employeeForm.invalid || isSaving">
+        <mat-spinner diameter="20" *ngIf="isSaving" style="margin-right: 8px; display: inline-block; vertical-align: middle;"></mat-spinner>
+        {{ isSaving ? 'Saving...' : 'Save Employee' }}
+      </button>
+    </div>
+  </form>
+</div>

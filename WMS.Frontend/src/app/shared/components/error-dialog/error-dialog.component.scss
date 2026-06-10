@@ -1,0 +1,47 @@
+.error-dialog-container {
+  padding: 16px;
+
+  .error-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    mat-icon {
+      font-size: 32px;
+      height: 32px;
+      width: 32px;
+    }
+
+    h2 {
+      margin: 0;
+      color: var(--text-color, #333);
+      font-weight: 600;
+    }
+  }
+
+  p {
+    color: var(--text-color, #444);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .sub-message {
+    color: var(--text-muted, #777);
+    font-size: 14px;
+    margin-top: 12px;
+    font-style: italic;
+  }
+}
+
+:host-context(body.dark-mode) .error-dialog-container {
+  .error-header h2 {
+    color: #e0e0e0;
+  }
+  p {
+    color: #cccccc;
+  }
+  .sub-message {
+    color: #aaaaaa;
+  }
+}

@@ -1,0 +1,203 @@
+.login-split-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--bg-color);
+}
+
+.login-branding {
+  flex: 1;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.06) 10%, transparent 20%);
+    background-size: 24px 24px;
+    animation: floating 90s linear infinite;
+  }
+
+  .branding-content {
+    position: relative;
+    z-index: 1;
+    color: white;
+    max-width: 550px;
+    padding: 0 32px;
+
+    h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      text-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      letter-spacing: -1px;
+    }
+
+    p {
+      font-size: 1.25rem;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 300;
+    }
+  }
+}
+
+.login-form-wrapper {
+  flex: 0 0 550px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--card-bg);
+  box-shadow: -20px 0 40px rgba(0,0,0,0.1);
+  z-index: 2;
+  padding: 40px;
+  transition: background-color 0.3s ease;
+
+  @media (max-width: 1024px) {
+    flex: 0 0 450px;
+  }
+
+  @media (max-width: 768px) {
+    flex: 1;
+    box-shadow: none;
+  }
+}
+
+.premium-card {
+  width: 100%;
+  box-shadow: none !important;
+  padding: 24px;
+  background-color: var(--card-bg) !important;
+
+  mat-card-header {
+    display: block;
+    text-align: center;
+    margin-bottom: 40px;
+
+    .header-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .auth-icon {
+      font-size: 56px;
+      height: 56px;
+      width: 56px;
+      margin-bottom: 16px;
+      color: #818cf8; /* Indigo that works on both light and dark */
+    }
+
+    mat-card-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-color);
+      margin-bottom: 8px;
+    }
+
+    mat-card-subtitle {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+    }
+  }
+}
+
+.form-spacing {
+  gap: 24px;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.premium-input {
+  font-size: 1.05rem;
+}
+
+.error-banner {
+  background-color: var(--error-banner-bg);
+  color: var(--error-banner-text);
+  border-left: 4px solid var(--error-banner-text);
+  padding: 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+  margin-bottom: 24px;
+
+  mat-icon {
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+  }
+}
+
+.premium-btn {
+  padding: 28px 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  border-radius: 8px;
+  background-color: #4338ca;
+  color: white !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  ::ng-deep .mdc-button__label {
+    width: 100%;
+  }
+
+  .btn-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    color: white !important;
+  }
+
+  .auth-text {
+    color: white !important;
+  }
+
+  mat-icon {
+    margin-left: 0;
+    color: white !important;
+  }
+
+  &:hover:not([disabled]) {
+    background-color: #312e81;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(67, 56, 202, 0.4), 0 8px 10px -6px rgba(67, 56, 202, 0.1);
+  }
+}
+
+.spinner {
+  ::ng-deep circle {
+    stroke: white !important;
+  }
+}
+
+@keyframes floating {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+@media (max-width: 768px) {
+  .login-branding {
+    display: none;
+  }
+}

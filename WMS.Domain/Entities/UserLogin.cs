@@ -6,7 +6,7 @@ namespace WMS.Domain.Entities
     /// <summary>
     /// Stores login credentials for employees.
     /// Created by Admin only — there is no public registration in this system.
-    /// Includes RefreshToken and RefreshTokenExpiry for the access/refresh token auth flow.
+    /// Uses BCrypt for storing the password hash.
     /// </summary>
     public class UserLogin
     {
@@ -28,12 +28,6 @@ namespace WMS.Domain.Entities
 
         [ForeignKey("RoleId")]
         public Role? Role { get; set; }
-
-        // Current refresh token — rotated on every token refresh call
-        public string? RefreshToken { get; set; }
-
-        // When the refresh token expires — set to null on logout
-        public DateTime? RefreshTokenExpiry { get; set; }
 
         // Timestamp of the last successful login
         public DateTime? LastLogin { get; set; }

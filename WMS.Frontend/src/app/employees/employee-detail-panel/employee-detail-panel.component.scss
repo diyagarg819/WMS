@@ -1,0 +1,131 @@
+.panel-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
+
+  h2 {
+    margin: 0 0 0 16px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+  }
+
+  .spacer { flex: 1; }
+}
+
+.panel-content {
+  padding: 32px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 32px;
+
+  .avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: #4338ca;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+  }
+  p {
+    margin: 4px 0 0 0;
+    color: var(--text-secondary);
+  }
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 32px 0;
+
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    span {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--text-color);
+    }
+  }
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  width: fit-content;
+
+  &.active {
+    background-color: var(--badge-active-bg);
+    color: var(--badge-active-text);
+  }
+  &.inactive {
+    background-color: var(--badge-inactive-bg);
+    color: var(--badge-inactive-text);
+  }
+}
+
+.danger-zone {
+  h3 { color: #EF4444; margin-top: 0; }
+
+  .confirm-box {
+    background-color: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    p {
+      margin: 0;
+      color: var(--danger-text);
+      font-weight: 500;
+    }
+
+    .confirm-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+  }
+}

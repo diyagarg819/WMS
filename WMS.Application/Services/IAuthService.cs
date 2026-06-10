@@ -4,17 +4,14 @@ namespace WMS.Application.Services
 {
     /// <summary>
     /// Service interface for authentication operations.
-    /// Handles login, token refresh, logout, token revocation, and user creation.
+    /// Handles login, logout, and user creation. Uses a single JWT token (no refresh tokens).
     /// </summary>
     public interface IAuthService
     {
-        // Verify credentials and return access + refresh tokens
+        // Verify credentials and return a JWT token
         Task<LoginResponseDto?> LoginAsync(LoginRequestDto request);
 
-        // Validate refresh token, rotate it, and return new token pair
-        Task<LoginResponseDto?> RefreshTokenAsync(string refreshToken);
-
-        // Invalidate the refresh token for the current user
+        // Clear user session (no-op for stateless JWT, but kept for future use)
         Task<bool> LogoutAsync(int userId);
 
         // Admin action — revoke all tokens for any user

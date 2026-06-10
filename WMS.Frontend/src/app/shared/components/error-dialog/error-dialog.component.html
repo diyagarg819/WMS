@@ -1,0 +1,17 @@
+<div class="error-dialog-container">
+  <div class="error-header">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <h2 mat-dialog-title>{{ data.title || 'Error Occurred' }}</h2>
+  </div>
+
+  <mat-dialog-content>
+    <p>{{ data.message }}</p>
+    <p *ngIf="data.isBackendDown" class="sub-message">
+      Please check if the backend server is running on localhost:5056.
+    </p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button color="primary" (click)="close()">Dismiss</button>
+  </mat-dialog-actions>
+</div>

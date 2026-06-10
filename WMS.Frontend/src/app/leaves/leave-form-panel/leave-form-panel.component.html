@@ -1,0 +1,60 @@
+<div class="panel-header">
+  <h2>Apply for Leave</h2>
+  <button mat-icon-button (click)="onCancel()" aria-label="Close panel">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="panel-content">
+  <div *ngIf="errorMessage" class="error-banner">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <form [formGroup]="leaveForm" class="panel-form" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Leave Type</mat-label>
+      <mat-select formControlName="leaveType">
+        <mat-option *ngFor="let type of leaveTypes" [value]="type">{{ type }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="leaveForm.get('leaveType')?.hasError('required')">
+        Leave Type is required
+      </mat-error>
+    </mat-form-field>
+
+    <div class="date-row">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>From Date</mat-label>
+        <input matInput [matDatepicker]="fromPicker" formControlName="fromDate">
+        <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
+        <mat-datepicker #fromPicker></mat-datepicker>
+        <mat-error *ngIf="leaveForm.get('fromDate')?.hasError('required')">
+          From Date is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>To Date</mat-label>
+        <input matInput [matDatepicker]="toPicker" formControlName="toDate">
+        <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
+        <mat-datepicker #toPicker></mat-datepicker>
+        <mat-error *ngIf="leaveForm.get('toDate')?.hasError('required')">
+          To Date is required
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Reason</mat-label>
+      <textarea matInput formControlName="reason" rows="4" placeholder="Brief reason for leave"></textarea>
+    </mat-form-field>
+  </form>
+</div>
+
+<div class="panel-footer">
+  <button mat-button (click)="onCancel()" [disabled]="isSaving">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="leaveForm.invalid || isSaving">
+    <mat-spinner diameter="20" *ngIf="isSaving" class="btn-spinner"></mat-spinner>
+    {{ isSaving ? 'Submitting...' : 'Submit Leave Request' }}
+  </button>
+</div>

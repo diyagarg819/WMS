@@ -1,0 +1,66 @@
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { LeaveService } from '../../shared/services/leave.service';
+
+@Component({
+  selector: 'app-leave-form-panel',
+  templateUrl: './leave-form-panel.component.html',
+  styleUrls: ['./leave-form-panel.component.scss'],
+  standalone: false
+})
+export class LeaveFormPanelComponent implements OnInit {
+  @Output() closePanel = new EventEmitter<void>();
+  @Output() actionComplete = new EventEmitter<{ success: boolean, message: string }>();
+
+  leaveForm: FormGroup;
+  isSaving = false;
+  errorMessage = '';
+  
+  leaveTypes = ['Sick', 'Casual', 'Earned'];
+
+  constructor(
+    private fb: FormBuilder,
+    private leaveService: LeaveService
+  ) {
+    this.leaveForm = this.fb.group({
+      leaveType: ['', Validators.required],
+      fromDate: ['', Validators.required],
+      toDate: ['', Validators.required],
+      reason: ['']
+    });
+  }
+
+  ngOnInit(): void {
+    // Component initialized
+  }
+
+  onSubmit(): void {
+    if (this.leaveForm.invalid) return;
+
+    this.isSaving = true;
+    this.errorMessage = '';
+
+    const req = this.leaveForm.value;
+    // Format dates to ISO string before sending
+    if (req.fromDate) {
+      req.fromDate = new Date(req.fromDate).toISOString();
+    }
+    if (req.toDate) {
+      req.toDate = new Date(req.toDate).toISOString();
+    }
+
+    this.leaveService.applyLeave(req).subscribe({
+      next: (res) => {
+        this.actionComplete.emit({ success: true, message: res.message || 'Leave applied successfully.' });
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to apply leave.';
+        this.isSaving = false;
+      }
+    });
+  }
+
+  onCancel(): void {
+    this.closePanel.emit();
+  }
+}

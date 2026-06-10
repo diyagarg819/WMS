@@ -1,0 +1,36 @@
+<div class="panel-header">
+  <h2>{{ mode === 'create' ? 'New Department' : 'Edit Department' }}</h2>
+  <button mat-icon-button (click)="onCancel()" aria-label="Close panel">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="panel-content">
+  <div *ngIf="errorMessage" class="error-banner">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <form [formGroup]="departmentForm" class="panel-form" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Department Name</mat-label>
+      <input matInput formControlName="departmentName" placeholder="Enter department name">
+      <mat-error *ngIf="departmentForm.get('departmentName')?.hasError('required')">
+        Department Name is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="4" placeholder="Enter description"></textarea>
+    </mat-form-field>
+  </form>
+</div>
+
+<div class="panel-footer">
+  <button mat-button (click)="onCancel()" [disabled]="isSaving">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="departmentForm.invalid || isSaving">
+    <mat-spinner diameter="20" *ngIf="isSaving" class="btn-spinner"></mat-spinner>
+    {{ isSaving ? 'Saving...' : 'Save Department' }}
+  </button>
+</div>

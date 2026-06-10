@@ -10,7 +10,7 @@ namespace WMS.Application.Common
         public string SecretKey { get; set; } = string.Empty;
         public string Issuer { get; set; } = string.Empty;
         public string Audience { get; set; } = string.Empty;
+        // Number of minutes the access token is valid for (e.g. 10)
         public int AccessTokenExpiryMinutes { get; set; } = 10;
-        public int RefreshTokenExpiryMinutes { get; set; } = 60;
     }
 }

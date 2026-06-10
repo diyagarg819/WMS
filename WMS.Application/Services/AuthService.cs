@@ -1,6 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -13,9 +12,9 @@ using WMS.Domain.Interfaces;
 namespace WMS.Application.Services
 {
     /// <summary>
-    /// Handles all authentication logic: login, token refresh, logout, revocation, and user creation.
-    /// Uses BCrypt for password hashing and JWT for access tokens.
-    /// Refresh tokens are random strings stored in the database — not JWTs.
+    /// Handles authentication: login, logout, and user creation.
+    /// Uses BCrypt for password hashing and a single JWT token for access.
+    /// No refresh tokens — keeps things simple and beginner-friendly.
     /// </summary>
     public class AuthService : IAuthService
     {
@@ -33,10 +32,11 @@ namespace WMS.Application.Services
             _logger = logger;
         }
 
-        // Verify the user's credentials and issue a new access + refresh token pair
+        // ── Login ─────────────────────────────────────────────────────────
+        // Check username + password, then return a single JWT token.
         public async Task<LoginResponseDto?> LoginAsync(LoginRequestDto request)
         {
-            // Look up the user by username
+            // Step 1: Find the user by username
             var user = await _userLoginRepository.GetByUsernameAsync(request.Username);
             if (user == null)
             {
@@ -44,7 +44,7 @@ namespace WMS.Application.Services
                 return null;
             }
 
-            // Verify the password against the stored hash
+            // Step 2: Verify the password against the stored hash
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
             if (!isPasswordValid)
             {
@@ -52,104 +52,59 @@ namespace WMS.Application.Services
                 return null;
             }
 
-            // Get the role name for the JWT claims
+            // Step 3: Get the user's role name (defaults to "Employee" if not set)
             string roleName = user.Role?.RoleName ?? "Employee";
 
-            // Generate the access token (short-lived JWT) and refresh token (random string)
-            string accessToken = GenerateAccessToken(user.UserId, user.Username, roleName);
-            string refreshToken = GenerateRefreshToken();
+            // Step 4: Generate a JWT token
+            string token = GenerateJwtToken(user.UserId, user.Username, roleName);
 
-            // Save the refresh token and update last login timestamp
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiry = DateTime.UtcNow.AddMinutes(_jwtSettings.RefreshTokenExpiryMinutes);
+            // Step 5: Update LastLogin timestamp
             user.LastLogin = DateTime.UtcNow;
             await _userLoginRepository.UpdateAsync(user);
 
             _logger.LogInformation("Login successful for username: {Username}", request.Username);
 
+            // Step 6: Return the token
             return new LoginResponseDto
             {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken,
-                ExpiresIn = _jwtSettings.AccessTokenExpiryMinutes * 60
+                AccessToken = token,
+                ExpiresIn = _jwtSettings.AccessTokenExpiryMinutes * 60,
+                Role = roleName,
+                Username = user.Username
             };
         }
 
-        // Validate the refresh token, rotate it, and return a new token pair
-        public async Task<LoginResponseDto?> RefreshTokenAsync(string refreshToken)
-        {
-            // Find the user who owns this refresh token
-            var user = await _userLoginRepository.GetByRefreshTokenAsync(refreshToken);
-            if (user == null)
-            {
-                _logger.LogWarning("Token refresh failed — refresh token not found in database");
-                return null;
-            }
-
-            // Check if the refresh token has expired
-            if (user.RefreshTokenExpiry == null || user.RefreshTokenExpiry < DateTime.UtcNow)
-            {
-                _logger.LogWarning("Token refresh failed — refresh token expired for user: {UserId}", user.UserId);
-                return null;
-            }
-
-            // Get the role name for the new JWT
-            string roleName = user.Role?.RoleName ?? "Employee";
-
-            // Issue a new access token and rotate the refresh token
-            string newAccessToken = GenerateAccessToken(user.UserId, user.Username, roleName);
-            string newRefreshToken = GenerateRefreshToken();
-
-            // Save the new refresh token — the old one is now invalid
-            user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiry = DateTime.UtcNow.AddMinutes(_jwtSettings.RefreshTokenExpiryMinutes);
-            await _userLoginRepository.UpdateAsync(user);
-
-            _logger.LogInformation("Token refresh successful for user: {UserId}", user.UserId);
-
-            return new LoginResponseDto
-            {
-                AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken,
-                ExpiresIn = _jwtSettings.AccessTokenExpiryMinutes * 60
-            };
-        }
-
-        // Clear the refresh token so it can no longer be used
+        // ── Logout ────────────────────────────────────────────────────────
+        // With a single JWT, logout is handled client-side by deleting the token.
+        // This method exists so the API contract stays clean.
         public async Task<bool> LogoutAsync(int userId)
         {
             var user = await _userLoginRepository.GetByIdAsync(userId);
             if (user == null)
                 return false;
 
-            // Nulling out the refresh token invalidates it server-side
-            user.RefreshToken = null;
-            user.RefreshTokenExpiry = null;
-            await _userLoginRepository.UpdateAsync(user);
-
             _logger.LogInformation("User logged out: {UserId}", userId);
             return true;
         }
 
-        // Admin action — revoke all tokens for a specific user
+        // ── Revoke Tokens (Admin) ─────────────────────────────────────────
+        // With stateless JWT there's nothing to revoke server-side,
+        // but we keep this endpoint for admin tooling.
         public async Task<bool> RevokeAllTokensAsync(int userId)
         {
             var user = await _userLoginRepository.GetByIdAsync(userId);
             if (user == null)
                 return false;
 
-            user.RefreshToken = null;
-            user.RefreshTokenExpiry = null;
-            await _userLoginRepository.UpdateAsync(user);
-
-            _logger.LogInformation("All tokens revoked for user: {UserId}", userId);
+            _logger.LogInformation("Token revocation requested for user: {UserId}", userId);
             return true;
         }
 
-        // Admin action — create login credentials for an existing employee
+        // ── Create User (Admin) ───────────────────────────────────────────
+        // Admin creates login credentials for an existing employee.
         public async Task<bool> CreateUserAsync(CreateUserDto request)
         {
-            // Make sure the employee actually exists before creating a login
+            // Make sure the employee exists
             bool employeeExists = await _userLoginRepository.EmployeeExistsAsync(request.EmployeeId);
             if (!employeeExists)
             {
@@ -157,7 +112,7 @@ namespace WMS.Application.Services
                 return false;
             }
 
-            // Make sure the username is not already taken
+            // Make sure the username isn't already taken
             bool usernameExists = await _userLoginRepository.UsernameExistsAsync(request.Username);
             if (usernameExists)
             {
@@ -182,13 +137,14 @@ namespace WMS.Application.Services
             return true;
         }
 
-        // Generate a short-lived JWT access token with user claims
-        private string GenerateAccessToken(int userId, string username, string roleName)
+        // ── Helper: Generate JWT Token ────────────────────────────────────
+        // Creates a signed JWT with user claims (id, username, role).
+        private string GenerateJwtToken(int userId, string username, string roleName)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            // Claims included in the token — these are read by the API for authorization
+            // These claims are embedded in the token and read by the API for authorization
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
@@ -205,15 +161,6 @@ namespace WMS.Application.Services
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        // Generate a random refresh token — this is NOT a JWT, just a random string
-        private string GenerateRefreshToken()
-        {
-            var randomBytes = new byte[64];
-            using var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomBytes);
-            return Convert.ToBase64String(randomBytes);
         }
     }
 }

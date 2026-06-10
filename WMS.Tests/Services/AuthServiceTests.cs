@@ -10,7 +10,7 @@ using WMS.Domain.Interfaces;
 namespace WMS.Tests.Services
 {
     /// <summary>
-    /// Unit tests for AuthService — covers login, token refresh, logout, revocation, and user creation.
+    /// Unit tests for AuthService — covers login, logout, and user creation.
     /// Uses Moq to mock the repository layer so tests run without a database.
     /// </summary>
     public class AuthServiceTests
@@ -31,8 +31,7 @@ namespace WMS.Tests.Services
                 SecretKey = "TestSecretKeyForUnitTestsThatIsAtLeast32Characters!",
                 Issuer = "WMS-API-Test",
                 Audience = "WMS-Client-Test",
-                AccessTokenExpiryMinutes = 10,
-                RefreshTokenExpiryMinutes = 60
+                AccessTokenExpiryMinutes = 720
             };
             _jwtOptions = Options.Create(jwtSettings);
 
@@ -42,7 +41,7 @@ namespace WMS.Tests.Services
         // ── Login Tests ───────────────────────────────────────────────────
 
         [Fact]
-        public async Task Login_WithCorrectCredentials_ReturnsTokens()
+        public async Task Login_WithCorrectCredentials_ReturnsToken()
         {
             // Arrange — create a user with a known password hash
             string password = "TestPassword123";
@@ -65,11 +64,10 @@ namespace WMS.Tests.Services
             // Act
             var result = await _authService.LoginAsync(request);
 
-            // Assert — should return tokens with correct expiry
+            // Assert — should return a token
             Assert.NotNull(result);
             Assert.False(string.IsNullOrEmpty(result.AccessToken));
-            Assert.False(string.IsNullOrEmpty(result.RefreshToken));
-            Assert.Equal(600, result.ExpiresIn); // 10 minutes = 600 seconds
+            Assert.Equal(720 * 60, result.ExpiresIn); // 720 minutes = 43200 seconds
         }
 
         [Fact]
@@ -111,79 +109,6 @@ namespace WMS.Tests.Services
             Assert.Null(result);
         }
 
-        // ── Token Refresh Tests ───────────────────────────────────────────
-
-        [Fact]
-        public async Task RefreshToken_WithValidToken_ReturnsNewTokens()
-        {
-            // Arrange — user has a valid, non-expired refresh token
-            string currentRefreshToken = "valid-refresh-token-123";
-
-            var user = new UserLogin
-            {
-                UserId = 1,
-                Username = "admin",
-                PasswordHash = "hash",
-                RoleId = 1,
-                Role = new Role { RoleId = 1, RoleName = "Admin" },
-                RefreshToken = currentRefreshToken,
-                RefreshTokenExpiry = DateTime.UtcNow.AddMinutes(30) // Still valid for 30 more minutes
-            };
-
-            _mockRepository.Setup(r => r.GetByRefreshTokenAsync(currentRefreshToken)).ReturnsAsync(user);
-            _mockRepository.Setup(r => r.UpdateAsync(It.IsAny<UserLogin>())).Returns(Task.CompletedTask);
-
-            // Act
-            var result = await _authService.RefreshTokenAsync(currentRefreshToken);
-
-            // Assert — should return new tokens
-            Assert.NotNull(result);
-            Assert.False(string.IsNullOrEmpty(result.AccessToken));
-            Assert.False(string.IsNullOrEmpty(result.RefreshToken));
-
-            // The new refresh token should be different from the old one (rotation)
-            Assert.NotEqual(currentRefreshToken, result.RefreshToken);
-        }
-
-        [Fact]
-        public async Task RefreshToken_WithExpiredToken_ReturnsNull()
-        {
-            // Arrange — user's refresh token has already expired
-            string expiredToken = "expired-refresh-token";
-
-            var user = new UserLogin
-            {
-                UserId = 1,
-                Username = "admin",
-                PasswordHash = "hash",
-                RoleId = 1,
-                Role = new Role { RoleId = 1, RoleName = "Admin" },
-                RefreshToken = expiredToken,
-                RefreshTokenExpiry = DateTime.UtcNow.AddMinutes(-10) // Expired 10 minutes ago
-            };
-
-            _mockRepository.Setup(r => r.GetByRefreshTokenAsync(expiredToken)).ReturnsAsync(user);
-
-            // Act
-            var result = await _authService.RefreshTokenAsync(expiredToken);
-
-            // Assert — expired token should be rejected
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public async Task RefreshToken_WithNonExistentToken_ReturnsNull()
-        {
-            // Arrange — this token does not exist in the database (already rotated or fake)
-            _mockRepository.Setup(r => r.GetByRefreshTokenAsync("fake-token")).ReturnsAsync((UserLogin?)null);
-
-            // Act
-            var result = await _authService.RefreshTokenAsync("fake-token");
-
-            // Assert — unknown token should be rejected
-            Assert.Null(result);
-        }
-
         // ── Logout Tests ──────────────────────────────────────────────────
 
         [Fact]
@@ -195,22 +120,16 @@ namespace WMS.Tests.Services
                 UserId = 1,
                 Username = "admin",
                 PasswordHash = "hash",
-                RoleId = 1,
-                RefreshToken = "some-token",
-                RefreshTokenExpiry = DateTime.UtcNow.AddMinutes(30)
+                RoleId = 1
             };
 
             _mockRepository.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(user);
-            _mockRepository.Setup(r => r.UpdateAsync(It.IsAny<UserLogin>())).Returns(Task.CompletedTask);
 
             // Act
             var result = await _authService.LogoutAsync(1);
 
-            // Assert — logout should succeed and clear the refresh token
+            // Assert — logout should succeed
             Assert.True(result);
-            _mockRepository.Verify(r => r.UpdateAsync(It.Is<UserLogin>(u =>
-                u.RefreshToken == null && u.RefreshTokenExpiry == null
-            )), Times.Once);
         }
 
         [Fact]
