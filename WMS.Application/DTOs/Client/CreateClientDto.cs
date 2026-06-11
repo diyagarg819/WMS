@@ -7,11 +7,15 @@ namespace WMS.Application.DTOs.Client
         [Required]
         [MaxLength(100)]
         public string ClientName { get; set; } = string.Empty;
-        public string? ClientAdress { get; set; }
-        public decimal? ClientPhoneNumber { get; set; }
+        [Required]
+        public string ClientAdress { get; set; } = string.Empty;
         
+        [Required]
+        public decimal ClientPhoneNumber { get; set; }
+        
+        [Required]
         [MaxLength(20)]
-        public string? ClientLocation { get; set; }
+        public string ClientLocation { get; set; } = string.Empty;
         public bool Status { get; set; } = true;
     }
 }

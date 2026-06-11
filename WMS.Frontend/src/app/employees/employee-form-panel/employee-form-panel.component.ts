@@ -78,16 +78,16 @@ export class EmployeeFormPanelComponent implements OnInit, OnChanges {
     this.employeeForm = this.fb.group({
       firstName: [this.employee?.firstName || '', [Validators.required]],
       lastName: [this.employee?.lastName || '', [Validators.required]],
-      email: [this.employee?.email || '', [Validators.required, Validators.email]],
-      phoneNumber: [this.employee?.phoneNumber || ''],
+      email: [this.employee?.email || '', [Validators.required, Validators.email, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$')]],
+      phoneNumber: [this.employee?.phoneNumber || '', [Validators.required, Validators.pattern('^\\d{10}$')]],
       gender: [this.employee?.gender || 'M', [Validators.required]],
       dob: [this.employee?.dob || '', [Validators.required, this.minimumAgeValidator(18)]],
       doj: [this.employee?.doj || '', [Validators.required]],
       departmentId: [this.employee?.departmentId || '', [Validators.required]],
       roleId: [this.employee?.roleId || '', [Validators.required]],
       status: [this.employee?.status || 'Active', [Validators.required]],
-      username: [this.employee?.username || '', isAdd ? [Validators.required, Validators.maxLength(50)] : [Validators.required, Validators.maxLength(50)]],
-      password: ['', isAdd ? [Validators.required, Validators.minLength(6)] : [Validators.minLength(6)]]
+      username: [this.employee?.username || 'user' + Math.floor(Math.random() * 1000), [Validators.required, Validators.maxLength(50)]],
+      password: [isAdd ? '' : '********', isAdd ? [Validators.required, Validators.minLength(6), Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\\$%\\^&\\*]).{6,}$')] : [Validators.minLength(6)]]
     });
   }
 
@@ -127,6 +127,12 @@ export class EmployeeFormPanelComponent implements OnInit, OnChanges {
       });
     } else {
       if (!this.employee) return;
+      
+      // If the password is the default mask, don't send it to the backend
+      if (formValue.password === '********') {
+        formValue.password = '';
+      }
+
       this.employeeService.updateEmployee(this.employee.employeeId, formValue).subscribe({
         next: () => {
           this.isSaving = false;

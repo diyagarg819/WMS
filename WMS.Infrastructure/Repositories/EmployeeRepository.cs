@@ -27,14 +27,29 @@ namespace WMS.Infrastructure.Repositories
                 string term = searchTerm.Trim().ToLower();
                 bool isNumeric = int.TryParse(term, out int searchId);
 
-                query = query.Where(e =>
-                    (isNumeric && e.EmployeeId == searchId) ||
-                    e.FirstName.ToLower().Contains(term) ||
-                    e.LastName.ToLower().Contains(term) ||
-                    e.Email.ToLower().Contains(term) ||
-                    (e.PhoneNumber != null && e.PhoneNumber.ToLower().Contains(term)) ||
-                    (e.Department != null && e.Department.DepartmentName.ToLower().Contains(term)) ||
-                    (e.Role != null && e.Role.RoleName.ToLower().Contains(term)));
+                if (isNumeric)
+                {
+                    if (term.Length < 6)
+                    {
+                        // If it's a short number, assume exact Employee ID search.
+                        query = query.Where(e => e.EmployeeId == searchId);
+                    }
+                    else
+                    {
+                        // If it's a longer number, assume Phone Number search.
+                        query = query.Where(e => e.PhoneNumber != null && e.PhoneNumber.Contains(term));
+                    }
+                }
+                else
+                {
+                    // Otherwise search text fields
+                    query = query.Where(e =>
+                        e.FirstName.ToLower().Contains(term) ||
+                        e.LastName.ToLower().Contains(term) ||
+                        e.Email.ToLower().Contains(term) ||
+                        (e.Department != null && e.Department.DepartmentName.ToLower().Contains(term)) ||
+                        (e.Role != null && e.Role.RoleName.ToLower().Contains(term)));
+                }
             }
 
             return await query.OrderBy(e => e.EmployeeId).ToListAsync();
@@ -140,10 +155,19 @@ namespace WMS.Infrastructure.Repositories
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 string term = searchTerm.Trim().ToLower();
-                query = query.Where(e =>
-                    e.FirstName.ToLower().Contains(term) ||
-                    e.LastName.ToLower().Contains(term) ||
-                    e.Email.ToLower().Contains(term));
+                bool isNumeric = int.TryParse(term, out int searchId);
+
+                if (isNumeric)
+                {
+                    query = query.Where(e => e.EmployeeId == searchId);
+                }
+                else
+                {
+                    query = query.Where(e =>
+                        e.FirstName.ToLower().Contains(term) ||
+                        e.LastName.ToLower().Contains(term) ||
+                        e.Email.ToLower().Contains(term));
+                }
             }
 
             return await query.OrderBy(e => e.FirstName).ToListAsync();

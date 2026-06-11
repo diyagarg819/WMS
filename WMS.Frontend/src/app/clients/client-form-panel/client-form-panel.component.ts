@@ -25,9 +25,9 @@ export class ClientFormPanelComponent implements OnInit {
   ) {
     this.clientForm = this.fb.group({
       clientName: ['', [Validators.required, Validators.maxLength(100)]],
-      clientAdress: [''],
-      clientPhoneNumber: [null, [Validators.pattern('^[0-9]{10}$')]],
-      clientLocation: ['', [Validators.maxLength(20)]],
+      clientAdress: ['', Validators.required],
+      clientPhoneNumber: [null, [Validators.required, Validators.pattern('^[0-9]{10}$')]],
+      clientLocation: ['', [Validators.required, Validators.maxLength(20)]],
       status: [true, Validators.required]
     });
   }

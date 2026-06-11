@@ -22,18 +22,21 @@
     <mat-form-field appearance="outline" class="w-100">
       <mat-label>Phone Number</mat-label>
       <input matInput formControlName="clientPhoneNumber" placeholder="e.g. 1234567890">
+      <mat-error *ngIf="clientForm.get('clientPhoneNumber')?.hasError('required')">Phone is required</mat-error>
       <mat-error *ngIf="clientForm.get('clientPhoneNumber')?.hasError('pattern')">Must be 10 digits</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
       <mat-label>Location</mat-label>
       <input matInput formControlName="clientLocation" placeholder="e.g. New York" maxlength="20">
+      <mat-error *ngIf="clientForm.get('clientLocation')?.hasError('required')">Location is required</mat-error>
       <mat-error *ngIf="clientForm.get('clientLocation')?.hasError('maxlength')">Max 20 chars</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-100">
       <mat-label>Address</mat-label>
       <textarea matInput formControlName="clientAdress" placeholder="Full address..." rows="3"></textarea>
+      <mat-error *ngIf="clientForm.get('clientAdress')?.hasError('required')">Address is required</mat-error>
     </mat-form-field>
 
     <div class="toggle-field" *ngIf="mode === 'edit'">

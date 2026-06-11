@@ -13,17 +13,21 @@
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>First Name</mat-label>
           <input matInput formControlName="firstName" required>
+          <mat-error *ngIf="employeeForm.get('firstName')?.hasError('required')">First Name is required</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Last Name</mat-label>
           <input matInput formControlName="lastName" required>
+          <mat-error *ngIf="employeeForm.get('lastName')?.hasError('required')">Last Name is required</mat-error>
         </mat-form-field>
       </div>
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Email Address</mat-label>
         <input matInput type="email" formControlName="email" required>
+        <mat-error *ngIf="employeeForm.get('email')?.hasError('required')">Email is required</mat-error>
+        <mat-error *ngIf="employeeForm.get('email')?.hasError('email') || employeeForm.get('email')?.hasError('pattern')">Please enter a valid email address</mat-error>
       </mat-form-field>
 
       <!-- Login Credentials -->
@@ -43,12 +47,15 @@
           <mat-icon matPrefix>lock</mat-icon>
           <mat-error *ngIf="employeeForm.get('password')?.hasError('required')">Password is required</mat-error>
           <mat-error *ngIf="employeeForm.get('password')?.hasError('minlength')">Minimum 6 characters</mat-error>
+          <mat-error *ngIf="employeeForm.get('password')?.hasError('pattern')">Must contain uppercase, lowercase, number, and special character</mat-error>
         </mat-form-field>
       </div>
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Phone Number</mat-label>
-        <input matInput formControlName="phoneNumber">
+        <input matInput formControlName="phoneNumber" required>
+        <mat-error *ngIf="employeeForm.get('phoneNumber')?.hasError('required')">Phone Number is required</mat-error>
+        <mat-error *ngIf="employeeForm.get('phoneNumber')?.hasError('pattern')">Phone Number must be exactly 10 digits</mat-error>
       </mat-form-field>
 
       <div class="form-row">

@@ -16,12 +16,13 @@ namespace WMS.Application.DTOs.Employee
         [MaxLength(50)]
         public string LastName { get; set; } = string.Empty;
 
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "Email is required")]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$", ErrorMessage = "Please enter a valid email address")]
         [MaxLength(80)]
         public string Email { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Phone Number is required")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone Number must be exactly 10 digits")]
         [MaxLength(15)]
         public string PhoneNumber { get; set; } = string.Empty;
 
@@ -51,6 +52,7 @@ namespace WMS.Application.DTOs.Employee
         /// </summary>
         [Required(ErrorMessage = "Password is required")]
         [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%\^&\*]).{6,}$", ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character")]
         public string Password { get; set; } = string.Empty;
     }
 }

@@ -54,7 +54,7 @@ export class ProjectFormPanelComponent implements OnInit {
     this.clientService.getAllClients().subscribe({
       next: (res) => {
         if (res.success && res.data) {
-          this.clients = res.data;
+          this.clients = res.data.filter((c: any) => c.status === true || c.status === 'Active');
         }
       },
       error: (err) => console.error('Failed to load clients', err)
