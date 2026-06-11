@@ -1,5 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { Component, OnInit } from '@angular/core';
 import { AttendanceService } from '../../shared/services/attendance.service';
 import { AuthService } from '../../shared/services/auth.service';
 import { AttendanceRecord, AttendanceFilter } from '../../shared/models/attendance.model';
@@ -15,25 +14,23 @@ import { debounceTime } from 'rxjs/operators';
 })
 export class AttendanceListComponent implements OnInit {
   records: AttendanceRecord[] = [];
-  totalRecords = 0;
+  filteredRecords: AttendanceRecord[] = [];
   isLoading = false;
 
   filter: AttendanceFilter = {
-    pageNumber: 1,
-    pageSize: 10,
     searchTerm: '',
     fromDate: undefined,
     toDate: undefined
   };
 
-  displayedColumns: string[] = ['attendanceDate', 'employeeName', 'checkIn', 'checkOut', 'totalHours', 'workMode'];
+  selectedStatus: string = '';
+  statuses: string[] = ['Present', 'In Progress'];
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  
+  displayedColumns: string[] = ['attendanceDate', 'employeeName', 'checkIn', 'checkOut', 'totalHours', 'status', 'workMode'];
+
   showActionPanel = false;
   searchSubject = new Subject<string>();
-  
-  // Banner state
+
   showBanner = false;
   bannerType: 'success' | 'error' | 'warning' | 'info' = 'info';
   bannerMessage = '';
@@ -44,29 +41,28 @@ export class AttendanceListComponent implements OnInit {
   ) {
     this.searchSubject.pipe(debounceTime(300)).subscribe(term => {
       this.filter.searchTerm = term;
-      this.filter.pageNumber = 1;
       this.loadData();
     });
   }
 
   ngOnInit(): void {
-    if (this.authService.getRole() === Role.Employee) {
-      this.displayedColumns = ['attendanceDate', 'checkIn', 'checkOut', 'totalHours', 'workMode'];
+    if (this.authService.getRole() !== Role.Admin) {
+      this.displayedColumns = ['attendanceDate', 'checkIn', 'checkOut', 'totalHours', 'status', 'workMode'];
     }
     this.loadData();
   }
 
   loadData(): void {
     this.isLoading = true;
-    const req = this.authService.getRole() === Role.Employee 
+    const req = this.authService.getRole() !== Role.Admin
       ? this.attendanceService.getMyHistory(this.filter)
       : this.attendanceService.getAllAttendance(this.filter);
 
     req.subscribe({
       next: (res) => {
         if (res.success && res.data) {
-          this.records = res.data.data;
-          this.totalRecords = res.data.totalCount;
+          this.records = res.data;
+          this.applyStatusFilter();
         } else {
           this.showNotification('error', res.message || 'Failed to load attendance records.');
         }
@@ -79,20 +75,29 @@ export class AttendanceListComponent implements OnInit {
     });
   }
 
+  getStatus(record: AttendanceRecord): string {
+    return record.checkOut ? 'Present' : 'In Progress';
+  }
+
+  applyStatusFilter(): void {
+    if (!this.selectedStatus) {
+      this.filteredRecords = this.records;
+    } else {
+      this.filteredRecords = this.records.filter(r => this.getStatus(r) === this.selectedStatus);
+    }
+  }
+
   onSearch(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.searchSubject.next(target.value);
   }
 
-  onPageChange(event: PageEvent): void {
-    this.filter.pageNumber = event.pageIndex + 1;
-    this.filter.pageSize = event.pageSize;
+  onFilterChange(): void {
     this.loadData();
   }
-  
-  onFilterChange(): void {
-    this.filter.pageNumber = 1;
-    this.loadData();
+
+  onStatusFilterChange(): void {
+    this.applyStatusFilter();
   }
 
   openActionPanel(): void {

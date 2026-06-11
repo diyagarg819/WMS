@@ -3,10 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WMS.Domain.Entities
 {
-    /// <summary>
-    /// Represents a company-wide announcement created by an Admin.
-    /// Active announcements are displayed on the dashboard for all users.
-    /// </summary>
     public class Announcement
     {
         [Key]
@@ -20,7 +16,6 @@ namespace WMS.Domain.Entities
         [Required]
         public string Message { get; set; } = string.Empty;
 
-        // The employee (Admin) who created this announcement
         [Required]
         public int CreatedBy { get; set; }
 
@@ -29,7 +24,10 @@ namespace WMS.Domain.Entities
 
         public DateTime CreatedOn { get; set; } = DateTime.Now;
 
-        // Whether this announcement is currently visible to users
         public bool IsActive { get; set; } = true;
+
+        // Who should see this: "All", "Admin", "Manager", "Employee"
+        [MaxLength(20)]
+        public string TargetAudience { get; set; } = "All";
     }
 }

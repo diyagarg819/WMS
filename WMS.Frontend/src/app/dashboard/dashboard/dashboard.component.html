@@ -19,7 +19,7 @@
   <div *ngIf="!isLoading && !errorMessage && dashboardData" class="dashboard-content">
     <!-- KPI Cards -->
     <div class="kpi-grid">
-      <mat-card class="kpi-card">
+      <mat-card class="kpi-card" *ngIf="isAdmin">
         <mat-card-content class="kpi-content">
           <div class="kpi-info">
             <span class="kpi-label">Total Employees</span>
@@ -31,7 +31,7 @@
         </mat-card-content>
       </mat-card>
 
-      <mat-card class="kpi-card">
+      <mat-card class="kpi-card" *ngIf="isAdmin">
         <mat-card-content class="kpi-content">
           <div class="kpi-info">
             <span class="kpi-label">Present Today</span>
@@ -43,7 +43,7 @@
         </mat-card-content>
       </mat-card>
 
-      <mat-card class="kpi-card">
+      <mat-card class="kpi-card" *ngIf="isAdmin">
         <mat-card-content class="kpi-content">
           <div class="kpi-info">
             <span class="kpi-label">Pending Leaves</span>
@@ -51,6 +51,18 @@
           </div>
           <div class="kpi-icon-wrapper bg-orange">
             <mat-icon>pending_actions</mat-icon>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card" *ngIf="!isAdmin">
+        <mat-card-content class="kpi-content">
+          <div class="kpi-info">
+            <span class="kpi-label">Leaves Taken</span>
+            <span class="kpi-value">{{ dashboardData.kpis.leavesTaken }}</span>
+          </div>
+          <div class="kpi-icon-wrapper" style="background-color: rgba(239, 68, 68, 0.1); color: #ef4444;">
+            <mat-icon>event_busy</mat-icon>
           </div>
         </mat-card-content>
       </mat-card>
@@ -66,21 +78,57 @@
           </div>
         </mat-card-content>
       </mat-card>
-    </div>
 
-    <div class="main-grid">
-      <!-- Chart Section -->
-      <mat-card class="chart-card">
-        <mat-card-header>
-          <mat-card-title>Attendance Trends</mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="chart-container">
-          <canvas #chartCanvas></canvas>
-          <div *ngIf="!dashboardData.charts || dashboardData.charts.length === 0" class="no-data">
-            No chart data available.
+      <mat-card class="kpi-card">
+        <mat-card-content class="kpi-content">
+          <div class="kpi-info">
+            <span class="kpi-label">Total Projects</span>
+            <span class="kpi-value">{{ dashboardData.kpis.totalProjects }}</span>
+          </div>
+          <div class="kpi-icon-wrapper bg-indigo">
+            <mat-icon>folder</mat-icon>
           </div>
         </mat-card-content>
       </mat-card>
+
+      <mat-card class="kpi-card">
+        <mat-card-content class="kpi-content">
+          <div class="kpi-info">
+            <span class="kpi-label">Allocated Employees</span>
+            <span class="kpi-value">{{ dashboardData.kpis.allocatedEmployees }}</span>
+          </div>
+          <div class="kpi-icon-wrapper bg-orange">
+            <mat-icon>assignment_ind</mat-icon>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="main-grid">
+      <!-- Charts Section -->
+      <div class="charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 24px;">
+        
+        <!-- Leave Statistics Chart -->
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>Leave Statistics</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="chart-container" style="position: relative; height: 300px;">
+            <canvas #leaveChartCanvas></canvas>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Project Status Chart -->
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>Project Status</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="chart-container" style="position: relative; height: 300px;">
+            <canvas #projectChartCanvas></canvas>
+          </mat-card-content>
+        </mat-card>
+
+      </div>
 
       <!-- Announcements Section -->
       <mat-card class="announcements-card">

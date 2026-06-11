@@ -14,9 +14,10 @@ namespace WMS.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<(List<Project> Projects, int TotalCount)> GetAllProjectsAsync(int pageNumber, int pageSize, string? searchTerm)
+        public async Task<List<Project>> GetAllProjectsAsync(string? searchTerm)
         {
             var query = _context.Projects
+                .Include(p => p.Client)
                 .Include(p => p.EmployeeAllocations)
                 .AsQueryable();
 
@@ -26,20 +27,15 @@ namespace WMS.Infrastructure.Repositories
                 query = query.Where(p => p.ProjectName.ToLower().Contains(term));
             }
 
-            int totalCount = await query.CountAsync();
-
-            var projects = await query
+            return await query
                 .OrderBy(p => p.ProjectName)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
                 .ToListAsync();
-
-            return (projects, totalCount);
         }
 
         public async Task<Project?> GetProjectByIdAsync(int id)
         {
             return await _context.Projects
+                .Include(p => p.Client)
                 .Include(p => p.EmployeeAllocations)
                     .ThenInclude(a => a.Employee)
                 .FirstOrDefaultAsync(p => p.ProjectId == id);
@@ -137,7 +133,7 @@ namespace WMS.Infrastructure.Repositories
 
                 await _context.AuditLogs.AddAsync(new AuditLog
                 {
-                    Action = "Assign Employee to Project",
+                    Action = "Assign Employee",
                     EntityName = "EmployeeProjectAllocation",
                     RecordId = allocation.AllocationId,
                     CreatedBY = createdByUserId,
@@ -179,7 +175,7 @@ namespace WMS.Infrastructure.Repositories
 
                 await _context.AuditLogs.AddAsync(new AuditLog
                 {
-                    Action = $"Update Allocation Status to {(allocation.Status ? "Active" : "Inactive")}",
+                    Action = "Update Allocation",
                     EntityName = "EmployeeProjectAllocation",
                     RecordId = allocation.AllocationId,
                     CreatedBY = updatedByUserId,
@@ -194,6 +190,32 @@ namespace WMS.Infrastructure.Repositories
                 await transaction.RollbackAsync();
                 throw;
             }
+        }
+
+        public async Task<List<EmployeeProjectAllocation>> GetAllocationHistoryAsync()
+        {
+            return await _context.EmployeeProjectAllocations
+                .Include(a => a.Employee)
+                .Include(a => a.Project)
+                .OrderByDescending(a => a.CreateDate)
+                .ToListAsync();
+        }
+
+        public async Task<List<Project>> GetProjectsByEmployeeAsync(int employeeId)
+        {
+            return await _context.EmployeeProjectAllocations
+                .Where(a => a.EmpId == employeeId && a.Status)
+                .Include(a => a.Project)
+                .Select(a => a.Project!)
+                .ToListAsync();
+        }
+
+        public async Task<List<EmployeeProjectAllocation>> GetAllocationsByProjectAsync(int projectId)
+        {
+            return await _context.EmployeeProjectAllocations
+                .Where(a => a.ProjectId == projectId)
+                .Include(a => a.Employee)
+                .ToListAsync();
         }
     }
 }

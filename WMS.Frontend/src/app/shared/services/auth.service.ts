@@ -1,10 +1,9 @@
 import { environment } from '../../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError, of } from 'rxjs';
-import { catchError, tap, map } from 'rxjs/operators';
-import { ApiResponse } from '../models/api-response.model';
+import { Observable, BehaviorSubject, tap } from 'rxjs';
 import { Role } from '../enums/role.enum';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -13,82 +12,62 @@ export class AuthService {
 
   private apiUrl = environment.apiUrl + '/auth';
 
-  // We no longer store the JWT in localStorage for security (HttpOnly Cookie is used instead).
-  // We only store a flag and the user's role to manage UI state synchronously.
-  private readonly AUTH_FLAG_KEY = 'isAuthenticated';
-  private readonly ROLE_KEY = 'userRole';
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
+  public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
-  // ── Login ─────────────────────────────────────────────────────────────
-  // Send username + password to the backend.
-  // The backend sets the HttpOnly cookie. We just save the UI state locally.
-  login(credentials: any): Observable<ApiResponse<any>> {
-    // Add withCredentials to ensure we receive the cookie in the response
-    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/login`, credentials, { withCredentials: true }).pipe(
-      tap(res => {
-        if (res.success && res.data) {
-          localStorage.setItem(this.AUTH_FLAG_KEY, 'true');
-          if (res.data.role) {
-            localStorage.setItem(this.ROLE_KEY, res.data.role);
+  private hasToken(): boolean {
+    return !!localStorage.getItem('token');
+  }
+
+  // Handle Login
+  login(credentials: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/login`, credentials)
+      .pipe(
+        tap((response: any) => {
+          if (response.success && response.data) {
+            localStorage.setItem('token', response.data.accessToken);
+            localStorage.setItem('userRole', response.data.role);
+            this.isAuthenticatedSubject.next(true);
           }
-        }
-      })
-    );
+        })
+      );
   }
 
-  // ── Logout ────────────────────────────────────────────────────────────
-  // Tell the backend we're logging out (clears cookie), then clear local state.
-  logout(): Observable<any> {
-    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/logout`, {}, { withCredentials: true }).pipe(
-      tap(() => this.clearLocalState()),
-      catchError(err => {
-        this.clearLocalState();
-        return throwError(() => err);
-      })
-    );
+  // Handle Logout
+  logout(): void {
+    // We don't necessarily need to call the backend if we are just dropping the token locally,
+    // but we can do a fire-and-forget if we want. For simplicity, we just clear local state.
+    localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
+    this.isAuthenticatedSubject.next(false);
+    this.router.navigate(['/auth/login']);
   }
 
-  // ── Auth Verification ──────────────────────────────────────────────────
-  // Calls the /me endpoint to verify if the HttpOnly cookie is still valid.
-  verifySession(): Observable<boolean> {
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/me`, { withCredentials: true }).pipe(
-      map(res => {
-        if (res.success) {
-          localStorage.setItem(this.AUTH_FLAG_KEY, 'true');
-          if (res.data && res.data.role) {
-            localStorage.setItem(this.ROLE_KEY, res.data.role);
-          }
-          return true;
-        }
-        this.clearLocalState();
-        return false;
-      }),
-      catchError(() => {
-        this.clearLocalState();
-        return of(false);
-      })
-    );
-  }
-
-  // ── Sync State Helpers ────────────────────────────────────────────────
-
-  // Check if the user is currently logged in (based on UI flag)
+  // Check if the user is currently logged in
   isLoggedIn(): boolean {
-    return localStorage.getItem(this.AUTH_FLAG_KEY) === 'true';
+    return this.hasToken();
   }
 
-  // Remove the UI state
-  clearLocalState(): void {
-    localStorage.removeItem(this.AUTH_FLAG_KEY);
-    localStorage.removeItem(this.ROLE_KEY);
-  }
-
-  // ── Role Extraction ───────────────────────────────────────────────────
-  // Get the role from localStorage since we can no longer decode the HttpOnly JWT.
+  // Get the role from localStorage
   getRole(): Role | null {
-    const roleStr = localStorage.getItem(this.ROLE_KEY);
+    const roleStr = localStorage.getItem('userRole');
     if (!roleStr) return null;
     return roleStr as Role;
+  }
+
+  // Get UserId from token
+  getUserId(): number | null {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      // nameid claim contains UserId
+      const userIdStr = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+      return userIdStr ? parseInt(userIdStr, 10) : null;
+    } catch (e) {
+      return null;
+    }
   }
 }

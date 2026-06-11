@@ -8,46 +8,39 @@ using WMS.Domain.Interfaces;
 
 namespace WMS.Tests.Services
 {
-    /// <summary>
-    /// Unit tests for EmployeeService — covers CRUD, validation, and soft delete.
-    /// </summary>
     public class EmployeeServiceTests
     {
         private readonly Mock<IEmployeeRepository> _mockRepository;
+        private readonly Mock<IUserLoginRepository> _mockUserLoginRepository;
         private readonly Mock<ILogger<EmployeeService>> _mockLogger;
         private readonly EmployeeService _employeeService;
 
         public EmployeeServiceTests()
         {
             _mockRepository = new Mock<IEmployeeRepository>();
+            _mockUserLoginRepository = new Mock<IUserLoginRepository>();
             _mockLogger = new Mock<ILogger<EmployeeService>>();
-            _employeeService = new EmployeeService(_mockRepository.Object, _mockLogger.Object);
+            _employeeService = new EmployeeService(_mockRepository.Object, _mockUserLoginRepository.Object, _mockLogger.Object);
         }
 
         // ── GetAll Tests ──────────────────────────────────────────────────
 
         [Fact]
-        public async Task GetAllEmployees_ReturnsPagedResult()
+        public async Task GetAllEmployees_ReturnsList()
         {
-            // Arrange — mock a page of 2 employees
             var employees = new List<Employee>
             {
                 new Employee { EmployeeId = 1, FirstName = "John", LastName = "Doe", Email = "john@wms.com", PhoneNumber = "1234567890", Status = "Active" },
                 new Employee { EmployeeId = 2, FirstName = "Jane", LastName = "Smith", Email = "jane@wms.com", PhoneNumber = "0987654321", Status = "Active" }
             };
 
-            _mockRepository.Setup(r => r.GetAllAsync(1, 10, null, null, null))
-                .ReturnsAsync((employees, 2));
+            _mockRepository.Setup(r => r.GetAllAsync(null)).ReturnsAsync(employees);
 
-            var request = new PagedRequestDto { PageNumber = 1, PageSize = 10 };
-
-            // Act
+            var request = new SearchRequestDto();
             var result = await _employeeService.GetAllEmployeesAsync(request);
 
-            // Assert
-            Assert.Equal(2, result.TotalCount);
-            Assert.Equal(2, result.Data.Count);
-            Assert.Equal("John", result.Data[0].FirstName);
+            Assert.Equal(2, result.Count);
+            Assert.Equal("John", result[0].FirstName);
         }
 
         // ── GetById Tests ─────────────────────────────────────────────────
@@ -55,7 +48,6 @@ namespace WMS.Tests.Services
         [Fact]
         public async Task GetEmployeeById_WithValidId_ReturnsEmployee()
         {
-            // Arrange
             var employee = new Employee
             {
                 EmployeeId = 1, FirstName = "John", LastName = "Doe",
@@ -67,10 +59,8 @@ namespace WMS.Tests.Services
 
             _mockRepository.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(employee);
 
-            // Act
             var result = await _employeeService.GetEmployeeByIdAsync(1);
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal("John", result.FirstName);
             Assert.Equal("Engineering", result.DepartmentName);
@@ -91,8 +81,9 @@ namespace WMS.Tests.Services
         [Fact]
         public async Task CreateEmployee_WithValidData_ReturnsEmployee()
         {
-            // Arrange — email is available and age >= 18
             _mockRepository.Setup(r => r.EmailExistsAsync("new@wms.com", null)).ReturnsAsync(false);
+            _mockUserLoginRepository.Setup(r => r.UsernameExistsAsync("newuser")).ReturnsAsync(false);
+            _mockUserLoginRepository.Setup(r => r.AddAsync(It.IsAny<UserLogin>())).Returns(Task.CompletedTask);
 
             var createdEmployee = new Employee
             {
@@ -108,13 +99,12 @@ namespace WMS.Tests.Services
             {
                 FirstName = "New", LastName = "User",
                 Email = "new@wms.com", PhoneNumber = "555",
-                DOB = new DateTime(2000, 1, 1), DOJ = DateTime.Now
+                DOB = new DateTime(2000, 1, 1), DOJ = DateTime.Now,
+                Username = "newuser", Password = "Password123!"
             };
 
-            // Act
             var result = await _employeeService.CreateEmployeeAsync(request, 1);
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal("New", result.FirstName);
         }
@@ -122,40 +112,18 @@ namespace WMS.Tests.Services
         [Fact]
         public async Task CreateEmployee_WithDuplicateEmail_ReturnsNull()
         {
-            // Arrange — email is already taken
             _mockRepository.Setup(r => r.EmailExistsAsync("taken@wms.com", null)).ReturnsAsync(true);
 
             var request = new CreateEmployeeDto
             {
                 FirstName = "Test", LastName = "User",
                 Email = "taken@wms.com", PhoneNumber = "555",
-                DOB = new DateTime(2000, 1, 1), DOJ = DateTime.Now
+                DOB = new DateTime(2000, 1, 1), DOJ = DateTime.Now,
+                Username = "testuser", Password = "Password123!"
             };
 
-            // Act
             var result = await _employeeService.CreateEmployeeAsync(request, 1);
 
-            // Assert
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public async Task CreateEmployee_UnderAge18_ReturnsNull()
-        {
-            // Arrange — employee is 15 years old
-            _mockRepository.Setup(r => r.EmailExistsAsync("young@wms.com", null)).ReturnsAsync(false);
-
-            var request = new CreateEmployeeDto
-            {
-                FirstName = "Young", LastName = "Person",
-                Email = "young@wms.com", PhoneNumber = "555",
-                DOB = DateTime.Today.AddYears(-15), DOJ = DateTime.Now
-            };
-
-            // Act
-            var result = await _employeeService.CreateEmployeeAsync(request, 1);
-
-            // Assert — under 18, should be rejected
             Assert.Null(result);
         }
 
@@ -164,7 +132,6 @@ namespace WMS.Tests.Services
         [Fact]
         public async Task UpdateEmployee_WithValidData_ReturnsTrue()
         {
-            // Arrange
             var existing = new Employee
             {
                 EmployeeId = 1, FirstName = "Old", LastName = "Name",
@@ -180,13 +147,12 @@ namespace WMS.Tests.Services
             {
                 FirstName = "Updated", LastName = "Name",
                 Email = "new@wms.com", PhoneNumber = "456",
-                DOB = new DateTime(1990, 1, 1), DOJ = new DateTime(2020, 1, 1)
+                DOB = new DateTime(1990, 1, 1), DOJ = new DateTime(2020, 1, 1),
+                Username = "old"
             };
 
-            // Act
             var result = await _employeeService.UpdateEmployeeAsync(1, request, 1);
 
-            // Assert
             Assert.True(result);
         }
 
@@ -199,7 +165,8 @@ namespace WMS.Tests.Services
             {
                 FirstName = "Test", LastName = "User",
                 Email = "test@wms.com", PhoneNumber = "123",
-                DOB = new DateTime(1990, 1, 1), DOJ = new DateTime(2020, 1, 1)
+                DOB = new DateTime(1990, 1, 1), DOJ = new DateTime(2020, 1, 1),
+                Username = "test"
             };
 
             var result = await _employeeService.UpdateEmployeeAsync(999, request, 1);

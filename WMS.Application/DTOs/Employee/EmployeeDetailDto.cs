@@ -19,6 +19,7 @@ namespace WMS.Application.DTOs.Employee
         public int? RoleId { get; set; }
         public string? RoleName { get; set; }
         public string Status { get; set; } = string.Empty;
+        public string? Username { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime? UpdatedOn { get; set; }
     }

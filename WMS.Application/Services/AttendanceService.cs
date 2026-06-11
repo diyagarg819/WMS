@@ -82,35 +82,23 @@ namespace WMS.Application.Services
             return record != null ? MapToDto(record) : null;
         }
 
-        // Get paginated attendance history for a specific employee
-        public async Task<PagedResponseDto<AttendanceRecordDto>> GetMyAttendanceAsync(
+        // Get attendance history for a specific employee
+        public async Task<List<AttendanceRecordDto>> GetMyAttendanceAsync(
             int empId, AttendanceFilterDto filter)
         {
-            var (records, totalCount) = await _attendanceRepository.GetByEmployeeAsync(
-                empId, filter.PageNumber, filter.PageSize, filter.FromDate, filter.ToDate);
+            var records = await _attendanceRepository.GetByEmployeeAsync(
+                empId, filter.FromDate, filter.ToDate);
 
-            return new PagedResponseDto<AttendanceRecordDto>
-            {
-                Data = records.Select(r => MapToDto(r)).ToList(),
-                TotalCount = totalCount,
-                PageNumber = filter.PageNumber,
-                PageSize = filter.PageSize
-            };
+            return records.Select(r => MapToDto(r)).ToList();
         }
 
-        // Get paginated attendance for all employees (Admin view)
-        public async Task<PagedResponseDto<AttendanceRecordDto>> GetAllAttendanceAsync(AttendanceFilterDto filter)
+        // Get attendance for all employees (Admin view)
+        public async Task<List<AttendanceRecordDto>> GetAllAttendanceAsync(AttendanceFilterDto filter)
         {
-            var (records, totalCount) = await _attendanceRepository.GetAllAsync(
-                filter.PageNumber, filter.PageSize, filter.FromDate, filter.ToDate, filter.SearchTerm);
+            var records = await _attendanceRepository.GetAllAsync(
+                filter.FromDate, filter.ToDate, filter.SearchTerm);
 
-            return new PagedResponseDto<AttendanceRecordDto>
-            {
-                Data = records.Select(r => MapToDto(r)).ToList(),
-                TotalCount = totalCount,
-                PageNumber = filter.PageNumber,
-                PageSize = filter.PageSize
-            };
+            return records.Select(r => MapToDto(r)).ToList();
         }
 
         // Map entity to DTO

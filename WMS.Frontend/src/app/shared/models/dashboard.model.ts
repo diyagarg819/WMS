@@ -2,7 +2,10 @@ export interface DashboardKpi {
   totalEmployees: number;
   attendanceCountToday: number;
   pendingLeaveCount: number;
+  leavesTaken: number;
   activeProjectCount: number;
+  totalProjects: number;
+  allocatedEmployees: number;
 }
 
 export interface DashboardChart {

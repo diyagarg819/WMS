@@ -14,7 +14,7 @@ namespace WMS.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<(List<Department> Departments, int TotalCount)> GetAllAsync(int pageNumber, int pageSize, string? searchTerm)
+        public async Task<List<Department>> GetAllAsync(string? searchTerm)
         {
             var query = _context.Departments.AsQueryable();
 
@@ -24,15 +24,9 @@ namespace WMS.Infrastructure.Repositories
                 query = query.Where(d => d.DepartmentName.ToLower().Contains(term));
             }
 
-            int totalCount = await query.CountAsync();
-
-            var departments = await query
+            return await query
                 .OrderBy(d => d.DepartmentName)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
                 .ToListAsync();
-
-            return (departments, totalCount);
         }
 
         public async Task<Department?> GetByIdAsync(int id)

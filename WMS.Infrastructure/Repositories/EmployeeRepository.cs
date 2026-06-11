@@ -5,10 +5,6 @@ using WMS.Infrastructure.Data;
 
 namespace WMS.Infrastructure.Repositories
 {
-    /// <summary>
-    /// Repository for Employee database operations.
-    /// Only this class touches the database for employee-related queries.
-    /// </summary>
     public class EmployeeRepository : IEmployeeRepository
     {
         private readonly WMSDbContext _context;
@@ -18,42 +14,32 @@ namespace WMS.Infrastructure.Repositories
             _context = context;
         }
 
-        // Paginated, searchable, sortable list of all employees
-        public async Task<(List<Employee> Employees, int TotalCount)> GetAllAsync(
-            int pageNumber, int pageSize, string? searchTerm, string? sortBy, string? sortDirection)
+        public async Task<List<Employee>> GetAllAsync(string? searchTerm)
         {
             var query = _context.Employees
                 .Include(e => e.Department)
                 .Include(e => e.Role)
+                .Where(e => e.Status != "Inactive")
                 .AsQueryable();
 
-            // Apply search filter — searches across first name, last name, email, and phone
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 string term = searchTerm.Trim().ToLower();
+                bool isNumeric = int.TryParse(term, out int searchId);
+
                 query = query.Where(e =>
+                    (isNumeric && e.EmployeeId == searchId) ||
                     e.FirstName.ToLower().Contains(term) ||
                     e.LastName.ToLower().Contains(term) ||
                     e.Email.ToLower().Contains(term) ||
-                    e.PhoneNumber.Contains(term));
+                    (e.PhoneNumber != null && e.PhoneNumber.ToLower().Contains(term)) ||
+                    (e.Department != null && e.Department.DepartmentName.ToLower().Contains(term)) ||
+                    (e.Role != null && e.Role.RoleName.ToLower().Contains(term)));
             }
 
-            // Get total count before pagination (for page metadata)
-            int totalCount = await query.CountAsync();
-
-            // Apply sorting
-            query = ApplySorting(query, sortBy, sortDirection);
-
-            // Apply pagination
-            var employees = await query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            return (employees, totalCount);
+            return await query.OrderBy(e => e.EmployeeId).ToListAsync();
         }
 
-        // Get a single employee by ID — includes Department and Role
         public async Task<Employee?> GetByIdAsync(int employeeId)
         {
             return await _context.Employees
@@ -62,7 +48,6 @@ namespace WMS.Infrastructure.Repositories
                 .FirstOrDefaultAsync(e => e.EmployeeId == employeeId);
         }
 
-        // Check if an email is already in use (optionally exclude a specific employee for updates)
         public async Task<bool> EmailExistsAsync(string email, int? excludeEmployeeId = null)
         {
             var query = _context.Employees.AsNoTracking().Where(e => e.Email == email);
@@ -73,7 +58,6 @@ namespace WMS.Infrastructure.Repositories
             return await query.AnyAsync();
         }
 
-        // Add a new employee record
         public async Task<Employee> AddAsync(Employee employee, int createdByUserId)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -93,7 +77,6 @@ namespace WMS.Infrastructure.Repositories
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
-
                 return employee;
             }
             catch
@@ -103,14 +86,13 @@ namespace WMS.Infrastructure.Repositories
             }
         }
 
-        // Update an existing employee record
         public async Task UpdateAsync(Employee employee, int updatedByUserId)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 _context.Employees.Update(employee);
-                
+
                 await _context.AuditLogs.AddAsync(new AuditLog
                 {
                     Action = "Update Employee",
@@ -130,30 +112,25 @@ namespace WMS.Infrastructure.Repositories
             }
         }
 
-        // Soft delete — set Status to 'Inactive' and add an AuditLog entry
         public async Task DeleteAsync(Employee employee, int deletedByUserId)
         {
             employee.Status = "Inactive";
             employee.UpdatedOn = DateTime.Now;
             _context.Employees.Update(employee);
 
-            // Write an audit log entry for the soft delete
-            var auditLog = new AuditLog
+            await _context.AuditLogs.AddAsync(new AuditLog
             {
                 Action = "SoftDelete",
                 EntityName = "Employee",
                 RecordId = employee.EmployeeId,
                 CreatedBY = deletedByUserId,
                 CreatedOn = DateTime.Now
-            };
-            await _context.AuditLogs.AddAsync(auditLog);
+            });
 
             await _context.SaveChangesAsync();
         }
 
-        // Get employees within a specific department (Manager team-scoped view)
-        public async Task<(List<Employee> Employees, int TotalCount)> GetByDepartmentAsync(
-            int departmentId, int pageNumber, int pageSize, string? searchTerm)
+        public async Task<List<Employee>> GetByDepartmentAsync(int departmentId, string? searchTerm)
         {
             var query = _context.Employees
                 .Include(e => e.Department)
@@ -169,32 +146,7 @@ namespace WMS.Infrastructure.Repositories
                     e.Email.ToLower().Contains(term));
             }
 
-            int totalCount = await query.CountAsync();
-
-            var employees = await query
-                .OrderBy(e => e.FirstName)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            return (employees, totalCount);
-        }
-
-        // Apply dynamic sorting based on the sort field name
-        private IQueryable<Employee> ApplySorting(IQueryable<Employee> query, string? sortBy, string? sortDirection)
-        {
-            bool isDescending = string.Equals(sortDirection, "desc", StringComparison.OrdinalIgnoreCase);
-
-            return sortBy?.ToLower() switch
-            {
-                "firstname" => isDescending ? query.OrderByDescending(e => e.FirstName) : query.OrderBy(e => e.FirstName),
-                "lastname" => isDescending ? query.OrderByDescending(e => e.LastName) : query.OrderBy(e => e.LastName),
-                "email" => isDescending ? query.OrderByDescending(e => e.Email) : query.OrderBy(e => e.Email),
-                "department" => isDescending ? query.OrderByDescending(e => e.Department!.DepartmentName) : query.OrderBy(e => e.Department!.DepartmentName),
-                "status" => isDescending ? query.OrderByDescending(e => e.Status) : query.OrderBy(e => e.Status),
-                "doj" => isDescending ? query.OrderByDescending(e => e.DOJ) : query.OrderBy(e => e.DOJ),
-                _ => query.OrderBy(e => e.EmployeeId) // Default sort by ID
-            };
+            return await query.OrderBy(e => e.FirstName).ToListAsync();
         }
     }
 }

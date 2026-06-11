@@ -8,8 +8,11 @@ export interface Employee {
   dob: string;
   doj: string;
   departmentId: number;
+  departmentName?: string;
   roleId: number;
+  roleName?: string;
   status: string;
+  username?: string;
 }
 
 export interface EmployeeDto {
@@ -23,4 +26,5 @@ export interface EmployeeDto {
   departmentId: number;
   roleId: number;
   status: string;
+  username?: string;
 }

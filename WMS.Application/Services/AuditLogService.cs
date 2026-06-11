@@ -1,4 +1,3 @@
-using WMS.Application.Common;
 using WMS.Application.DTOs.AuditLog;
 using WMS.Domain.Interfaces;
 
@@ -6,7 +5,7 @@ namespace WMS.Application.Services
 {
     public interface IAuditLogService
     {
-        Task<PagedResponseDto<AuditLogDto>> GetAllAsync(PagedRequestDto request);
+        Task<List<AuditLogDto>> GetAllAsync(DateTime? startDate, DateTime? endDate);
     }
 
     public class AuditLogService : IAuditLogService
@@ -18,11 +17,11 @@ namespace WMS.Application.Services
             _auditLogRepository = auditLogRepository;
         }
 
-        public async Task<PagedResponseDto<AuditLogDto>> GetAllAsync(PagedRequestDto request)
+        public async Task<List<AuditLogDto>> GetAllAsync(DateTime? startDate, DateTime? endDate)
         {
-            var (records, totalCount) = await _auditLogRepository.GetAllAsync(request.PageNumber, request.PageSize);
+            var records = await _auditLogRepository.GetAllAsync(startDate, endDate);
 
-            var dtoList = records.Select(a => new AuditLogDto
+            return records.Select(a => new AuditLogDto
             {
                 AuditId = a.AuditId,
                 EntityName = a.EntityName,
@@ -31,14 +30,6 @@ namespace WMS.Application.Services
                 CreatedBy = a.CreatedBY,
                 CreatedOn = a.CreatedOn
             }).ToList();
-
-            return new PagedResponseDto<AuditLogDto>
-            {
-                Data = dtoList,
-                TotalCount = totalCount,
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize
-            };
         }
     }
 }

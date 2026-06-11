@@ -20,6 +20,16 @@
       </mat-error>
     </mat-form-field>
 
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Client</mat-label>
+      <mat-select formControlName="clientId">
+        <mat-option [value]="null">Internal / None</mat-option>
+        <mat-option *ngFor="let c of clients" [value]="c.clientId">
+          {{ c.clientName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
     <div class="date-row">
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Start Date</mat-label>

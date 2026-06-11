@@ -5,7 +5,7 @@ namespace WMS.Application.Services
 {
     public interface IProjectService
     {
-        Task<PagedResponseDto<ProjectDto>> GetAllProjectsAsync(PagedRequestDto request);
+        Task<List<ProjectDto>> GetAllProjectsAsync(SearchRequestDto request);
         Task<(bool Success, string Message, ProjectDto? Data)> GetProjectByIdAsync(int id);
         
         Task<(bool Success, string Message, ProjectDto? Data)> CreateProjectAsync(CreateProjectDto request, int userId);
@@ -14,6 +14,9 @@ namespace WMS.Application.Services
 
         Task<(bool Success, string Message, ProjectAllocationDto? Data)> AssignEmployeeAsync(int projectId, AssignEmployeeDto request, int userId, string userName);
         Task<(bool Success, string Message)> RemoveEmployeeAsync(int allocationId, int userId, string userName);
-        Task<(bool Success, string Message, ProjectAllocationDto? Data)> UpdateAllocationStatusAsync(int allocationId, UpdateAllocationStatusDto request, int userId, string userName);
+
+        Task<List<ProjectAllocationDto>> GetAllocationHistoryAsync();
+        Task<List<ProjectDto>> GetProjectsByEmployeeAsync(int employeeId);
+        Task<List<ProjectAllocationDto>> GetEmployeesByProjectAsync(int projectId);
     }
 }

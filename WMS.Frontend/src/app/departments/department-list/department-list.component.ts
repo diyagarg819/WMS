@@ -1,5 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { Component, OnInit } from '@angular/core';
 import { DepartmentService } from '../../shared/services/department.service';
 import { AuthService } from '../../shared/services/auth.service';
 import { Department } from '../../shared/models/department.model';
@@ -15,17 +14,11 @@ import { debounceTime } from 'rxjs/operators';
 })
 export class DepartmentListComponent implements OnInit {
   departments: Department[] = [];
-  totalRecords = 0;
   isLoading = false;
-
-  pageNumber = 1;
-  pageSize = 10;
   searchTerm = '';
 
   displayedColumns: string[] = ['departmentName', 'description', 'createdOn', 'actions'];
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  
   showFormPanel = false;
   selectedDepartment: Department | null = null;
   formMode: 'create' | 'edit' = 'create';
@@ -43,7 +36,6 @@ export class DepartmentListComponent implements OnInit {
   ) {
     this.searchSubject.pipe(debounceTime(300)).subscribe(term => {
       this.searchTerm = term;
-      this.pageNumber = 1;
       this.loadData();
     });
   }
@@ -54,11 +46,10 @@ export class DepartmentListComponent implements OnInit {
 
   loadData(): void {
     this.isLoading = true;
-    this.departmentService.getAllDepartments(this.pageNumber, this.pageSize, this.searchTerm).subscribe({
+    this.departmentService.getAllDepartments(this.searchTerm).subscribe({
       next: (res) => {
         if (res.success && res.data) {
-          this.departments = res.data.data;
-          this.totalRecords = res.data.totalCount;
+          this.departments = res.data;
         } else {
           this.showNotification('error', res.message || 'Failed to load departments.');
         }
@@ -74,12 +65,6 @@ export class DepartmentListComponent implements OnInit {
   onSearch(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.searchSubject.next(target.value);
-  }
-
-  onPageChange(event: PageEvent): void {
-    this.pageNumber = event.pageIndex + 1;
-    this.pageSize = event.pageSize;
-    this.loadData();
   }
 
   openCreatePanel(): void {

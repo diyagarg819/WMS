@@ -1,5 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { Component, OnInit } from '@angular/core';
 import { ProjectService } from '../../shared/services/project.service';
 import { AuthService } from '../../shared/services/auth.service';
 import { ProjectRecord } from '../../shared/models/project.model';
@@ -15,17 +14,11 @@ import { debounceTime } from 'rxjs/operators';
 })
 export class ProjectListComponent implements OnInit {
   projects: ProjectRecord[] = [];
-  totalRecords = 0;
   isLoading = false;
-
-  pageNumber = 1;
-  pageSize = 10;
   searchTerm = '';
 
-  displayedColumns: string[] = ['projectName', 'dates', 'status', 'actions'];
+  displayedColumns: string[] = ['projectName', 'clientName', 'dates', 'status', 'actions'];
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  
   showFormPanel = false;
   showDetailPanel = false;
   
@@ -45,7 +38,6 @@ export class ProjectListComponent implements OnInit {
   ) {
     this.searchSubject.pipe(debounceTime(300)).subscribe(term => {
       this.searchTerm = term;
-      this.pageNumber = 1;
       this.loadData();
     });
   }
@@ -56,11 +48,10 @@ export class ProjectListComponent implements OnInit {
 
   loadData(): void {
     this.isLoading = true;
-    this.projectService.getAllProjects(this.pageNumber, this.pageSize, this.searchTerm).subscribe({
+    this.projectService.getAllProjects(this.searchTerm).subscribe({
       next: (res) => {
         if (res.success && res.data) {
-          this.projects = res.data.data;
-          this.totalRecords = res.data.totalCount;
+          this.projects = res.data;
         } else {
           this.showNotification('error', res.message || 'Failed to load projects.');
         }
@@ -76,12 +67,6 @@ export class ProjectListComponent implements OnInit {
   onSearch(event: Event): void {
     const target = event.target as HTMLInputElement;
     this.searchSubject.next(target.value);
-  }
-
-  onPageChange(event: PageEvent): void {
-    this.pageNumber = event.pageIndex + 1;
-    this.pageSize = event.pageSize;
-    this.loadData();
   }
 
   openCreatePanel(): void {
@@ -140,8 +125,29 @@ export class ProjectListComponent implements OnInit {
     this.showBanner = true;
   }
 
+  deleteProject(project: ProjectRecord): void {
+    if (!confirm(`Are you sure you want to delete project '${project.projectName}'?`)) return;
+
+    this.isLoading = true;
+    this.projectService.deleteProject(project.projectId).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.showNotification('success', res.message || 'Project deleted successfully.');
+          this.loadData();
+        } else {
+          this.showNotification('error', res.message || 'Failed to delete project.');
+          this.isLoading = false;
+        }
+      },
+      error: (err) => {
+        this.showNotification('error', err.error?.message || 'Failed to delete project.');
+        this.isLoading = false;
+      }
+    });
+  }
+
   canManageProjects(): boolean {
     const role = this.authService.getRole();
-    return role === Role.Admin || role === Role.Manager;
+    return role === Role.Admin;
   }
 }

@@ -1,13 +1,10 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.RateLimiting;
-using System.Threading.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using WMS.Api.Middleware;
 using WMS.Application.Common;
 using WMS.Application.Services;
-using WMS.Domain.Entities;
 using WMS.Domain.Interfaces;
 using WMS.Infrastructure.Data;
 using WMS.Infrastructure.Repositories;
@@ -25,19 +22,6 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 var secretKey = Encoding.UTF8.GetBytes(jwtSettings!.SecretKey);
-
-// ── Rate Limiting ─────────────────────────────────────────────────────
-builder.Services.AddRateLimiter(options =>
-{
-    // Restrict login to 5 attempts per minute per IP address
-    options.AddFixedWindowLimiter("LoginPolicy", opt =>
-    {
-        opt.PermitLimit = 5;
-        opt.Window = TimeSpan.FromMinutes(1);
-        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-        opt.QueueLimit = 0; // Reject immediately if over limit
-    });
-});
 
 // ── Authentication ────────────────────────────────────────────────────
 builder.Services.AddAuthentication(options =>
@@ -57,19 +41,6 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(secretKey),
         ClockSkew = TimeSpan.Zero // No clock skew — token expires exactly when it says it does
-    };
-
-    // Extract the JWT token from the HttpOnly cookie
-    options.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
-        {
-            if (context.Request.Cookies.TryGetValue("jwt", out var token))
-            {
-                context.Token = token;
-            }
-            return Task.CompletedTask;
-        }
     };
 });
 
@@ -96,6 +67,8 @@ builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
 
 // Services — Application layer, depend only on repository interfaces
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -106,6 +79,8 @@ builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
+builder.Services.AddScoped<IClientService, ClientService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -136,8 +111,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseRateLimiter(); // Add rate limiter before CORS
 
 // CORS must come before auth
 app.UseCors("AllowAngularApp");

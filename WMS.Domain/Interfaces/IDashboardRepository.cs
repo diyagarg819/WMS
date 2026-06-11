@@ -9,11 +9,13 @@ namespace WMS.Domain.Interfaces
         Task<int> GetAttendanceCountTodayAsync(string role, int employeeId, int? departmentId);
         
         Task<int> GetPendingLeaveCountAsync(string role, int employeeId, int? departmentId);
-        
+        Task<int> GetLeavesTakenCountAsync(string role, int employeeId, int? departmentId);
         Task<int> GetActiveProjectCountAsync(string role, int employeeId);
+        Task<int> GetTotalProjectsCountAsync(string role, int employeeId);
+        Task<int> GetAllocatedEmployeesCountAsync(string role, int employeeId);
 
         // Chart Data
-        Task<List<KeyValuePair<string, int>>> GetAttendanceChartDataAsync(string role, int employeeId, int? departmentId, DateTime startDate, DateTime endDate);
+
         
         Task<List<KeyValuePair<string, int>>> GetLeavePieChartDataAsync(string role, int employeeId, int? departmentId);
         

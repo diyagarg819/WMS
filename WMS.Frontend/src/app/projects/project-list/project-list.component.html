@@ -41,6 +41,14 @@
           </td>
         </ng-container>
 
+        <!-- Client Name Column -->
+        <ng-container matColumnDef="clientName">
+          <th mat-header-cell *matHeaderCellDef> Client </th>
+          <td mat-cell *matCellDef="let element"> 
+            {{ element.clientName || 'Internal' }}
+          </td>
+        </ng-container>
+
         <!-- Dates Column -->
         <ng-container matColumnDef="dates">
           <th mat-header-cell *matHeaderCellDef> Timeline </th>
@@ -67,17 +75,19 @@
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef> Actions </th>
           <td mat-cell *matCellDef="let element">
-            <button mat-button color="primary" (click)="openDetailPanel(element)">
-              Details
-            </button>
-            <button mat-icon-button color="accent" *ngIf="canManageProjects()" (click)="openEditPanel(element)">
-              <mat-icon>edit</mat-icon>
-            </button>
+            <div class="action-buttons">
+              <button mat-icon-button color="accent" *ngIf="canManageProjects()" (click)="openEditPanel(element); $event.stopPropagation()" matTooltip="Edit Project">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" *ngIf="canManageProjects()" (click)="deleteProject(element); $event.stopPropagation()" matTooltip="Delete Project">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
           </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="row-hover"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="row-hover" (click)="openDetailPanel(row)" style="cursor: pointer;"></tr>
         
         <!-- Empty row -->
         <tr class="mat-row" *matNoDataRow>
@@ -87,12 +97,7 @@
         </tr>
       </table>
 
-      <mat-paginator 
-        [length]="totalRecords"
-        [pageSize]="pageSize"
-        [pageSizeOptions]="[5, 10, 25, 100]"
-        (page)="onPageChange($event)">
-      </mat-paginator>
+      
     </div>
   </div>
 </div>

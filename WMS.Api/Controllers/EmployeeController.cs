@@ -7,63 +7,51 @@ using WMS.Application.Services;
 
 namespace WMS.Api.Controllers
 {
-    /// <summary>
-    /// Employee CRUD operations with role-based access control.
-    /// Admin: full CRUD + search. Manager: read + search. Employee: own profile only.
-    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
-        private readonly ILogger<EmployeeController> _logger;
 
-        public EmployeeController(IEmployeeService employeeService, ILogger<EmployeeController> logger)
+        public EmployeeController(IEmployeeService employeeService)
         {
             _employeeService = employeeService;
-            _logger = logger;
         }
 
-        // GET /api/employee — Admin and Manager get paginated employee list
         [Authorize(Roles = "Admin,Manager")]
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] PagedRequestDto request)
+        public async Task<IActionResult> GetAll([FromQuery] SearchRequestDto request)
         {
             var result = await _employeeService.GetAllEmployeesAsync(request);
-            return Ok(new ApiResponse<PagedResponseDto<EmployeeListDto>>(true, "Employees retrieved", result));
+            return Ok(new ApiResponse<List<EmployeeListDto>>(true, "Employees retrieved", result));
         }
 
-        // GET /api/employee/{id} — Admin and Manager can view any employee
         [Authorize(Roles = "Admin,Manager")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var employee = await _employeeService.GetEmployeeByIdAsync(id);
-
             if (employee == null)
                 return NotFound(new ApiResponse<object>(false, "Employee not found"));
 
             return Ok(new ApiResponse<EmployeeDetailDto>(true, "Employee retrieved", employee));
         }
 
-        // GET /api/employee/my-profile — any authenticated user can view their own profile
         [HttpGet("my-profile")]
         public async Task<IActionResult> GetMyProfile()
         {
-            int? employeeId = GetEmployeeIdFromToken();
-            if (employeeId == null)
+            int userId = GetUserIdFromToken();
+            if (userId == 0)
                 return Unauthorized(new ApiResponse<object>(false, "Unable to identify user"));
 
-            var employee = await _employeeService.GetEmployeeByIdAsync(employeeId.Value);
-
+            var employee = await _employeeService.GetEmployeeByIdAsync(userId);
             if (employee == null)
                 return NotFound(new ApiResponse<object>(false, "Profile not found"));
 
             return Ok(new ApiResponse<EmployeeDetailDto>(true, "Profile retrieved", employee));
         }
 
-        // POST /api/employee — Admin creates a new employee
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateEmployeeDto request)
@@ -77,7 +65,6 @@ namespace WMS.Api.Controllers
             return StatusCode(201, new ApiResponse<EmployeeDetailDto>(true, "Employee created", created));
         }
 
-        // PUT /api/employee/{id} — Admin updates any employee
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateEmployeeDto request)
@@ -91,15 +78,14 @@ namespace WMS.Api.Controllers
             return Ok(new ApiResponse<object>(true, "Employee updated"));
         }
 
-        // PUT /api/employee/my-profile — any authenticated user updates their own phone number
         [HttpPut("my-profile")]
         public async Task<IActionResult> UpdateMyProfile([FromBody] UpdateMyProfileDto request)
         {
-            int? employeeId = GetEmployeeIdFromToken();
-            if (employeeId == null)
+            int userId = GetUserIdFromToken();
+            if (userId == 0)
                 return Unauthorized(new ApiResponse<object>(false, "Unable to identify user"));
 
-            var success = await _employeeService.UpdateMyProfileAsync(employeeId.Value, request, employeeId.Value);
+            var success = await _employeeService.UpdateMyProfileAsync(userId, request, userId);
 
             if (!success)
                 return NotFound(new ApiResponse<object>(false, "Profile not found"));
@@ -107,14 +93,12 @@ namespace WMS.Api.Controllers
             return Ok(new ApiResponse<object>(true, "Profile updated"));
         }
 
-        // DELETE /api/employee/{id} — Admin soft-deletes an employee
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            int deletedByUserId = GetUserIdFromToken();
-
-            var success = await _employeeService.DeleteEmployeeAsync(id, deletedByUserId);
+            int userId = GetUserIdFromToken();
+            var success = await _employeeService.DeleteEmployeeAsync(id, userId);
 
             if (!success)
                 return NotFound(new ApiResponse<object>(false, "Employee not found"));
@@ -122,18 +106,6 @@ namespace WMS.Api.Controllers
             return Ok(new ApiResponse<object>(true, "Employee deactivated"));
         }
 
-        // Extract the user's EmployeeId from the JWT claims (NameIdentifier = UserId)
-        // Note: In the current auth setup, the JWT stores UserId, not EmployeeId.
-        // For now we use UserId as a proxy — a mapping will be added if needed.
-        private int? GetEmployeeIdFromToken()
-        {
-            var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (claim != null && int.TryParse(claim, out int id))
-                return id;
-            return null;
-        }
-
-        // Extract the UserId for audit logging
         private int GetUserIdFromToken()
         {
             var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

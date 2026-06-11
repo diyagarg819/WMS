@@ -8,13 +8,14 @@ export interface ProjectAllocation {
   projectName: string;
   assignedOn: string;
   status: boolean;
-  createdBy: string;
+  createdBY: string;
 }
 
 export interface ProjectRecord {
   projectId: number;
   projectName: string;
   clientId?: number;
+  clientName?: string;
   startDate?: string;
   endDate?: string;
   status: string;
@@ -34,8 +35,5 @@ export interface UpdateProjectRequest extends CreateProjectRequest {
 
 export interface AssignEmployeeRequest {
   empId: number;
-}
-
-export interface UpdateAllocationStatusRequest {
-  status: boolean;
+  projectId?: number;
 }

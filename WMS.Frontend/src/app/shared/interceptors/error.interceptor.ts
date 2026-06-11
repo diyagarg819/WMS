@@ -32,8 +32,7 @@ export class ErrorInterceptor implements HttpInterceptor {
             // Unauthorized — cookie expired or invalid. Clear state and redirect to login.
             // But don't redirect if we are already on the login page (to avoid loops)
             if (!this.router.url.includes('/auth/login')) {
-                this.authService.clearLocalState();
-                this.router.navigate(['/auth/login']);
+                this.authService.logout();
             }
             return throwError(() => error);
           } else if (error.status === 400 || error.status === 403) {

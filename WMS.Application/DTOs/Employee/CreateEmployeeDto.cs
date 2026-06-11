@@ -29,6 +29,7 @@ namespace WMS.Application.DTOs.Employee
         public string? Gender { get; set; }
 
         [Required]
+        [WMS.Application.Common.MinimumAge(18)]
         public DateTime DOB { get; set; }
 
         [Required]
@@ -37,5 +38,19 @@ namespace WMS.Application.DTOs.Employee
         public int? DepartmentId { get; set; }
 
         public int? RoleId { get; set; }
+
+        /// <summary>
+        /// Login username for the new employee.
+        /// </summary>
+        [Required(ErrorMessage = "Username is required")]
+        [MaxLength(50)]
+        public string Username { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Login password for the new employee (will be hashed before storage).
+        /// </summary>
+        [Required(ErrorMessage = "Password is required")]
+        [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
+        public string Password { get; set; } = string.Empty;
     }
 }

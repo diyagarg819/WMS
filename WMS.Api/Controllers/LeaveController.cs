@@ -4,7 +4,6 @@ using System.Security.Claims;
 using WMS.Application.Common;
 using WMS.Application.DTOs.Leave;
 using WMS.Application.Services;
-using WMS.Domain.Interfaces;
 
 namespace WMS.Api.Controllers
 {
@@ -14,12 +13,10 @@ namespace WMS.Api.Controllers
     public class LeaveController : ControllerBase
     {
         private readonly ILeaveService _leaveService;
-        private readonly IEmployeeRepository _employeeRepository;
 
-        public LeaveController(ILeaveService leaveService, IEmployeeRepository employeeRepository)
+        public LeaveController(ILeaveService leaveService)
         {
             _leaveService = leaveService;
-            _employeeRepository = employeeRepository;
         }
 
         private int GetCurrentUserId()
@@ -39,9 +36,7 @@ namespace WMS.Api.Controllers
             var result = await _leaveService.ApplyLeaveAsync(empId, request);
 
             if (!result.Success)
-            {
                 return BadRequest(new ApiResponse<object?>(false, result.Message));
-            }
 
             return Ok(new ApiResponse<LeaveRecordDto>(true, result.Message, result.Data!));
         }
@@ -53,9 +48,7 @@ namespace WMS.Api.Controllers
             var result = await _leaveService.CancelLeaveAsync(id, empId);
 
             if (!result.Success)
-            {
                 return BadRequest(new ApiResponse<object?>(false, result.Message));
-            }
 
             return Ok(new ApiResponse<object?>(true, result.Message));
         }
@@ -65,28 +58,20 @@ namespace WMS.Api.Controllers
         {
             int empId = GetCurrentUserId();
             var result = await _leaveService.GetMyLeavesAsync(empId, filter);
-            return Ok(new ApiResponse<PagedResponseDto<LeaveRecordDto>>(true, "My leave history retrieved successfully.", result));
+            return Ok(new ApiResponse<List<LeaveRecordDto>>(true, "My leave history retrieved successfully.", result));
         }
 
         [HttpGet("team")]
         [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> GetTeamLeaves([FromQuery] LeaveFilterDto filter)
         {
-            int empId = GetCurrentUserId();
-            var manager = await _employeeRepository.GetByIdAsync(empId);
-            
-            if (manager == null)
-            {
-                return Unauthorized(new ApiResponse<object?>(false, "Manager profile not found."));
-            }
+            int managerId = GetCurrentUserId();
+            var result = await _leaveService.GetTeamLeavesForManagerAsync(managerId, filter);
 
-            if (manager.DepartmentId == null)
-            {
-                return BadRequest(new ApiResponse<object?>(false, "Manager is not assigned to any department."));
-            }
+            if (!result.Success)
+                return BadRequest(new ApiResponse<object?>(false, result.Message));
 
-            var result = await _leaveService.GetTeamLeavesAsync(manager.DepartmentId.Value, filter);
-            return Ok(new ApiResponse<PagedResponseDto<LeaveRecordDto>>(true, "Team leave requests retrieved successfully.", result));
+            return Ok(new ApiResponse<List<LeaveRecordDto>>(true, "Team leave requests retrieved successfully.", result.Data!));
         }
 
         [HttpGet("all")]
@@ -94,7 +79,7 @@ namespace WMS.Api.Controllers
         public async Task<IActionResult> GetAllLeaves([FromQuery] LeaveFilterDto filter)
         {
             var result = await _leaveService.GetAllLeavesAsync(filter);
-            return Ok(new ApiResponse<PagedResponseDto<LeaveRecordDto>>(true, "All leave requests retrieved successfully.", result));
+            return Ok(new ApiResponse<List<LeaveRecordDto>>(true, "All leave requests retrieved successfully.", result));
         }
 
         [HttpPost("approve-reject/{id}")]
@@ -107,9 +92,7 @@ namespace WMS.Api.Controllers
             var result = await _leaveService.ApproveOrRejectLeaveAsync(id, request, empId, role);
 
             if (!result.Success)
-            {
                 return BadRequest(new ApiResponse<object?>(false, result.Message));
-            }
 
             return Ok(new ApiResponse<LeaveRecordDto>(true, result.Message, result.Data!));
         }

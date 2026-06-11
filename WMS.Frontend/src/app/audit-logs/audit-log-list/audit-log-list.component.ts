@@ -1,6 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuditLogService, AuditLog } from '../../shared/services/audit-log.service';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-audit-log-list',
@@ -10,13 +9,10 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 export class AuditLogListComponent implements OnInit {
   displayedColumns: string[] = ['auditId', 'entityName', 'recordId', 'action', 'createdBy', 'createdOn'];
   dataSource: AuditLog[] = [];
-  
-  totalCount = 0;
-  pageSize = 10;
-  pageIndex = 0;
   isLoading = false;
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  startDate: Date | null = null;
+  endDate: Date | null = null;
 
   constructor(private auditLogService: AuditLogService) {}
 
@@ -26,10 +22,9 @@ export class AuditLogListComponent implements OnInit {
 
   loadLogs(): void {
     this.isLoading = true;
-    this.auditLogService.getAuditLogs(this.pageIndex + 1, this.pageSize).subscribe({
+    this.auditLogService.getAuditLogs(this.startDate, this.endDate).subscribe({
       next: (response) => {
-        this.dataSource = response.data.data;
-        this.totalCount = response.data.totalCount;
+        this.dataSource = response.data;
         this.isLoading = false;
       },
       error: () => {
@@ -38,9 +33,13 @@ export class AuditLogListComponent implements OnInit {
     });
   }
 
-  onPageChange(event: PageEvent): void {
-    this.pageIndex = event.pageIndex;
-    this.pageSize = event.pageSize;
+  applyFilter(): void {
+    this.loadLogs();
+  }
+
+  clearFilter(): void {
+    this.startDate = null;
+    this.endDate = null;
     this.loadLogs();
   }
 }

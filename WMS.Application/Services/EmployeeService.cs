@@ -3,75 +3,49 @@ using WMS.Application.Common;
 using WMS.Application.DTOs.Employee;
 using WMS.Domain.Entities;
 using WMS.Domain.Interfaces;
+using BCrypt.Net;
 
 namespace WMS.Application.Services
 {
-    /// <summary>
-    /// Employee business logic — validation, mapping, and delegation to the repository.
-    /// Never accesses the database directly — always goes through IEmployeeRepository.
-    /// </summary>
     public class EmployeeService : IEmployeeService
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IUserLoginRepository _userLoginRepository;
         private readonly ILogger<EmployeeService> _logger;
 
-        public EmployeeService(IEmployeeRepository employeeRepository, ILogger<EmployeeService> logger)
+        public EmployeeService(
+            IEmployeeRepository employeeRepository,
+            IUserLoginRepository userLoginRepository,
+            ILogger<EmployeeService> logger)
         {
             _employeeRepository = employeeRepository;
+            _userLoginRepository = userLoginRepository;
             _logger = logger;
         }
 
-        // Get a paginated list of all employees
-        public async Task<PagedResponseDto<EmployeeListDto>> GetAllEmployeesAsync(PagedRequestDto request)
+        public async Task<List<EmployeeListDto>> GetAllEmployeesAsync(SearchRequestDto request)
         {
-            var (employees, totalCount) = await _employeeRepository.GetAllAsync(
-                request.PageNumber, request.PageSize, request.SearchTerm,
-                request.SortBy, request.SortDirection);
-
-            // Map entities to list DTOs
-            var employeeList = employees.Select(e => MapToListDto(e)).ToList();
-
-            return new PagedResponseDto<EmployeeListDto>
-            {
-                Data = employeeList,
-                TotalCount = totalCount,
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize
-            };
+            var employees = await _employeeRepository.GetAllAsync(request.SearchTerm);
+            return employees.Select(e => MapToListDto(e)).ToList();
         }
 
-        // Get a paginated list of employees in a specific department (Manager team view)
-        public async Task<PagedResponseDto<EmployeeListDto>> GetEmployeesByDepartmentAsync(
-            int departmentId, PagedRequestDto request)
+        public async Task<List<EmployeeListDto>> GetEmployeesByDepartmentAsync(
+            int departmentId, SearchRequestDto request)
         {
-            var (employees, totalCount) = await _employeeRepository.GetByDepartmentAsync(
-                departmentId, request.PageNumber, request.PageSize, request.SearchTerm);
-
-            var employeeList = employees.Select(e => MapToListDto(e)).ToList();
-
-            return new PagedResponseDto<EmployeeListDto>
-            {
-                Data = employeeList,
-                TotalCount = totalCount,
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize
-            };
+            var employees = await _employeeRepository.GetByDepartmentAsync(
+                departmentId, request.SearchTerm);
+            return employees.Select(e => MapToListDto(e)).ToList();
         }
 
-        // Get full details for a single employee
         public async Task<EmployeeDetailDto?> GetEmployeeByIdAsync(int employeeId)
         {
             var employee = await _employeeRepository.GetByIdAsync(employeeId);
-            if (employee == null)
-                return null;
-
-            return MapToDetailDto(employee);
+            if (employee == null) return null;
+            return await MapToDetailDto(employee);
         }
 
-        // Create a new employee — validates email uniqueness and age >= 18
         public async Task<EmployeeDetailDto?> CreateEmployeeAsync(CreateEmployeeDto request, int userId)
         {
-            // Check if the email is already in use
             bool emailExists = await _employeeRepository.EmailExistsAsync(request.Email);
             if (emailExists)
             {
@@ -79,11 +53,11 @@ namespace WMS.Application.Services
                 return null;
             }
 
-            // Validate that the employee is at least 18 years old
-            int age = CalculateAge(request.DOB);
-            if (age < 18)
+            // Check if the username is already taken
+            bool usernameExists = await _userLoginRepository.UsernameExistsAsync(request.Username);
+            if (usernameExists)
             {
-                _logger.LogWarning("Create employee failed — age is {Age}, must be at least 18", age);
+                _logger.LogWarning("Create employee failed — username already in use: {Username}", request.Username);
                 return null;
             }
 
@@ -103,23 +77,29 @@ namespace WMS.Application.Services
             };
 
             var createdEmployee = await _employeeRepository.AddAsync(employee, userId);
-
             _logger.LogInformation("Employee created: {EmployeeId} — {FirstName} {LastName}",
                 createdEmployee.EmployeeId, createdEmployee.FirstName, createdEmployee.LastName);
 
-            // Re-fetch to include Department and Role navigation properties
+            // Create UserLogin so the new employee can log in
+            var userLogin = new UserLogin
+            {
+                Username = request.Username,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                RoleId = request.RoleId ?? 3 // Default to Employee role
+            };
+            await _userLoginRepository.AddAsync(userLogin);
+            _logger.LogInformation("UserLogin created for employee {EmployeeId} with username: {Username}",
+                createdEmployee.EmployeeId, request.Username);
+
             var result = await _employeeRepository.GetByIdAsync(createdEmployee.EmployeeId);
-            return result != null ? MapToDetailDto(result) : null;
+            return result != null ? await MapToDetailDto(result) : null;
         }
 
-        // Update an employee — Admin can update all fields
         public async Task<bool> UpdateEmployeeAsync(int employeeId, UpdateEmployeeDto request, int userId)
         {
             var employee = await _employeeRepository.GetByIdAsync(employeeId);
-            if (employee == null)
-                return false;
+            if (employee == null) return false;
 
-            // Check if the new email is already used by someone else
             bool emailExists = await _employeeRepository.EmailExistsAsync(request.Email, employeeId);
             if (emailExists)
             {
@@ -127,15 +107,6 @@ namespace WMS.Application.Services
                 return false;
             }
 
-            // Validate age if DOB changed
-            int age = CalculateAge(request.DOB);
-            if (age < 18)
-            {
-                _logger.LogWarning("Update employee failed — age is {Age}, must be at least 18", age);
-                return false;
-            }
-
-            // Apply the updates
             employee.FirstName = request.FirstName;
             employee.LastName = request.LastName;
             employee.Email = request.Email;
@@ -150,54 +121,54 @@ namespace WMS.Application.Services
 
             await _employeeRepository.UpdateAsync(employee, userId);
 
+            // Update UserLogin credentials if username is provided
+            if (!string.IsNullOrWhiteSpace(request.Username))
+            {
+                // Find existing UserLogin by the old username (from email prefix)
+                // We try to find by the provided username first
+                var existingLogin = await _userLoginRepository.GetByUsernameAsync(request.Username);
+
+                if (existingLogin != null)
+                {
+                    // Update password if a new one is provided
+                    if (!string.IsNullOrWhiteSpace(request.Password))
+                    {
+                        existingLogin.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+                    }
+                    existingLogin.RoleId = request.RoleId ?? existingLogin.RoleId;
+                    await _userLoginRepository.UpdateAsync(existingLogin);
+                    _logger.LogInformation("UserLogin updated for employee {EmployeeId}", employeeId);
+                }
+            }
+
             _logger.LogInformation("Employee updated: {EmployeeId}", employeeId);
             return true;
         }
 
-        // Update own profile — employees can only change their PhoneNumber
         public async Task<bool> UpdateMyProfileAsync(int employeeId, UpdateMyProfileDto request, int userId)
         {
             var employee = await _employeeRepository.GetByIdAsync(employeeId);
-            if (employee == null)
-                return false;
+            if (employee == null) return false;
 
             employee.PhoneNumber = request.PhoneNumber;
             employee.UpdatedOn = DateTime.Now;
 
             await _employeeRepository.UpdateAsync(employee, userId);
-
             _logger.LogInformation("Employee updated own profile: {EmployeeId}", employeeId);
             return true;
         }
 
-        // Soft delete — marks as Inactive, does not remove from database
         public async Task<bool> DeleteEmployeeAsync(int employeeId, int deletedByUserId)
         {
             var employee = await _employeeRepository.GetByIdAsync(employeeId);
-            if (employee == null)
-                return false;
+            if (employee == null) return false;
 
             await _employeeRepository.DeleteAsync(employee, deletedByUserId);
-
             _logger.LogInformation("Employee soft-deleted: {EmployeeId} by user: {DeletedBy}",
                 employeeId, deletedByUserId);
             return true;
         }
 
-        // Calculate age from date of birth
-        private int CalculateAge(DateTime dateOfBirth)
-        {
-            var today = DateTime.Today;
-            int age = today.Year - dateOfBirth.Year;
-
-            // Subtract one if the birthday has not occurred yet this year
-            if (dateOfBirth.Date > today.AddYears(-age))
-                age--;
-
-            return age;
-        }
-
-        // Map an Employee entity to the list DTO
         private EmployeeListDto MapToListDto(Employee employee)
         {
             return new EmployeeListDto
@@ -213,9 +184,12 @@ namespace WMS.Application.Services
             };
         }
 
-        // Map an Employee entity to the detail DTO
-        private EmployeeDetailDto MapToDetailDto(Employee employee)
+        private async Task<EmployeeDetailDto> MapToDetailDto(Employee employee)
         {
+            // Look up the username from UserLogin using email prefix
+            string emailPrefix = employee.Email?.Split('@')[0] ?? "";
+            var userLogin = await _userLoginRepository.GetByUsernameAsync(emailPrefix);
+
             return new EmployeeDetailDto
             {
                 EmployeeId = employee.EmployeeId,
@@ -231,6 +205,7 @@ namespace WMS.Application.Services
                 RoleId = employee.RoleId,
                 RoleName = employee.Role?.RoleName,
                 Status = employee.Status,
+                Username = userLogin?.Username,
                 CreatedOn = employee.CreatedOn,
                 UpdatedOn = employee.UpdatedOn
             };

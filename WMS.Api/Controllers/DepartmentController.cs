@@ -19,10 +19,10 @@ namespace WMS.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] PagedRequestDto request)
+        public async Task<IActionResult> GetAll([FromQuery] SearchRequestDto request)
         {
             var result = await _departmentService.GetAllAsync(request);
-            return Ok(new ApiResponse<PagedResponseDto<DepartmentDto>>(true, "Departments retrieved successfully.", result));
+            return Ok(new ApiResponse<List<DepartmentDto>>(true, "Departments retrieved successfully.", result));
         }
 
         [HttpGet("{id}")]

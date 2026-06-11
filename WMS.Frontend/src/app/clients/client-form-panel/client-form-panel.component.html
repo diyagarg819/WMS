@@ -1,0 +1,51 @@
+<div class="panel-header">
+  <h2>{{ mode === 'edit' ? 'Edit Client' : 'New Client' }}</h2>
+  <button mat-icon-button (click)="close.emit()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="panel-content">
+  <div *ngIf="errorMessage" class="error-banner">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <form [formGroup]="clientForm" class="form-fields">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Client Name</mat-label>
+      <input matInput formControlName="clientName" placeholder="e.g. Acme Corp" maxlength="100">
+      <mat-error *ngIf="clientForm.get('clientName')?.hasError('required')">Name is required</mat-error>
+      <mat-error *ngIf="clientForm.get('clientName')?.hasError('maxlength')">Max 100 chars</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Phone Number</mat-label>
+      <input matInput formControlName="clientPhoneNumber" placeholder="e.g. 1234567890">
+      <mat-error *ngIf="clientForm.get('clientPhoneNumber')?.hasError('pattern')">Must be 10 digits</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Location</mat-label>
+      <input matInput formControlName="clientLocation" placeholder="e.g. New York" maxlength="20">
+      <mat-error *ngIf="clientForm.get('clientLocation')?.hasError('maxlength')">Max 20 chars</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Address</mat-label>
+      <textarea matInput formControlName="clientAdress" placeholder="Full address..." rows="3"></textarea>
+    </mat-form-field>
+
+    <div class="toggle-field" *ngIf="mode === 'edit'">
+      <mat-slide-toggle formControlName="status" color="primary">Active</mat-slide-toggle>
+    </div>
+  </form>
+</div>
+
+<div class="panel-footer">
+  <button mat-button (click)="close.emit()" [disabled]="isSaving">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="clientForm.invalid || isSaving">
+    <mat-spinner diameter="20" *ngIf="isSaving" class="btn-spinner"></mat-spinner>
+    {{ isSaving ? 'Saving...' : (mode === 'edit' ? 'Update' : 'Save') }}
+  </button>
+</div>

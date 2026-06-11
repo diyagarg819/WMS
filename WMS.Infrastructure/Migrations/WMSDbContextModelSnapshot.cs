@@ -56,7 +56,7 @@ namespace WMS.Infrastructure.Migrations
 
                     b.HasIndex("CreatedBy");
 
-                    b.ToTable("Announcements");
+                    b.ToTable("Announcements", (string)null);
                 });
 
             modelBuilder.Entity("WMS.Domain.Entities.Attendance", b =>
@@ -92,7 +92,7 @@ namespace WMS.Infrastructure.Migrations
 
                     b.HasIndex("EmpId");
 
-                    b.ToTable("Attendances");
+                    b.ToTable("Attendances", (string)null);
                 });
 
             modelBuilder.Entity("WMS.Domain.Entities.AuditLog", b =>
@@ -125,7 +125,7 @@ namespace WMS.Infrastructure.Migrations
 
                     b.HasKey("AuditId");
 
-                    b.ToTable("AuditLogs");
+                    b.ToTable("AuditLogs", (string)null);
                 });
 
             modelBuilder.Entity("WMS.Domain.Entities.Client", b =>
@@ -158,7 +158,7 @@ namespace WMS.Infrastructure.Migrations
 
                     b.HasKey("ClientId");
 
-                    b.ToTable("Clients");
+                    b.ToTable("Clients", (string)null);
                 });
 
             modelBuilder.Entity("WMS.Domain.Entities.Department", b =>
@@ -185,7 +185,7 @@ namespace WMS.Infrastructure.Migrations
 
                     b.HasKey("DepartmentId");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
 
                     b.HasData(
                         new
@@ -279,7 +279,7 @@ namespace WMS.Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("WMS.Domain.Entities.EmployeeProjectAllocation", b =>
@@ -325,7 +325,7 @@ namespace WMS.Infrastructure.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("EmployeeProjectAllocations");
+                    b.ToTable("EmployeeProjectAllocations", (string)null);
                 });
 
             modelBuilder.Entity("WMS.Domain.Entities.Leave", b =>
@@ -376,7 +376,7 @@ namespace WMS.Infrastructure.Migrations
 
                     b.HasIndex("EmpId");
 
-                    b.ToTable("Leaves");
+                    b.ToTable("Leaves", (string)null);
                 });
 
             modelBuilder.Entity("WMS.Domain.Entities.Project", b =>
@@ -412,7 +412,7 @@ namespace WMS.Infrastructure.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("WMS.Domain.Entities.Role", b =>
@@ -434,7 +434,7 @@ namespace WMS.Infrastructure.Migrations
 
                     b.HasKey("RoleId");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
 
                     b.HasData(
                         new
@@ -487,7 +487,7 @@ namespace WMS.Infrastructure.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("UserLogins");
+                    b.ToTable("UserLogins", (string)null);
                 });
 
             modelBuilder.Entity("WMS.Domain.Entities.Announcement", b =>

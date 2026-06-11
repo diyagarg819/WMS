@@ -1,6 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProjectService } from '../../shared/services/project.service';
+import { ClientService } from '../../shared/services/client.service';
 import { ProjectRecord } from '../../shared/models/project.model';
 
 @Component({
@@ -20,10 +21,12 @@ export class ProjectFormPanelComponent implements OnInit {
   errorMessage = '';
   
   statuses = ['Active', 'Completed', 'On-Hold'];
+  clients: any[] = [];
 
   constructor(
     private fb: FormBuilder,
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private clientService: ClientService
   ) {
     this.projectForm = this.fb.group({
       projectName: ['', Validators.required],
@@ -44,6 +47,18 @@ export class ProjectFormPanelComponent implements OnInit {
         status: this.project.status
       });
     }
+    this.loadClients();
+  }
+
+  loadClients(): void {
+    this.clientService.getAllClients().subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.clients = res.data;
+        }
+      },
+      error: (err) => console.error('Failed to load clients', err)
+    });
   }
 
   onSubmit(): void {
@@ -54,12 +69,17 @@ export class ProjectFormPanelComponent implements OnInit {
 
     const req = this.projectForm.value;
     
-    // Format dates to ISO string before sending
+    const formatDate = (dateInput: any) => {
+      const d = new Date(dateInput);
+      d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+      return d.toISOString().split('T')[0];
+    };
+    
     if (req.startDate) {
-      req.startDate = new Date(req.startDate).toISOString();
+      req.startDate = formatDate(req.startDate);
     }
     if (req.endDate) {
-      req.endDate = new Date(req.endDate).toISOString();
+      req.endDate = formatDate(req.endDate);
     }
 
     if (this.mode === 'create') {

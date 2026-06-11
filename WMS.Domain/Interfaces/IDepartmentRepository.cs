@@ -4,7 +4,7 @@ namespace WMS.Domain.Interfaces
 {
     public interface IDepartmentRepository
     {
-        Task<(List<Department> Departments, int TotalCount)> GetAllAsync(int pageNumber, int pageSize, string? searchTerm);
+        Task<List<Department>> GetAllAsync(string? searchTerm);
         Task<Department?> GetByIdAsync(int id);
         Task<Department?> GetByNameAsync(string name);
         Task<Department> AddAsync(Department department);

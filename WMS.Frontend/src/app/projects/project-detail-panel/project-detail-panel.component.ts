@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ProjectService } from '../../shared/services/project.service';
 import { EmployeeService } from '../../shared/services/employee.service';
 import { AuthService } from '../../shared/services/auth.service';
@@ -12,7 +12,7 @@ import { Role } from '../../shared/enums/role.enum';
   styleUrls: ['./project-detail-panel.component.scss'],
   standalone: false
 })
-export class ProjectDetailPanelComponent implements OnInit {
+export class ProjectDetailPanelComponent implements OnInit, OnChanges {
   @Input() project: ProjectRecord | null = null;
   @Output() closePanel = new EventEmitter<void>();
   @Output() actionComplete = new EventEmitter<{ success: boolean, message: string }>();
@@ -36,11 +36,31 @@ export class ProjectDetailPanelComponent implements OnInit {
     }
   }
 
+  ngOnChanges(changes: any): void {
+    if (changes.project && changes.project.currentValue) {
+      // Fetch full project details to get populated allocations
+      this.fetchFullProjectDetails(changes.project.currentValue.projectId);
+    }
+  }
+
+  fetchFullProjectDetails(projectId: number): void {
+    this.projectService.getProjectById(projectId).subscribe({
+      next: (res) => {
+        if (res.data) {
+          this.project = res.data;
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load full project details', err);
+      }
+    });
+  }
+
   loadEmployees(): void {
     // Load first 100 employees for the dropdown
-    this.employeeService.getEmployees(1, 100).subscribe(res => {
+    this.employeeService.getEmployees().subscribe(res => {
       if (res.data) {
-        this.employees = res.data.data;
+        this.employees = res.data;
       }
     });
   }
@@ -64,6 +84,7 @@ export class ProjectDetailPanelComponent implements OnInit {
 
     this.projectService.assignEmployee(this.project.projectId, { empId: this.selectedEmpId }).subscribe({
       next: (res) => {
+        this.isSaving = false;
         this.actionComplete.emit({ success: true, message: res.message || 'Employee assigned successfully.' });
       },
       error: (err) => {
@@ -81,6 +102,7 @@ export class ProjectDetailPanelComponent implements OnInit {
 
     this.projectService.removeEmployee(allocationId).subscribe({
       next: (res) => {
+        this.isSaving = false;
         this.actionComplete.emit({ success: true, message: res.message || 'Employee removed successfully.' });
       },
       error: (err) => {

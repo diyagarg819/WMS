@@ -4,15 +4,3 @@ export interface ApiResponse<T> {
   data: T;
 }
 
-export interface PagedData<T> {
-  data: T[];
-  totalCount: number;
-  pageNumber: number;
-  pageSize: number;
-}
-
-export interface PagedResponse<T> {
-  success: boolean;
-  message: string;
-  data: PagedData<T>;
-}

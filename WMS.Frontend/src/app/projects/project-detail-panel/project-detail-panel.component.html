@@ -19,6 +19,10 @@
         <strong>{{ project.projectName }}</strong>
       </div>
       <div class="detail-row">
+        <span>Client:</span>
+        <strong>{{ project.clientName || 'Internal / None' }}</strong>
+      </div>
+      <div class="detail-row">
         <span>Status:</span>
         <span class="badge" [ngClass]="{'active': project.status === 'Active', 'completed': project.status === 'Completed'}">
           {{ project.status }}
@@ -45,8 +49,8 @@
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Select Employee</mat-label>
           <mat-select [(ngModel)]="selectedEmpId">
-            <mat-option *ngFor="let emp of employees" [value]="emp.empId">
-              {{ emp.firstName }} {{ emp.lastName }} ({{ emp.role }})
+            <mat-option *ngFor="let emp of employees" [value]="emp.employeeId">
+              {{ emp.firstName }} {{ emp.lastName }}
             </mat-option>
           </mat-select>
         </mat-form-field>

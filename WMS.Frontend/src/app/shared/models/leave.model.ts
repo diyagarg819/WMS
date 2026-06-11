@@ -24,8 +24,6 @@ export interface UpdateLeaveStatusRequest {
 }
 
 export interface LeaveFilter {
-  pageNumber: number;
-  pageSize: number;
   searchTerm?: string;
   status?: string;
 }

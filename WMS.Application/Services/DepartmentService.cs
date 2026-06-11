@@ -17,10 +17,10 @@ namespace WMS.Application.Services
             _logger = logger;
         }
 
-        public async Task<PagedResponseDto<DepartmentDto>> GetAllAsync(PagedRequestDto request)
+        public async Task<List<DepartmentDto>> GetAllAsync(SearchRequestDto request)
         {
-            var (records, totalCount) = await _departmentRepository.GetAllAsync(
-                request.PageNumber, request.PageSize, request.SearchTerm);
+            var records = await _departmentRepository.GetAllAsync(
+                request.SearchTerm);
 
             var dtos = records.Select(d => new DepartmentDto
             {
@@ -30,13 +30,7 @@ namespace WMS.Application.Services
                 CreatedOn = d.CreatedOn
             }).ToList();
 
-            return new PagedResponseDto<DepartmentDto>
-            {
-                Data = dtos,
-                TotalCount = totalCount,
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize
-            };
+            return dtos;
         }
 
         public async Task<(bool Success, string Message, DepartmentDto? Data)> GetByIdAsync(int id)

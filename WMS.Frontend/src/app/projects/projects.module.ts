@@ -19,12 +19,17 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AllocationManagementComponent } from './allocation-management/allocation-management.component';
+import { MyProjectsComponent } from './my-projects/my-projects.component';
 
 @NgModule({
   declarations: [
     ProjectListComponent,
     ProjectFormPanelComponent,
-    ProjectDetailPanelComponent
+    ProjectDetailPanelComponent,
+    AllocationManagementComponent,
+    MyProjectsComponent
   ],
   imports: [
     CommonModule,
@@ -42,7 +47,8 @@ import { MatCardModule } from '@angular/material/card';
     MatDatepickerModule,
     MatNativeDateModule,
     MatChipsModule,
-    MatCardModule
+    MatCardModule,
+    MatProgressSpinnerModule
   ]
 })
 export class ProjectsModule { }

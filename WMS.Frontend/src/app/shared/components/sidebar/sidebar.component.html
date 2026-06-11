@@ -15,6 +15,11 @@
     <div matListItemTitle>Employees</div>
   </a>
 
+  <a mat-list-item routerLink="/clients" routerLinkActive="active-link" *ngIf="authService.getRole() === Role.Admin">
+    <mat-icon matListItemIcon>business</mat-icon>
+    <div matListItemTitle>Clients</div>
+  </a>
+
   <a mat-list-item routerLink="/attendance" routerLinkActive="active-link">
     <mat-icon matListItemIcon>access_time</mat-icon>
     <div matListItemTitle>Attendance</div>
@@ -33,6 +38,21 @@
   <a mat-list-item routerLink="/projects" routerLinkActive="active-link" *ngIf="authService.getRole() !== Role.Employee">
     <mat-icon matListItemIcon>work</mat-icon>
     <div matListItemTitle>Projects</div>
+  </a>
+
+  <a mat-list-item routerLink="/projects/allocations" routerLinkActive="active-link" *ngIf="authService.getRole() !== Role.Employee">
+    <mat-icon matListItemIcon>assignment_ind</mat-icon>
+    <div matListItemTitle>Allocations</div>
+  </a>
+
+  <a mat-list-item routerLink="/projects/my-projects" routerLinkActive="active-link" *ngIf="authService.getRole() === Role.Employee">
+    <mat-icon matListItemIcon>work</mat-icon>
+    <div matListItemTitle>My Projects</div>
+  </a>
+
+  <a mat-list-item routerLink="/announcements" routerLinkActive="active-link" *ngIf="authService.getRole() !== Role.Employee">
+    <mat-icon matListItemIcon>campaign</mat-icon>
+    <div matListItemTitle>Announcements</div>
   </a>
 
   <a mat-list-item routerLink="/audit-logs" routerLinkActive="active-link" *ngIf="authService.getRole() === Role.Admin">

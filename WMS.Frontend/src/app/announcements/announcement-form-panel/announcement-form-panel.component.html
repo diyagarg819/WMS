@@ -1,0 +1,51 @@
+<div class="panel-header">
+  <h2>{{ isEditMode ? 'Edit Announcement' : 'New Announcement' }}</h2>
+  <button mat-icon-button (click)="onCancel()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="panel-content">
+  <div *ngIf="errorMessage" class="error-banner">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <form [formGroup]="form" class="form-fields">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" placeholder="Announcement title" maxlength="100">
+      <mat-error *ngIf="form.get('title')?.hasError('required')">Title is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Message</mat-label>
+      <textarea matInput formControlName="message" placeholder="Write your announcement..." rows="4"></textarea>
+      <mat-error *ngIf="form.get('message')?.hasError('required')">Message is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Select Employee</mat-label>
+      <mat-select [(ngModel)]="selectedEmployeeIds" [ngModelOptions]="{standalone: true}" multiple>
+        <div class="toggle-field" style="padding: 8px 16px; border-bottom: 1px solid var(--border-color); margin-bottom: 8px;">
+          <mat-slide-toggle [checked]="isAllSelected" (change)="toggleAll($event.checked)" color="primary">Select All Employees</mat-slide-toggle>
+        </div>
+        <mat-option *ngFor="let emp of employees" [value]="emp.employeeId">
+          {{ emp.firstName }} {{ emp.lastName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="toggle-field" *ngIf="isEditMode">
+      <mat-slide-toggle formControlName="isActive" color="primary">Active</mat-slide-toggle>
+    </div>
+  </form>
+</div>
+
+<div class="panel-footer">
+  <button mat-button (click)="onCancel()" [disabled]="isSaving">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="form.invalid || isSaving">
+    <mat-spinner diameter="20" *ngIf="isSaving" class="btn-spinner"></mat-spinner>
+    {{ isSaving ? 'Saving...' : (isEditMode ? 'Update' : 'Publish') }}
+  </button>
+</div>

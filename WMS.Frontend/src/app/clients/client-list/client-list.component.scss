@@ -1,0 +1,128 @@
+.page-container {
+  position: relative;
+  height: 100%;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+
+  .header-title {
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-color);
+    }
+    .subtitle {
+      margin: 4px 0 0 0;
+      color: var(--text-secondary);
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px 12px;
+
+      input {
+        border: none;
+        outline: none;
+        background: transparent;
+        color: var(--text-color);
+        font-size: 0.9rem;
+        width: 200px;
+      }
+
+      mat-icon {
+        color: var(--text-secondary);
+        font-size: 20px;
+      }
+    }
+  }
+}
+
+.content-card {
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.loading-shade {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px;
+}
+
+.fw-500 { font-weight: 500; }
+.text-small { font-size: 0.8rem; }
+.text-muted { color: var(--text-secondary); }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.p-4 { padding: 16px; }
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+
+  &.active {
+    background-color: var(--badge-active-bg, #e8f5e9);
+    color: var(--badge-active-text, #2e7d32);
+  }
+  &.inactive {
+    background-color: var(--badge-inactive-bg, #ffebee);
+    color: var(--badge-inactive-text, #c62828);
+  }
+}
+
+/* Slide Panel */
+.slide-panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.3s ease;
+}
+
+.slide-panel {
+  position: fixed;
+  top: 0;
+  right: -600px;
+  width: 100%;
+  max-width: 550px;
+  height: 100vh;
+  background-color: var(--card-bg);
+  box-shadow: -10px 0 30px rgba(0,0,0,0.2);
+  z-index: 1001;
+  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  color: var(--text-color);
+
+  &.open {
+    right: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

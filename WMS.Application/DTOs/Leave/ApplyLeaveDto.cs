@@ -16,9 +16,11 @@ namespace WMS.Application.DTOs.Leave
         public string? Reason { get; set; }
 
         [Required(ErrorMessage = "FromDate is required.")]
+        [WMS.Application.Common.FutureDate(ErrorMessage = "Cannot apply for leaves in the past.")]
         public DateTime FromDate { get; set; }
 
         [Required(ErrorMessage = "ToDate is required.")]
+        [WMS.Application.Common.DateGreaterThan("FromDate", ErrorMessage = "ToDate cannot be earlier than FromDate.")]
         public DateTime ToDate { get; set; }
     }
 }

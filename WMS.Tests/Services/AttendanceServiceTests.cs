@@ -158,7 +158,7 @@ namespace WMS.Tests.Services
         // ── History Tests ─────────────────────────────────────────────────
 
         [Fact]
-        public async Task GetMyAttendance_ReturnsPaginatedRecords()
+        public async Task GetMyAttendance_ReturnsRecords()
         {
             var records = new List<Attendance>
             {
@@ -166,15 +166,14 @@ namespace WMS.Tests.Services
                 new Attendance { AttendanceId = 2, EmpId = 1, CheckIn = DateTime.Today.AddDays(-1).AddHours(9), AttendanceDate = DateTime.Today.AddDays(-1) }
             };
 
-            _mockRepository.Setup(r => r.GetByEmployeeAsync(1, 1, 10, null, null))
-                .ReturnsAsync((records, 2));
+            _mockRepository.Setup(r => r.GetByEmployeeAsync(1, null, null))
+                .ReturnsAsync(records);
 
-            var filter = new AttendanceFilterDto { PageNumber = 1, PageSize = 10 };
+            var filter = new AttendanceFilterDto();
 
             var result = await _attendanceService.GetMyAttendanceAsync(1, filter);
 
-            Assert.Equal(2, result.TotalCount);
-            Assert.Equal(2, result.Data.Count);
+            Assert.Equal(2, result.Count);
         }
     }
 }

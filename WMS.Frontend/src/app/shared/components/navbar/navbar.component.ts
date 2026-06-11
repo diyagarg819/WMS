@@ -25,10 +25,7 @@ export class NavbarComponent {
     this.themeService.toggleTheme();
   }
 
-  logout() {
-    this.authService.logout().subscribe({
-      next: () => this.router.navigate(['/auth/login']),
-      error: () => this.router.navigate(['/auth/login'])
-    });
+  logout(): void {
+    this.authService.logout();
   }
 }

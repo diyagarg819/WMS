@@ -9,6 +9,7 @@ namespace WMS.Application.DTOs.Leave
     {
         [Required(ErrorMessage = "Status is required.")]
         [MaxLength(20)]
+        [WMS.Application.Common.AllowedValues("Approved", "Rejected", ErrorMessage = "Status must be either 'Approved' or 'Rejected'.")]
         public string Status { get; set; } = string.Empty;
     }
 }

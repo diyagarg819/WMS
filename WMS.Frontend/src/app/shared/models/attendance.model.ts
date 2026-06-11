@@ -14,8 +14,6 @@ export interface CheckInRequest {
 }
 
 export interface AttendanceFilter {
-  pageNumber: number;
-  pageSize: number;
   fromDate?: string;
   toDate?: string;
   searchTerm?: string;

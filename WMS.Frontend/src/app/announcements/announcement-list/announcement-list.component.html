@@ -1,0 +1,155 @@
+<div class="page-container" [class.panel-open]="showFormPanel">
+  <div class="page-header">
+    <div class="header-titles">
+      <h1>Announcements</h1>
+      <p>Create and manage company announcements.</p>
+    </div>
+    <div class="header-actions" *ngIf="isAdminOrManager">
+      <button mat-raised-button color="primary" (click)="openCreatePanel()">
+        <mat-icon>campaign</mat-icon>
+        New Announcement
+      </button>
+    </div>
+  </div>
+
+  <app-notification-banner
+    [type]="bannerType"
+    [message]="bannerMessage"
+    [visible]="showBanner"
+    (dismissed)="showBanner = false">
+  </app-notification-banner>
+
+  <div class="card table-card">
+    <div class="filters-container">
+      <div class="search-box">
+        <mat-icon>search</mat-icon>
+        <input type="text" placeholder="Search announcements..." (input)="onSearch($event)">
+      </div>
+
+      <div class="filter-group">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Status</mat-label>
+          <mat-select [(ngModel)]="statusFilter" (selectionChange)="onStatusFilterChange()">
+            <mat-option value="">All</mat-option>
+            <mat-option value="active">Active</mat-option>
+            <mat-option value="inactive">Inactive</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <div class="loading-shade" *ngIf="isLoading">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+
+      <table mat-table [dataSource]="records" class="w-100">
+        <!-- Title Column -->
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef> Title </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="title-text">{{ element.title }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Message Column -->
+        <ng-container matColumnDef="message">
+          <th mat-header-cell *matHeaderCellDef> Message </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="message-preview">{{ element.message | slice:0:80 }}{{ element.message.length > 80 ? '...' : '' }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Target Audience Column -->
+        <ng-container matColumnDef="targetAudience">
+          <th mat-header-cell *matHeaderCellDef> Audience </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="audience-tag" [ngClass]="{'audience-all': element.targetAudience === 'All', 'audience-specific': element.targetAudience !== 'All'}">
+              <mat-icon class="audience-icon">{{ element.targetAudience === 'All' ? 'groups' : 'person' }}</mat-icon>
+              {{ getAudienceDisplay(element.targetAudience) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Creator Column -->
+        <ng-container matColumnDef="creatorName">
+          <th mat-header-cell *matHeaderCellDef> Created By </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="creator-cell">
+              <mat-icon class="avatar-icon">account_circle</mat-icon>
+              <span>{{ element.creatorName }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Created On Column -->
+        <ng-container matColumnDef="createdOn">
+          <th mat-header-cell *matHeaderCellDef> Date </th>
+          <td mat-cell *matCellDef="let element"> {{ element.createdOn | date:'mediumDate' }} </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef> Status </th>
+          <td mat-cell *matCellDef="let element">
+            <span class="badge" [ngClass]="{'active': element.isActive, 'inactive': !element.isActive}">
+              {{ element.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let element">
+            <div class="actions-cell" *ngIf="deletingId !== element.announcementId">
+              <button mat-icon-button matTooltip="Toggle Active" (click)="toggleActive(element)" *ngIf="isAdminOrManager">
+                <mat-icon>{{ element.isActive ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Edit" (click)="openEditPanel(element)" *ngIf="isAdminOrManager">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Delete" color="warn" (click)="confirmDelete(element.announcementId)" *ngIf="isAdmin">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <div class="inline-confirm" *ngIf="deletingId === element.announcementId">
+              <span class="confirm-text">Delete?</span>
+              <button mat-icon-button color="warn" (click)="executeDelete(element.announcementId)"><mat-icon>check</mat-icon></button>
+              <button mat-icon-button (click)="cancelDelete()"><mat-icon>close</mat-icon></button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="row-hover"></tr>
+
+        <!-- Empty row -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell empty-cell" [attr.colspan]="displayedColumns.length">
+            <mat-icon class="empty-icon">campaign</mat-icon>
+            <p>No announcements found.</p>
+            <button mat-stroked-button color="primary" *ngIf="isAdminOrManager" (click)="openCreatePanel()">
+              Create First Announcement
+            </button>
+          </td>
+        </tr>
+      </table>
+
+      
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop -->
+<div class="panel-backdrop" *ngIf="showFormPanel" (click)="closeFormPanel()"></div>
+
+<!-- Slide Panel -->
+<app-slide-panel [isOpen]="showFormPanel">
+  <app-announcement-form-panel
+    *ngIf="showFormPanel"
+    [announcement]="editingAnnouncement"
+    (closePanel)="closeFormPanel()"
+    (actionComplete)="onFormComplete($event)">
+  </app-announcement-form-panel>
+</app-slide-panel>

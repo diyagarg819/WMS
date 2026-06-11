@@ -28,17 +28,7 @@ namespace WMS.Application.Services
 
         public async Task<(bool Success, string Message, LeaveRecordDto? Data)> ApplyLeaveAsync(int empId, ApplyLeaveDto request)
         {
-            // Business Rule: ToDate must be >= FromDate
-            if (request.ToDate.Date < request.FromDate.Date)
-            {
-                return (false, "ToDate cannot be earlier than FromDate.", null);
-            }
-
-            // Business Rule: Cannot apply for past dates
-            if (request.FromDate.Date < DateTime.Today)
-            {
-                return (false, "Cannot apply for leaves in the past.", null);
-            }
+            // Date validations are now handled by [FutureDate] and [DateGreaterThan] attributes
 
             // Ensure employee exists
             var employee = await _employeeRepository.GetByIdAsync(empId);
@@ -94,46 +84,37 @@ namespace WMS.Application.Services
             return (true, "Leave cancelled successfully.");
         }
 
-        public async Task<PagedResponseDto<LeaveRecordDto>> GetMyLeavesAsync(int empId, LeaveFilterDto filter)
+        public async Task<List<LeaveRecordDto>> GetMyLeavesAsync(int empId, LeaveFilterDto filter)
         {
-            var (records, totalCount) = await _leaveRepository.GetByEmployeeAsync(
-                empId, filter.PageNumber, filter.PageSize, filter.Status);
+            var records = await _leaveRepository.GetByEmployeeAsync(
+                empId, filter.Status);
 
-            return new PagedResponseDto<LeaveRecordDto>
-            {
-                Data = records.Select(MapToDto).ToList(),
-                TotalCount = totalCount,
-                PageNumber = filter.PageNumber,
-                PageSize = filter.PageSize
-            };
+            return records.Select(MapToDto).ToList();
         }
 
-        public async Task<PagedResponseDto<LeaveRecordDto>> GetTeamLeavesAsync(int managerDeptId, LeaveFilterDto filter)
+        public async Task<(bool Success, string Message, List<LeaveRecordDto>? Data)> GetTeamLeavesForManagerAsync(int managerId, LeaveFilterDto filter)
         {
-            var (records, totalCount) = await _leaveRepository.GetByDepartmentAsync(
-                managerDeptId, filter.PageNumber, filter.PageSize, filter.Status, filter.SearchTerm);
+            var manager = await _employeeRepository.GetByIdAsync(managerId);
+            if (manager == null)
+                return (false, "Manager profile not found.", null);
 
-            return new PagedResponseDto<LeaveRecordDto>
-            {
-                Data = records.Select(MapToDto).ToList(),
-                TotalCount = totalCount,
-                PageNumber = filter.PageNumber,
-                PageSize = filter.PageSize
-            };
+            if (manager.DepartmentId == null)
+                return (false, "Manager is not assigned to any department.", null);
+
+            var records = await _leaveRepository.GetByDepartmentAsync(
+                manager.DepartmentId.Value, filter.Status, filter.SearchTerm);
+
+            var result = records.Select(MapToDto).ToList();
+
+            return (true, "Team leave requests retrieved successfully.", result);
         }
 
-        public async Task<PagedResponseDto<LeaveRecordDto>> GetAllLeavesAsync(LeaveFilterDto filter)
+        public async Task<List<LeaveRecordDto>> GetAllLeavesAsync(LeaveFilterDto filter)
         {
-            var (records, totalCount) = await _leaveRepository.GetAllAsync(
-                filter.PageNumber, filter.PageSize, filter.Status, filter.SearchTerm);
+            var records = await _leaveRepository.GetAllAsync(
+                filter.Status, filter.SearchTerm);
 
-            return new PagedResponseDto<LeaveRecordDto>
-            {
-                Data = records.Select(MapToDto).ToList(),
-                TotalCount = totalCount,
-                PageNumber = filter.PageNumber,
-                PageSize = filter.PageSize
-            };
+            return records.Select(MapToDto).ToList();
         }
 
         public async Task<(bool Success, string Message, LeaveRecordDto? Data)> ApproveOrRejectLeaveAsync(
@@ -145,11 +126,7 @@ namespace WMS.Application.Services
                 return (false, "Leave request not found.", null);
             }
 
-            // Ensure valid status string
-            if (request.Status != "Approved" && request.Status != "Rejected")
-            {
-                return (false, "Status must be either 'Approved' or 'Rejected'.", null);
-            }
+            // Ensure valid status string is now handled by [AllowedValues] attribute
 
             // Business Rule: Admin can override anything. Manager can only process 'Pending' leaves.
             if (leave.Status != "Pending" && userRole != "Admin")

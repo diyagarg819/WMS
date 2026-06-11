@@ -24,17 +24,11 @@ namespace WMS.Api.Controllers
             return int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int id) ? id : 0;
         }
 
-        private string GetCurrentUserName()
-        {
-            // Fallback to empty string if GivenName doesn't exist
-            return User.FindFirst(ClaimTypes.GivenName)?.Value ?? string.Empty;
-        }
-
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] PagedRequestDto request)
+        public async Task<IActionResult> GetAll([FromQuery] SearchRequestDto request)
         {
             var result = await _projectService.GetAllProjectsAsync(request);
-            return Ok(new ApiResponse<PagedResponseDto<ProjectDto>>(true, "Projects retrieved successfully.", result));
+            return Ok(new ApiResponse<List<ProjectDto>>(true, "Projects retrieved successfully.", result));
         }
 
         [HttpGet("{id}")]
@@ -49,7 +43,7 @@ namespace WMS.Api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateProjectDto request)
         {
             int userId = GetCurrentUserId();
@@ -62,7 +56,7 @@ namespace WMS.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateProjectDto request)
         {
             int userId = GetCurrentUserId();
@@ -87,51 +81,11 @@ namespace WMS.Api.Controllers
             return Ok(new ApiResponse<object?>(true, result.Message));
         }
 
-        // --- Allocations ---
-
-        [HttpPost("{id}/assign")]
-        [Authorize(Roles = "Admin,Manager")]
-        public async Task<IActionResult> AssignEmployee(int id, [FromBody] AssignEmployeeDto request)
+        [HttpGet("{projectId}/employees")]
+        public async Task<IActionResult> GetEmployeesByProject(int projectId)
         {
-            int userId = GetCurrentUserId();
-            string userName = GetCurrentUserName();
-
-            var result = await _projectService.AssignEmployeeAsync(id, request, userId, userName);
-
-            if (!result.Success)
-                return BadRequest(new ApiResponse<object?>(false, result.Message));
-
-            return Ok(new ApiResponse<ProjectAllocationDto>(true, result.Message, result.Data!));
-        }
-
-        [HttpPost("allocation/{allocationId}/remove")]
-        [Authorize(Roles = "Admin,Manager")]
-        public async Task<IActionResult> RemoveEmployee(int allocationId)
-        {
-            int userId = GetCurrentUserId();
-            string userName = GetCurrentUserName();
-
-            var result = await _projectService.RemoveEmployeeAsync(allocationId, userId, userName);
-
-            if (!result.Success)
-                return BadRequest(new ApiResponse<object?>(false, result.Message));
-
-            return Ok(new ApiResponse<object?>(true, result.Message));
-        }
-
-        [HttpPut("allocation/{allocationId}/status")]
-        [Authorize(Roles = "Admin,Manager")]
-        public async Task<IActionResult> UpdateAllocationStatus(int allocationId, [FromBody] UpdateAllocationStatusDto request)
-        {
-            int userId = GetCurrentUserId();
-            string userName = GetCurrentUserName();
-
-            var result = await _projectService.UpdateAllocationStatusAsync(allocationId, request, userId, userName);
-
-            if (!result.Success)
-                return BadRequest(new ApiResponse<object?>(false, result.Message));
-
-            return Ok(new ApiResponse<ProjectAllocationDto>(true, result.Message, result.Data!));
+            var result = await _projectService.GetEmployeesByProjectAsync(projectId);
+            return Ok(new ApiResponse<List<ProjectAllocationDto>>(true, "Employees retrieved.", result));
         }
     }
 }

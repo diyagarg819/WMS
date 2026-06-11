@@ -1,9 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { EmployeeService } from '../../shared/services/employee.service';
 import { Employee } from '../../shared/models/employee.model';
+import { AuthService } from '../../shared/services/auth.service';
+import { Role } from '../../shared/enums/role.enum';
 
 @Component({
   selector: 'app-employee-list',
@@ -14,9 +15,6 @@ import { Employee } from '../../shared/models/employee.model';
 export class EmployeeListComponent implements OnInit {
   displayedColumns: string[] = ['employeeId', 'name', 'email', 'department', 'role', 'status'];
   employees: Employee[] = [];
-  totalItems = 0;
-  pageSize = 10;
-  currentPage = 1;
   isLoading = true;
   
   searchControl = new FormControl('');
@@ -32,9 +30,11 @@ export class EmployeeListComponent implements OnInit {
   bannerType: 'success' | 'error' | 'warning' | 'info' = 'info';
   bannerMessage = '';
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  constructor(private employeeService: EmployeeService, private authService: AuthService) {}
 
-  constructor(private employeeService: EmployeeService) {}
+  get isAdmin(): boolean {
+    return this.authService.getRole() === Role.Admin;
+  }
 
   ngOnInit(): void {
     this.loadEmployees();
@@ -43,18 +43,16 @@ export class EmployeeListComponent implements OnInit {
       debounceTime(300),
       distinctUntilChanged()
     ).subscribe(() => {
-      this.currentPage = 1;
       this.loadEmployees();
     });
   }
 
   loadEmployees(): void {
     this.isLoading = true;
-    this.employeeService.getEmployees(this.currentPage, this.pageSize, this.searchControl.value || '')
+    this.employeeService.getEmployees(this.searchControl.value || '')
       .subscribe({
         next: (response) => {
-          this.employees = response.data.data;
-          this.totalItems = response.data.totalCount;
+          this.employees = response.data;
           this.isLoading = false;
         },
         error: (err) => {
@@ -62,12 +60,6 @@ export class EmployeeListComponent implements OnInit {
           this.isLoading = false;
         }
       });
-  }
-
-  onPageChange(event: any): void {
-    this.currentPage = event.pageIndex + 1;
-    this.pageSize = event.pageSize;
-    this.loadEmployees();
   }
 
   openDetailPanel(employee: Employee): void {
@@ -85,9 +77,17 @@ export class EmployeeListComponent implements OnInit {
 
   openEditForm(employee: Employee): void {
     this.formMode = 'edit';
-    this.selectedEmployee = employee;
     this.isFormPanelOpen = true;
     this.isDetailPanelOpen = false;
+    // Fetch full details (list DTO doesn't have departmentId, roleId, gender, dob, doj)
+    this.employeeService.getEmployeeById(employee.employeeId).subscribe({
+      next: (res) => {
+        this.selectedEmployee = res.data;
+      },
+      error: () => {
+        this.selectedEmployee = employee;
+      }
+    });
   }
 
   closePanel(): void {
@@ -107,7 +107,7 @@ export class EmployeeListComponent implements OnInit {
 
   handleDelete(success: boolean): void {
     if (success) {
-      this.showBanner('success', 'Employee deleted successfully');
+      this.showBanner('success', 'Employee deactivated successfully');
       this.closePanel();
       this.loadEmployees();
     }

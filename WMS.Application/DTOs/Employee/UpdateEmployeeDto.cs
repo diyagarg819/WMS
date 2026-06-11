@@ -29,6 +29,7 @@ namespace WMS.Application.DTOs.Employee
         public string? Gender { get; set; }
 
         [Required]
+        [WMS.Application.Common.MinimumAge(18)]
         public DateTime DOB { get; set; }
 
         [Required]
@@ -40,5 +41,19 @@ namespace WMS.Application.DTOs.Employee
 
         [MaxLength(20)]
         public string? Status { get; set; }
+
+        /// <summary>
+        /// Login username — can be changed by Admin.
+        /// </summary>
+        [Required(ErrorMessage = "Username is required")]
+        [MaxLength(50)]
+        public string Username { get; set; } = string.Empty;
+
+        /// <summary>
+        /// New password — optional. If provided, password will be updated (hashed).
+        /// Leave empty to keep the current password.
+        /// </summary>
+        [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
+        public string? Password { get; set; }
     }
 }

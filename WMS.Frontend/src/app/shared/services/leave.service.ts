@@ -2,7 +2,7 @@ import { environment } from '../../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ApiResponse, PagedData } from '../models/api-response.model';
+import { ApiResponse } from '../models/api-response.model';
 import { LeaveRecord, ApplyLeaveRequest, UpdateLeaveStatusRequest, LeaveFilter } from '../models/leave.model';
 
 @Injectable({
@@ -21,19 +21,19 @@ export class LeaveService {
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/cancel/${leaveId}`, {});
   }
 
-  getMyHistory(filter: LeaveFilter): Observable<ApiResponse<PagedData<LeaveRecord>>> {
+  getMyHistory(filter: LeaveFilter): Observable<ApiResponse<LeaveRecord[]>> {
     let params = this.buildParams(filter);
-    return this.http.get<ApiResponse<PagedData<LeaveRecord>>>(`${this.apiUrl}/my-history`, { params });
+    return this.http.get<ApiResponse<LeaveRecord[]>>(`${this.apiUrl}/my-history`, { params });
   }
 
-  getTeamLeaves(filter: LeaveFilter): Observable<ApiResponse<PagedData<LeaveRecord>>> {
+  getTeamLeaves(filter: LeaveFilter): Observable<ApiResponse<LeaveRecord[]>> {
     let params = this.buildParams(filter);
-    return this.http.get<ApiResponse<PagedData<LeaveRecord>>>(`${this.apiUrl}/team`, { params });
+    return this.http.get<ApiResponse<LeaveRecord[]>>(`${this.apiUrl}/team`, { params });
   }
 
-  getAllLeaves(filter: LeaveFilter): Observable<ApiResponse<PagedData<LeaveRecord>>> {
+  getAllLeaves(filter: LeaveFilter): Observable<ApiResponse<LeaveRecord[]>> {
     let params = this.buildParams(filter);
-    return this.http.get<ApiResponse<PagedData<LeaveRecord>>>(`${this.apiUrl}/all`, { params });
+    return this.http.get<ApiResponse<LeaveRecord[]>>(`${this.apiUrl}/all`, { params });
   }
 
   approveOrReject(leaveId: number, request: UpdateLeaveStatusRequest): Observable<ApiResponse<LeaveRecord>> {
@@ -41,10 +41,7 @@ export class LeaveService {
   }
 
   private buildParams(filter: LeaveFilter): HttpParams {
-    let params = new HttpParams()
-      .set('pageNumber', filter.pageNumber.toString())
-      .set('pageSize', filter.pageSize.toString());
-      
+    let params = new HttpParams();
     if (filter.searchTerm) params = params.set('searchTerm', filter.searchTerm);
     if (filter.status) params = params.set('status', filter.status);
 

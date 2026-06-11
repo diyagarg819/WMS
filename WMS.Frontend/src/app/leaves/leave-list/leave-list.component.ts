@@ -1,5 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { Component, OnInit } from '@angular/core';
 import { LeaveService } from '../../shared/services/leave.service';
 import { AuthService } from '../../shared/services/auth.service';
 import { LeaveRecord, LeaveFilter } from '../../shared/models/leave.model';
@@ -15,12 +14,9 @@ import { debounceTime } from 'rxjs/operators';
 })
 export class LeaveListComponent implements OnInit {
   records: LeaveRecord[] = [];
-  totalRecords = 0;
   isLoading = false;
 
   filter: LeaveFilter = {
-    pageNumber: 1,
-    pageSize: 10,
     searchTerm: '',
     status: undefined
   };
@@ -28,8 +24,6 @@ export class LeaveListComponent implements OnInit {
   displayedColumns: string[] = ['leaveType', 'dates', 'reason', 'status', 'appliedOn', 'actions'];
   statuses = ['Pending', 'Approved', 'Rejected'];
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  
   showFormPanel = false;
   showActionPanel = false;
   selectedLeave: LeaveRecord | null = null;
@@ -50,13 +44,12 @@ export class LeaveListComponent implements OnInit {
   ) {
     this.searchSubject.pipe(debounceTime(300)).subscribe(term => {
       this.filter.searchTerm = term;
-      this.filter.pageNumber = 1;
       this.loadData();
     });
   }
 
   ngOnInit(): void {
-    if (this.authService.getRole() !== Role.Employee) {
+    if (this.authService.getRole() === Role.Admin) {
       this.displayedColumns = ['employeeName', 'leaveType', 'dates', 'reason', 'status', 'appliedOn', 'actions'];
     }
     this.loadData();
@@ -67,19 +60,16 @@ export class LeaveListComponent implements OnInit {
     const role = this.authService.getRole();
     
     let req;
-    if (role === Role.Employee) {
-      req = this.leaveService.getMyHistory(this.filter);
-    } else if (role === Role.Manager) {
-      req = this.leaveService.getTeamLeaves(this.filter);
-    } else {
+    if (role === Role.Admin) {
       req = this.leaveService.getAllLeaves(this.filter);
+    } else {
+      req = this.leaveService.getMyHistory(this.filter);
     }
 
     req.subscribe({
       next: (res) => {
         if (res.success && res.data) {
-          this.records = res.data.data;
-          this.totalRecords = res.data.totalCount;
+          this.records = res.data;
         } else {
           this.showNotification('error', res.message || 'Failed to load leaves.');
         }
@@ -96,15 +86,8 @@ export class LeaveListComponent implements OnInit {
     const target = event.target as HTMLInputElement;
     this.searchSubject.next(target.value);
   }
-
-  onPageChange(event: PageEvent): void {
-    this.filter.pageNumber = event.pageIndex + 1;
-    this.filter.pageSize = event.pageSize;
-    this.loadData();
-  }
   
   onFilterChange(): void {
-    this.filter.pageNumber = 1;
     this.loadData();
   }
 

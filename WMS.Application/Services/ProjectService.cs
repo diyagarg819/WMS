@@ -22,20 +22,12 @@ namespace WMS.Application.Services
             _logger = logger;
         }
 
-        public async Task<PagedResponseDto<ProjectDto>> GetAllProjectsAsync(PagedRequestDto request)
+        public async Task<List<ProjectDto>> GetAllProjectsAsync(SearchRequestDto request)
         {
-            var (records, totalCount) = await _projectRepository.GetAllProjectsAsync(
-                request.PageNumber, request.PageSize, request.SearchTerm);
+            var records = await _projectRepository.GetAllProjectsAsync(
+                request.SearchTerm);
 
-            var dtos = records.Select(MapToDto).ToList();
-
-            return new PagedResponseDto<ProjectDto>
-            {
-                Data = dtos,
-                TotalCount = totalCount,
-                PageNumber = request.PageNumber,
-                PageSize = request.PageSize
-            };
+            return records.Select(MapToDto).ToList();
         }
 
         public async Task<(bool Success, string Message, ProjectDto? Data)> GetProjectByIdAsync(int id)
@@ -162,21 +154,6 @@ namespace WMS.Application.Services
             return (true, "Employee removed from project successfully.");
         }
 
-        public async Task<(bool Success, string Message, ProjectAllocationDto? Data)> UpdateAllocationStatusAsync(int allocationId, UpdateAllocationStatusDto request, int userId, string userName)
-        {
-            var allocation = await _projectRepository.GetAllocationAsync(allocationId);
-            if (allocation == null) return (false, "Allocation not found.", null);
-
-            allocation.Status = request.Status;
-            allocation.UpdatedBy = userName;
-            allocation.UpdatedDate = DateTime.Now;
-
-            await _projectRepository.UpdateAllocationStatusAsync(allocation, userId);
-
-            _logger.LogInformation("Allocation {AllocationId} status updated to {Status}", allocationId, request.Status);
-
-            return (true, "Allocation status updated successfully.", MapAllocationToDto(allocation));
-        }
 
         private ProjectDto MapToDto(Project project)
         {
@@ -185,10 +162,11 @@ namespace WMS.Application.Services
                 ProjectId = project.ProjectId,
                 ProjectName = project.ProjectName,
                 ClientId = project.ClientId,
+                ClientName = project.Client?.ClientName,
                 StartDate = project.StartDate,
                 EndDate = project.EndDate,
                 Status = project.Status,
-                Allocations = project.EmployeeAllocations?.Select(MapAllocationToDto).ToList() ?? new List<ProjectAllocationDto>()
+                Allocations = project.EmployeeAllocations?.Where(a => a.Status).Select(MapAllocationToDto).ToList() ?? new List<ProjectAllocationDto>()
             };
         }
 
@@ -205,6 +183,24 @@ namespace WMS.Application.Services
                 Status = allocation.Status,
                 CreatedBY = allocation.CreatedBY
             };
+        }
+
+        public async Task<List<ProjectAllocationDto>> GetAllocationHistoryAsync()
+        {
+            var allocations = await _projectRepository.GetAllocationHistoryAsync();
+            return allocations.Select(MapAllocationToDto).ToList();
+        }
+
+        public async Task<List<ProjectDto>> GetProjectsByEmployeeAsync(int employeeId)
+        {
+            var projects = await _projectRepository.GetProjectsByEmployeeAsync(employeeId);
+            return projects.Select(MapToDto).ToList();
+        }
+
+        public async Task<List<ProjectAllocationDto>> GetEmployeesByProjectAsync(int projectId)
+        {
+            var allocations = await _projectRepository.GetAllocationsByProjectAsync(projectId);
+            return allocations.Where(a => a.Status).Select(MapAllocationToDto).ToList();
         }
     }
 }

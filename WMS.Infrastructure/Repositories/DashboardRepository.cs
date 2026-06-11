@@ -51,6 +51,22 @@ namespace WMS.Infrastructure.Repositories
             return await query.CountAsync();
         }
 
+        public async Task<int> GetLeavesTakenCountAsync(string role, int employeeId, int? departmentId)
+        {
+            var query = _context.Leaves.Where(l => l.Status == "Approved");
+
+            if (role == "Manager" && departmentId.HasValue)
+            {
+                query = query.Where(l => l.Employee != null && l.Employee.DepartmentId == departmentId.Value);
+            }
+            else if (role == "Employee")
+            {
+                query = query.Where(l => l.EmpId == employeeId);
+            }
+
+            return await query.CountAsync();
+        }
+
         public async Task<int> GetActiveProjectCountAsync(string role, int employeeId)
         {
             if (role == "Employee")
@@ -69,40 +85,38 @@ namespace WMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<List<KeyValuePair<string, int>>> GetAttendanceChartDataAsync(string role, int employeeId, int? departmentId, DateTime startDate, DateTime endDate)
+        public async Task<int> GetTotalProjectsCountAsync(string role, int employeeId)
         {
-            var query = _context.Attendances.Where(a => a.AttendanceDate.Date >= startDate.Date && a.AttendanceDate.Date <= endDate.Date);
-
-            // Calculate how many employees are in scope to calculate "Absent" count
-            var employeeQuery = _context.Employees.AsQueryable();
-
-            if (role == "Manager" && departmentId.HasValue)
+            if (role == "Employee")
             {
-                query = query.Where(a => a.Employee != null && a.Employee.DepartmentId == departmentId.Value);
-                employeeQuery = employeeQuery.Where(e => e.DepartmentId == departmentId.Value);
+                return await _context.EmployeeProjectAllocations
+                    .Where(a => a.EmpId == employeeId && a.Status == true && a.Project != null)
+                    .Select(a => a.ProjectId)
+                    .Distinct()
+                    .CountAsync();
             }
-            else if (role == "Employee")
+            else
             {
-                query = query.Where(a => a.EmpId == employeeId);
-                employeeQuery = employeeQuery.Where(e => e.EmployeeId == employeeId);
+                return await _context.Projects.CountAsync();
             }
-
-            int presentCount = await query.CountAsync();
-            int totalEmployeesInScope = await employeeQuery.CountAsync();
-            
-            // Total possible attendances (assuming 5 work days a week, but for simplicity we take elapsed days)
-            int elapsedDays = (int)(endDate.Date - startDate.Date).TotalDays + 1;
-            int totalPossibleAttendances = totalEmployeesInScope * elapsedDays;
-
-            int absentCount = totalPossibleAttendances - presentCount;
-            if (absentCount < 0) absentCount = 0;
-
-            return new List<KeyValuePair<string, int>>
-            {
-                new KeyValuePair<string, int>("Present", presentCount),
-                new KeyValuePair<string, int>("Absent", absentCount)
-            };
         }
+
+        public async Task<int> GetAllocatedEmployeesCountAsync(string role, int employeeId)
+        {
+            if (role == "Employee")
+            {
+                return 1; // It's just themselves
+            }
+            else
+            {
+                return await _context.EmployeeProjectAllocations
+                    .Where(a => a.Status == true)
+                    .Select(a => a.EmpId)
+                    .Distinct()
+                    .CountAsync();
+            }
+        }
+
 
         public async Task<List<KeyValuePair<string, int>>> GetLeavePieChartDataAsync(string role, int employeeId, int? departmentId)
         {

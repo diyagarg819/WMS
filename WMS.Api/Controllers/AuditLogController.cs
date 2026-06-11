@@ -19,10 +19,11 @@ namespace WMS.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] PagedRequestDto request)
+        public async Task<IActionResult> GetAll(
+            [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
         {
-            var result = await _auditLogService.GetAllAsync(request);
-            return Ok(new ApiResponse<PagedResponseDto<AuditLogDto>>(true, "Audit logs retrieved successfully.", result));
+            var result = await _auditLogService.GetAllAsync(startDate, endDate);
+            return Ok(new ApiResponse<List<AuditLogDto>>(true, "Audit logs retrieved.", result));
         }
     }
 }

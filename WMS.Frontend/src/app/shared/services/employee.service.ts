@@ -2,7 +2,7 @@ import { environment } from '../../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ApiResponse, PagedResponse } from '../models/api-response.model';
+import { ApiResponse } from '../models/api-response.model';
 import { Employee, EmployeeDto } from '../models/employee.model';
 
 @Injectable({
@@ -13,16 +13,13 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) { }
 
-  getEmployees(page: number = 1, size: number = 10, search?: string): Observable<PagedResponse<Employee>> {
-    let params = new HttpParams()
-      .set('pageNumber', page.toString())
-      .set('pageSize', size.toString());
-      
+  getEmployees(search?: string): Observable<ApiResponse<Employee[]>> {
+    let params = new HttpParams();
     if (search) {
       params = params.set('searchTerm', search);
     }
     
-    return this.http.get<PagedResponse<Employee>>(this.apiUrl, { params });
+    return this.http.get<ApiResponse<Employee[]>>(this.apiUrl, { params });
   }
 
   getEmployeeById(id: number): Observable<ApiResponse<Employee>> {

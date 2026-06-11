@@ -14,19 +14,26 @@ namespace WMS.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<(IEnumerable<AuditLog> records, int totalCount)> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<IEnumerable<AuditLog>> GetAllAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
             var query = _context.AuditLogs.AsQueryable();
 
-            int totalCount = await query.CountAsync();
+            if (startDate.HasValue)
+            {
+                var start = startDate.Value.Date;
+                query = query.Where(a => a.CreatedOn >= start);
+            }
 
-            var records = await query
+            if (endDate.HasValue)
+            {
+                // Add 1 day to include the entire end date if it's a date without time
+                var end = endDate.Value.Date.AddDays(1).AddTicks(-1);
+                query = query.Where(a => a.CreatedOn <= end);
+            }
+
+            return await query
                 .OrderByDescending(a => a.CreatedOn)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
                 .ToListAsync();
-
-            return (records, totalCount);
         }
     }
 }

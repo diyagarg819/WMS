@@ -5,7 +5,7 @@
     </button>
     <h2>Employee Details</h2>
     <span class="spacer"></span>
-    <button mat-stroked-button color="primary" (click)="onEdit()">
+    <button mat-stroked-button color="primary" (click)="onEdit()" *ngIf="isAdmin">
       <mat-icon>edit</mat-icon> Edit
     </button>
   </div>
@@ -18,12 +18,20 @@
       <div>
         <h3>{{ employee.firstName }} {{ employee.lastName }}</h3>
         <p>{{ employee.email }}</p>
+        <p *ngIf="employee.username" style="font-size: 0.9em; color: var(--text-muted);">
+          <mat-icon style="font-size: 14px; width: 14px; height: 14px; vertical-align: middle;">account_circle</mat-icon> 
+          {{ employee.username }}
+        </p>
       </div>
     </div>
 
     <mat-divider></mat-divider>
 
-    <div class="detail-grid">
+    <div *ngIf="isLoading" style="display: flex; justify-content: center; padding: 2rem;">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+
+    <div class="detail-grid" *ngIf="!isLoading">
       <div class="detail-item">
         <label>Employee ID</label>
         <span>#{{ employee.employeeId }}</span>
@@ -41,12 +49,12 @@
         <span>{{ employee.gender }}</span>
       </div>
       <div class="detail-item">
-        <label>Department ID</label>
-        <span>{{ employee.departmentId }}</span>
+        <label>Department</label>
+        <span>{{ employee.departmentName || employee.departmentId || 'N/A' }}</span>
       </div>
       <div class="detail-item">
-        <label>Role ID</label>
-        <span>{{ employee.roleId }}</span>
+        <label>Role</label>
+        <span>{{ employee.roleName || employee.roleId || 'N/A' }}</span>
       </div>
       <div class="detail-item">
         <label>Date of Birth</label>
@@ -60,24 +68,23 @@
 
     <mat-divider style="margin: 24px 0;"></mat-divider>
 
-    <!-- Inline Delete Confirmation Architecture -->
-    <div class="danger-zone">
-      <h3>Danger Zone</h3>
+    <!-- Inline Deactivate Confirmation -->
+    <div class="delete-section" style="margin-top: 16px;" *ngIf="isAdmin && employee.status !== 'Inactive'">
       
       <div *ngIf="!showDeleteConfirm">
         <button mat-stroked-button color="warn" (click)="showDeleteConfirm = true">
-          <mat-icon>delete</mat-icon> Delete Employee
+          <mat-icon>person_off</mat-icon> Deactivate Employee
         </button>
       </div>
 
       <div class="confirm-box" *ngIf="showDeleteConfirm">
         <mat-icon color="warn">warning</mat-icon>
-        <p>Are you sure you want to permanently delete this employee? This action cannot be undone.</p>
+        <p>Are you sure you want to deactivate this employee? They will no longer appear in active lists.</p>
         <div class="confirm-actions">
           <button mat-button (click)="showDeleteConfirm = false" [disabled]="isDeleting">Cancel</button>
           <button mat-flat-button color="warn" (click)="onDeleteConfirm()" [disabled]="isDeleting">
             <mat-spinner diameter="20" *ngIf="isDeleting" style="margin-right: 8px; display: inline-block; vertical-align: middle;"></mat-spinner>
-            {{ isDeleting ? 'Deleting...' : 'Yes, Delete' }}
+            {{ isDeleting ? 'Deactivating...' : 'Yes, Deactivate' }}
           </button>
         </div>
       </div>

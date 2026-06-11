@@ -41,12 +41,17 @@ export class LeaveFormPanelComponent implements OnInit {
     this.errorMessage = '';
 
     const req = this.leaveForm.value;
-    // Format dates to ISO string before sending
+    const formatDate = (dateInput: any) => {
+      const d = new Date(dateInput);
+      d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+      return d.toISOString().split('T')[0];
+    };
+
     if (req.fromDate) {
-      req.fromDate = new Date(req.fromDate).toISOString();
+      req.fromDate = formatDate(req.fromDate);
     }
     if (req.toDate) {
-      req.toDate = new Date(req.toDate).toISOString();
+      req.toDate = formatDate(req.toDate);
     }
 
     this.leaveService.applyLeave(req).subscribe({
