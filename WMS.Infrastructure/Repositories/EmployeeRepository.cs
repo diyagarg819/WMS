@@ -73,6 +73,16 @@ namespace WMS.Infrastructure.Repositories
             return await query.AnyAsync();
         }
 
+        public async Task<bool> PhoneNumberExistsAsync(string phoneNumber, int? excludeEmployeeId = null)
+        {
+            var query = _context.Employees.AsNoTracking().Where(e => e.PhoneNumber == phoneNumber);
+
+            if (excludeEmployeeId.HasValue)
+                query = query.Where(e => e.EmployeeId != excludeEmployeeId.Value);
+
+            return await query.AnyAsync();
+        }
+
         public async Task<Employee> AddAsync(Employee employee, int createdByUserId)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();

@@ -7,7 +7,7 @@
     <div class="header-actions">
       <div class="search-box">
         <mat-icon>search</mat-icon>
-        <input type="text" placeholder="Search clients..." [(ngModel)]="searchTerm" (keyup.enter)="onSearch()">
+        <input type="text" placeholder="Search clients..." [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" (input)="onSearch()">
       </div>
       <button mat-flat-button color="primary" (click)="openAddForm()" *ngIf="isAdmin">
         <mat-icon>add</mat-icon>

@@ -50,12 +50,18 @@ namespace WMS.Application.DTOs.Employee
         [MaxLength(50)]
         public string Username { get; set; } = string.Empty;
 
+        private string? _password;
+
         /// <summary>
         /// New password — optional. If provided, password will be updated (hashed).
         /// Leave empty to keep the current password.
         /// </summary>
         [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
         [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%\^&\*]).{6,}$", ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character")]
-        public string? Password { get; set; }
+        public string? Password 
+        { 
+            get => _password; 
+            set => _password = string.IsNullOrWhiteSpace(value) ? null : value; 
+        }
     }
 }

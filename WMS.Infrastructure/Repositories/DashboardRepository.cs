@@ -150,6 +150,36 @@ namespace WMS.Infrastructure.Repositories
             return result;
         }
 
+        public async Task<List<KeyValuePair<string, int>>> GetMonthlyAttendanceBarChartDataAsync(string role, int employeeId, int? departmentId)
+        {
+            var query = _context.Attendances.AsQueryable();
+
+            if (role == "Manager" && departmentId.HasValue)
+            {
+                query = query.Where(a => a.Employee != null && a.Employee.DepartmentId == departmentId.Value);
+            }
+            else if (role == "Employee")
+            {
+                query = query.Where(a => a.EmpId == employeeId);
+            }
+
+            var today = DateTime.Today;
+            var currentMonthStart = new DateTime(today.Year, today.Month, 1);
+            
+            // Generate last 6 months data
+            var result = new List<KeyValuePair<string, int>>();
+            for (int i = 5; i >= 0; i--)
+            {
+                var monthStart = currentMonthStart.AddMonths(-i);
+                var monthEnd = monthStart.AddMonths(1).AddDays(-1);
+                
+                var count = await query.Where(a => a.AttendanceDate >= monthStart && a.AttendanceDate <= monthEnd).CountAsync();
+                result.Add(new KeyValuePair<string, int>(monthStart.ToString("MMM yyyy"), count));
+            }
+
+            return result;
+        }
+
         public async Task<List<KeyValuePair<string, int>>> GetProjectBarChartDataAsync(string role, int employeeId)
         {
             if (role == "Employee")

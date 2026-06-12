@@ -70,7 +70,7 @@
       <mat-card class="kpi-card">
         <mat-card-content class="kpi-content">
           <div class="kpi-info">
-            <span class="kpi-label">Active Projects</span>
+            <span class="kpi-label">{{ isEmployee ? 'Allocated Projects' : 'Active Projects' }}</span>
             <span class="kpi-value">{{ dashboardData.kpis.activeProjectCount }}</span>
           </div>
           <div class="kpi-icon-wrapper bg-blue">
@@ -79,7 +79,7 @@
         </mat-card-content>
       </mat-card>
 
-      <mat-card class="kpi-card">
+      <mat-card class="kpi-card" *ngIf="!isEmployee">
         <mat-card-content class="kpi-content">
           <div class="kpi-info">
             <span class="kpi-label">Total Projects</span>
@@ -91,7 +91,7 @@
         </mat-card-content>
       </mat-card>
 
-      <mat-card class="kpi-card">
+      <mat-card class="kpi-card" *ngIf="!isEmployee">
         <mat-card-content class="kpi-content">
           <div class="kpi-info">
             <span class="kpi-label">Allocated Employees</span>
@@ -108,10 +108,10 @@
       <!-- Charts Section -->
       <div class="charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 24px;">
         
-        <!-- Leave Statistics Chart -->
+        <!-- Leave Statistics / Monthly Attendance Chart -->
         <mat-card class="chart-card">
           <mat-card-header>
-            <mat-card-title>Leave Statistics</mat-card-title>
+            <mat-card-title>{{ isAdmin ? 'Leave Statistics' : 'Monthly Attendance' }}</mat-card-title>
           </mat-card-header>
           <mat-card-content class="chart-container" style="position: relative; height: 300px;">
             <canvas #leaveChartCanvas></canvas>

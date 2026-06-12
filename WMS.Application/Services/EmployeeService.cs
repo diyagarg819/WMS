@@ -53,6 +53,13 @@ namespace WMS.Application.Services
                 return null;
             }
 
+            bool phoneExists = await _employeeRepository.PhoneNumberExistsAsync(request.PhoneNumber);
+            if (phoneExists)
+            {
+                _logger.LogWarning("Create employee failed — phone number already in use: {PhoneNumber}", request.PhoneNumber);
+                return null;
+            }
+
             // Check if the username is already taken
             bool usernameExists = await _userLoginRepository.UsernameExistsAsync(request.Username);
             if (usernameExists)
@@ -107,6 +114,13 @@ namespace WMS.Application.Services
                 return false;
             }
 
+            bool phoneExists = await _employeeRepository.PhoneNumberExistsAsync(request.PhoneNumber, employeeId);
+            if (phoneExists)
+            {
+                _logger.LogWarning("Update employee failed — phone number already in use: {PhoneNumber}", request.PhoneNumber);
+                return false;
+            }
+
             employee.FirstName = request.FirstName;
             employee.LastName = request.LastName;
             employee.Email = request.Email;
@@ -124,12 +138,26 @@ namespace WMS.Application.Services
             // Update UserLogin credentials if username is provided
             if (!string.IsNullOrWhiteSpace(request.Username))
             {
-                // Find existing UserLogin by the old username (from email prefix)
-                // We try to find by the provided username first
-                var existingLogin = await _userLoginRepository.GetByUsernameAsync(request.Username);
+                // Find existing UserLogin by EmployeeId (UserId matches EmployeeId in our schema)
+                var existingLogin = await _userLoginRepository.GetByIdAsync(employeeId);
 
                 if (existingLogin != null)
                 {
+                    // Check if new username is taken by someone else
+                    if (existingLogin.Username != request.Username)
+                    {
+                        bool usernameTaken = await _userLoginRepository.UsernameExistsAsync(request.Username);
+                        if (!usernameTaken)
+                        {
+                            existingLogin.Username = request.Username;
+                        }
+                        else
+                        {
+                            _logger.LogWarning("Update employee failed — username already in use: {Username}", request.Username);
+                            return false;
+                        }
+                    }
+
                     // Update password if a new one is provided
                     if (!string.IsNullOrWhiteSpace(request.Password))
                     {
@@ -149,6 +177,13 @@ namespace WMS.Application.Services
         {
             var employee = await _employeeRepository.GetByIdAsync(employeeId);
             if (employee == null) return false;
+
+            bool phoneExists = await _employeeRepository.PhoneNumberExistsAsync(request.PhoneNumber, employeeId);
+            if (phoneExists)
+            {
+                _logger.LogWarning("Update profile failed — phone number already in use: {PhoneNumber}", request.PhoneNumber);
+                return false;
+            }
 
             employee.PhoneNumber = request.PhoneNumber;
             employee.UpdatedOn = DateTime.Now;
@@ -186,9 +221,8 @@ namespace WMS.Application.Services
 
         private async Task<EmployeeDetailDto> MapToDetailDto(Employee employee)
         {
-            // Look up the username from UserLogin using email prefix
-            string emailPrefix = employee.Email?.Split('@')[0] ?? "";
-            var userLogin = await _userLoginRepository.GetByUsernameAsync(emailPrefix);
+            // Look up the username from UserLogin using the EmployeeId (UserId)
+            var userLogin = await _userLoginRepository.GetByIdAsync(employee.EmployeeId);
 
             return new EmployeeDetailDto
             {

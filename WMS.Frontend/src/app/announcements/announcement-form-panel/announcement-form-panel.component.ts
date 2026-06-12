@@ -39,6 +39,7 @@ export class AnnouncementFormPanelComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadEmployees();
 
     if (this.announcement) {
       this.form.patchValue({

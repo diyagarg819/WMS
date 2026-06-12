@@ -60,7 +60,7 @@ namespace WMS.Api.Controllers
             var created = await _employeeService.CreateEmployeeAsync(request, userId);
 
             if (created == null)
-                return Conflict(new ApiResponse<object>(false, "Email already in use or validation failed"));
+                return Conflict(new ApiResponse<object>(false, "Email or phone number already in use, or validation failed"));
 
             return StatusCode(201, new ApiResponse<EmployeeDetailDto>(true, "Employee created", created));
         }
@@ -73,7 +73,7 @@ namespace WMS.Api.Controllers
             var success = await _employeeService.UpdateEmployeeAsync(id, request, userId);
 
             if (!success)
-                return Conflict(new ApiResponse<object>(false, "Employee not found, email in use, or validation failed"));
+                return Conflict(new ApiResponse<object>(false, "Employee not found, email/phone number in use, or validation failed"));
 
             return Ok(new ApiResponse<object>(true, "Employee updated"));
         }
@@ -88,7 +88,7 @@ namespace WMS.Api.Controllers
             var success = await _employeeService.UpdateMyProfileAsync(userId, request, userId);
 
             if (!success)
-                return NotFound(new ApiResponse<object>(false, "Profile not found"));
+                return Conflict(new ApiResponse<object>(false, "Profile not found or phone number already in use"));
 
             return Ok(new ApiResponse<object>(true, "Profile updated"));
         }

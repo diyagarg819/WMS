@@ -21,7 +21,22 @@ namespace WMS.Infrastructure.Repositories
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 string term = searchTerm.Trim().ToLower();
-                query = query.Where(c => c.ClientName.ToLower().Contains(term));
+                bool isNumeric = int.TryParse(term, out int searchId);
+
+                if (isNumeric)
+                {
+                    // Search by exact ID, or see if it matches the phone number
+                    query = query.Where(c => 
+                        c.ClientId == searchId || 
+                        (c.ClientPhoneNumber != null && c.ClientPhoneNumber.ToString().Contains(term)));
+                }
+                else
+                {
+                    // Search text fields
+                    query = query.Where(c => 
+                        c.ClientName.ToLower().Contains(term) ||
+                        (c.ClientLocation != null && c.ClientLocation.ToLower().Contains(term)));
+                }
             }
 
             return await query

@@ -39,6 +39,11 @@ namespace WMS.Infrastructure.Data
                 .HasIndex(e => e.Email)
                 .IsUnique();
 
+            // Phone number must be unique across all employees
+            modelBuilder.Entity<Employee>()
+                .HasIndex(e => e.PhoneNumber)
+                .IsUnique();
+
             // Index on DepartmentId for faster lookups by department
             modelBuilder.Entity<Employee>()
                 .HasIndex(e => e.DepartmentId);

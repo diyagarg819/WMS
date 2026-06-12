@@ -36,14 +36,26 @@ namespace WMS.Application.Services
             kpis.TotalProjects = await _dashboardRepository.GetTotalProjectsCountAsync(role, userId);
             kpis.AllocatedEmployees = await _dashboardRepository.GetAllocatedEmployeesCountAsync(role, userId);
 
-
-            var leaveData = await _dashboardRepository.GetLeavePieChartDataAsync(role, userId, departmentId);
-            charts.Add(new DashboardChartDto
+            if (role == "Admin")
             {
-                ChartName = "LeaveBreakdown",
-                Labels = leaveData.Select(x => x.Key).ToList(),
-                Data = leaveData.Select(x => x.Value).ToList()
-            });
+                var leaveData = await _dashboardRepository.GetLeavePieChartDataAsync(role, userId, departmentId);
+                charts.Add(new DashboardChartDto
+                {
+                    ChartName = "LeaveStatus",
+                    Labels = leaveData.Select(x => x.Key).ToList(),
+                    Data = leaveData.Select(x => x.Value).ToList()
+                });
+            }
+            else
+            {
+                var attendanceData = await _dashboardRepository.GetMonthlyAttendanceBarChartDataAsync(role, userId, departmentId);
+                charts.Add(new DashboardChartDto
+                {
+                    ChartName = "MonthlyAttendance",
+                    Labels = attendanceData.Select(x => x.Key).ToList(),
+                    Data = attendanceData.Select(x => x.Value).ToList()
+                });
+            }
 
             var projectData = await _dashboardRepository.GetProjectBarChartDataAsync(role, userId);
             charts.Add(new DashboardChartDto

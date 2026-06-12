@@ -32,6 +32,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     return this.authService.getRole() === Role.Admin;
   }
 
+  get isEmployee(): boolean {
+    return this.authService.getRole() === Role.Employee;
+  }
+
   ngOnInit(): void {
     this.loadDashboard();
   }
@@ -72,8 +76,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     const textColor = style.getPropertyValue('--text-color').trim() || '#1e293b';
     const gridColor = style.getPropertyValue('--border-color').trim() || '#e2e8f0';
 
-    // 1. Leave Statistics Chart
+    // 1. Leave Statistics Chart or Monthly Attendance
     const leaveData = this.dashboardData.charts.find(c => c.chartName === 'LeaveStatus');
+    const attendanceData = this.dashboardData.charts.find(c => c.chartName === 'MonthlyAttendance');
+
     if (leaveData && this.leaveChartCanvas) {
       if (this.leaveChartInstance) this.leaveChartInstance.destroy();
       const ctx = this.leaveChartCanvas.nativeElement.getContext('2d');
@@ -94,6 +100,26 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             }]
           },
           options: this.getPieChartOptions(textColor)
+        });
+      }
+    } else if (attendanceData && this.leaveChartCanvas) {
+      if (this.leaveChartInstance) this.leaveChartInstance.destroy();
+      const ctx = this.leaveChartCanvas.nativeElement.getContext('2d');
+      if (ctx) {
+        this.leaveChartInstance = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: attendanceData.labels,
+            datasets: [{
+              label: 'Attendance',
+              data: attendanceData.data,
+              backgroundColor: 'rgba(16, 185, 129, 0.7)',
+              borderColor: '#10b981',
+              borderWidth: 1,
+              borderRadius: 4
+            }]
+          },
+          options: this.getBarChartOptions(textColor, gridColor)
         });
       }
     }

@@ -19,6 +19,8 @@ namespace WMS.Domain.Interfaces
         
         Task<List<KeyValuePair<string, int>>> GetLeavePieChartDataAsync(string role, int employeeId, int? departmentId);
         
+        Task<List<KeyValuePair<string, int>>> GetMonthlyAttendanceBarChartDataAsync(string role, int employeeId, int? departmentId);
+        
         Task<List<KeyValuePair<string, int>>> GetProjectBarChartDataAsync(string role, int employeeId);
 
         Task<List<Announcement>> GetLatestAnnouncementsAsync(int count);
