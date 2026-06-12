@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WMS.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+722fb9a33dec2359d7925594be7197ebf9414717")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+27cf1ffe9f3f261a8aa34f20c83d961b34991f0c")]
 [assembly: System.Reflection.AssemblyProductAttribute("WMS.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WMS.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

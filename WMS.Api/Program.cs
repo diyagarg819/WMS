@@ -45,12 +45,13 @@ builder.Services.AddAuthentication(options =>
 });
 
 // ── CORS ──────────────────────────────────────────────────────────────
-// Allow Angular frontend to call the API — restrict origin in production
+// Allow frontend to call the API — configured dynamically per environment
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp", policy =>
     {
-        policy.WithOrigins("http://localhost:4200") // Angular dev server
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -88,12 +89,15 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// ── Database Seeding ──────────────────────────────────────────────────
+// ── Database Migrations & Seeding ─────────────────────────────────────
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<WMSDbContext>();
-    // Ensure database exists
-    context.Database.EnsureCreated();
+    // Apply pending migrations (or create database if it doesn't exist)
+    context.Database.Migrate();
+
+    // Seed the database with default Admin user
+    await WMS.Api.Extensions.DatabaseSeeder.SeedAsync(scope.ServiceProvider);
 }
 
 // ── Middleware Pipeline ───────────────────────────────────────────────
@@ -103,12 +107,6 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 // Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI();
-
-if (app.Environment.IsDevelopment())
-{
-    // Seed the database
-    await WMS.Api.Extensions.DatabaseSeeder.SeedAsync(app.Services);
-}
 
 app.UseHttpsRedirection();
 

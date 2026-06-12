@@ -1,36 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{2BBF398B-DF0D-496F-B9D7-24044456A9E1}|WMS.Api\\WMS.Api.csproj|c:\\users\\dell\\desktop\\wms\\wms.solution\\wms.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{2BBF398B-DF0D-496F-B9D7-24044456A9E1}|WMS.Api\\WMS.Api.csproj|solutionrelative:wms.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8006EC9F-DEA2-4AC1-ADE8-E9D0ED503400}|WMS.Infrastructure\\WMS.Infrastructure.csproj|c:\\users\\dell\\desktop\\wms\\wms.solution\\wms.infrastructure\\wms.infrastructure.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{8006EC9F-DEA2-4AC1-ADE8-E9D0ED503400}|WMS.Infrastructure\\WMS.Infrastructure.csproj|solutionrelative:wms.infrastructure\\wms.infrastructure.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6A786FED-5642-4666-AD95-256D8B836750}|WMS.Application\\WMS.Application.csproj|c:\\users\\dell\\desktop\\wms\\wms.solution\\wms.application\\wms.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{6A786FED-5642-4666-AD95-256D8B836750}|WMS.Application\\WMS.Application.csproj|solutionrelative:wms.application\\wms.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{C4D691E7-1DA6-4BDA-9EC9-7ADEF42B7A54}|WMS.Tests\\WMS.Tests.csproj|c:\\users\\dell\\desktop\\wms\\wms.solution\\wms.tests\\unittest1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C4D691E7-1DA6-4BDA-9EC9-7ADEF42B7A54}|WMS.Tests\\WMS.Tests.csproj|solutionrelative:wms.tests\\unittest1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6A786FED-5642-4666-AD95-256D8B836750}|WMS.Application\\WMS.Application.csproj|c:\\users\\dell\\desktop\\wms\\wms.solution\\wms.application\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6A786FED-5642-4666-AD95-256D8B836750}|WMS.Application\\WMS.Application.csproj|solutionrelative:wms.application\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8006EC9F-DEA2-4AC1-ADE8-E9D0ED503400}|WMS.Infrastructure\\WMS.Infrastructure.csproj|c:\\users\\dell\\desktop\\wms\\wms.solution\\wms.infrastructure\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8006EC9F-DEA2-4AC1-ADE8-E9D0ED503400}|WMS.Infrastructure\\WMS.Infrastructure.csproj|solutionrelative:wms.infrastructure\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BCC3993F-AAF1-4447-8164-0CF566B5EB09}|WMS.Domain\\WMS.Domain.csproj|c:\\users\\dell\\desktop\\wms\\wms.solution\\wms.domain\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{BCC3993F-AAF1-4447-8164-0CF566B5EB09}|WMS.Domain\\WMS.Domain.csproj|solutionrelative:wms.domain\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -38,98 +9,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": -1,
           "Children": [
             {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Api\\appsettings.json",
-              "RelativeDocumentMoniker": "WMS.Api\\appsettings.json",
-              "ToolTip": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Api\\appsettings.json",
-              "RelativeToolTip": "WMS.Api\\appsettings.json",
-              "ViewState": "AgIAAAcAAAAAAAAAAAAAABEAAAAVAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-06-10T02:43:13.131Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "WMS.Infrastructure",
-              "DocumentMoniker": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Infrastructure\\WMS.Infrastructure.csproj",
-              "RelativeDocumentMoniker": "WMS.Infrastructure\\WMS.Infrastructure.csproj",
-              "ToolTip": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Infrastructure\\WMS.Infrastructure.csproj",
-              "RelativeToolTip": "WMS.Infrastructure\\WMS.Infrastructure.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-06-10T02:42:04.656Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "WMS.Application",
-              "DocumentMoniker": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Application\\WMS.Application.csproj",
-              "RelativeDocumentMoniker": "WMS.Application\\WMS.Application.csproj",
-              "ToolTip": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Application\\WMS.Application.csproj",
-              "RelativeToolTip": "WMS.Application\\WMS.Application.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-06-10T02:41:02.638Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "UnitTest1.cs",
-              "DocumentMoniker": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Tests\\UnitTest1.cs",
-              "RelativeDocumentMoniker": "WMS.Tests\\UnitTest1.cs",
-              "ToolTip": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Tests\\UnitTest1.cs",
-              "RelativeToolTip": "WMS.Tests\\UnitTest1.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-10T02:32:48.72Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Class1.cs",
-              "DocumentMoniker": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Application\\Class1.cs",
-              "RelativeDocumentMoniker": "WMS.Application\\Class1.cs",
-              "ToolTip": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Application\\Class1.cs",
-              "RelativeToolTip": "WMS.Application\\Class1.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-10T02:32:11.827Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Class1.cs",
-              "DocumentMoniker": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Infrastructure\\Class1.cs",
-              "RelativeDocumentMoniker": "WMS.Infrastructure\\Class1.cs",
-              "ToolTip": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Infrastructure\\Class1.cs",
-              "RelativeToolTip": "WMS.Infrastructure\\Class1.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-10T02:31:43.131Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Class1.cs",
-              "DocumentMoniker": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Domain\\Class1.cs",
-              "RelativeDocumentMoniker": "WMS.Domain\\Class1.cs",
-              "ToolTip": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Domain\\Class1.cs",
-              "RelativeToolTip": "WMS.Domain\\Class1.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-10T02:31:02.321Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
             }
           ]
         }

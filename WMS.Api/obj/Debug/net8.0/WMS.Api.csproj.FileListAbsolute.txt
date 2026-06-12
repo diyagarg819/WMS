@@ -155,3 +155,4 @@ C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Api\obj\Debug\net8.0\refint\WMS.Api.d
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Api\obj\Debug\net8.0\WMS.Api.pdb
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Api\obj\Debug\net8.0\WMS.Api.genruntimeconfig.cache
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Api\obj\Debug\net8.0\ref\WMS.Api.dll
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Api\bin\Debug\net8.0\appsettings.Production.json
