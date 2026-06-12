@@ -25,10 +25,12 @@ namespace WMS.Infrastructure.Repositories
 
                 if (isNumeric)
                 {
-                    // Search by exact ID, or see if it matches the phone number
+                    // Search by exact ID, phone number, OR text fields (in case the name contains numbers)
                     query = query.Where(c => 
                         c.ClientId == searchId || 
-                        (c.ClientPhoneNumber != null && c.ClientPhoneNumber.ToString().Contains(term)));
+                        (c.ClientPhoneNumber != null && c.ClientPhoneNumber.ToString().Contains(term)) ||
+                        c.ClientName.ToLower().Contains(term) ||
+                        (c.ClientLocation != null && c.ClientLocation.ToLower().Contains(term)));
                 }
                 else
                 {

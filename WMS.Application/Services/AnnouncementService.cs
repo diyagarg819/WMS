@@ -14,9 +14,18 @@ namespace WMS.Application.Services
             _repository = repository;
         }
 
-        public async Task<List<AnnouncementListDto>> GetAllAsync(SearchRequestDto request, bool? isActive)
+        public async Task<List<AnnouncementListDto>> GetAllAsync(SearchRequestDto request, bool? isActive, int currentUserId, string role)
         {
             var records = await _repository.GetAllAsync(request.SearchTerm, isActive);
+
+            // Filter for employee role
+            if (role == "Employee")
+            {
+                records = records.Where(a => 
+                    !a.TargetEmployees.Any() || // Global announcement
+                    a.TargetEmployees.Any(te => te.EmployeeId == currentUserId) // Targeted to them
+                ).ToList();
+            }
 
             return records.Select(a => new AnnouncementListDto
             {
@@ -26,7 +35,7 @@ namespace WMS.Application.Services
                 IsActive = a.IsActive,
                 CreatedOn = a.CreatedOn,
                 CreatorName = a.Creator != null ? $"{a.Creator.FirstName} {a.Creator.LastName}" : "System",
-                TargetAudience = a.TargetAudience
+                TargetEmployeeIds = a.TargetEmployees.Select(te => te.EmployeeId).ToList()
             }).ToList();
         }
 
@@ -38,9 +47,13 @@ namespace WMS.Application.Services
                 Message = request.Message,
                 CreatedBy = createdByUserId,
                 CreatedOn = DateTime.Now,
-                IsActive = true,
-                TargetAudience = request.TargetAudience
+                IsActive = true
             };
+
+            foreach (var empId in request.TargetEmployeeIds)
+            {
+                announcement.TargetEmployees.Add(new AnnouncementEmployee { EmployeeId = empId });
+            }
 
             await _repository.AddAsync(announcement);
             return (true, "Announcement created.");
@@ -55,7 +68,13 @@ namespace WMS.Application.Services
             announcement.Title = request.Title;
             announcement.Message = request.Message;
             announcement.IsActive = request.IsActive;
-            announcement.TargetAudience = request.TargetAudience;
+
+            // Clear and rebuild target employees
+            announcement.TargetEmployees.Clear();
+            foreach (var empId in request.TargetEmployeeIds)
+            {
+                announcement.TargetEmployees.Add(new AnnouncementEmployee { EmployeeId = empId });
+            }
 
             await _repository.UpdateAsync(announcement);
             return (true, "Announcement updated.");

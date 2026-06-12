@@ -20,6 +20,7 @@ namespace WMS.Infrastructure.Data
         public DbSet<Attendance> Attendances { get; set; }
         public DbSet<Leave> Leaves { get; set; }
         public DbSet<Announcement> Announcements { get; set; }
+        public DbSet<AnnouncementEmployee> AnnouncementEmployees { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Client> Clients { get; set; }
         public DbSet<EmployeeProjectAllocation> EmployeeProjectAllocations { get; set; }
@@ -133,6 +134,21 @@ namespace WMS.Infrastructure.Data
             modelBuilder.Entity<Announcement>()
                 .Property(a => a.Message)
                 .HasColumnType("nvarchar(max)");
+
+            // Many-to-many relationship mapping table
+            modelBuilder.Entity<AnnouncementEmployee>()
+                .HasKey(ae => new { ae.AnnouncementId, ae.EmployeeId });
+
+            modelBuilder.Entity<AnnouncementEmployee>()
+                .HasOne(ae => ae.Announcement)
+                .WithMany(a => a.TargetEmployees)
+                .HasForeignKey(ae => ae.AnnouncementId);
+
+            modelBuilder.Entity<AnnouncementEmployee>()
+                .HasOne(ae => ae.Employee)
+                .WithMany()
+                .HasForeignKey(ae => ae.EmployeeId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete from Employee to Announcement
 
             // ──────────────────────────────────────────────
             // Project configuration

@@ -47,9 +47,8 @@ export class AnnouncementFormPanelComponent implements OnInit {
         message: this.announcement.message,
         isActive: this.announcement.isActive
       });
-      if (this.announcement.targetAudience !== 'All') {
-        this.selectedEmployeeIds = this.announcement.targetAudience
-          .split(',').map(id => parseInt(id.trim(), 10)).filter(id => !isNaN(id));
+      if (this.announcement.targetEmployeeIds && this.announcement.targetEmployeeIds.length > 0) {
+        this.selectedEmployeeIds = [...this.announcement.targetEmployeeIds];
       }
     }
   }
@@ -59,8 +58,14 @@ export class AnnouncementFormPanelComponent implements OnInit {
       next: (res) => {
         if (res.success && res.data) {
           this.employees = res.data;
-          if (this.announcement && this.announcement.targetAudience === 'All') {
-            this.selectedEmployeeIds = this.employees.map(e => e.employeeId);
+          // If editing an existing announcement and targetEmployeeIds are not set (e.g. legacy data or empty array usually means all if it was previously targetAudience='All' but wait, the backend now expects targetEmployeeIds to have all Ids if it's 'All' or empty if global)
+          // Wait, backend logic for global announcement is TargetEmployeeIds being empty list!
+          // Actually, let's just use what's in the announcement.targetEmployeeIds array.
+          if (this.announcement) {
+             if (!this.announcement.targetEmployeeIds || this.announcement.targetEmployeeIds.length === 0) {
+                // If it's a global announcement, select all employees in the UI.
+                this.selectedEmployeeIds = this.employees.map(e => e.employeeId);
+             }
           }
         }
       }
@@ -87,20 +92,22 @@ export class AnnouncementFormPanelComponent implements OnInit {
     this.isSaving = true;
     this.errorMessage = '';
 
-    const targetAudience = this.selectedEmployeeIds.length === this.employees.length
-      ? 'All' : this.selectedEmployeeIds.join(',');
+    // If all are selected, we send an empty array to indicate global announcement (or we can send all Ids. The backend handles empty list as Global).
+    // Let's send an empty list if all are selected to save space.
+    const targetEmployeeIds = this.selectedEmployeeIds.length === this.employees.length
+      ? [] : this.selectedEmployeeIds;
 
     if (this.isEditMode) {
       this.announcementService.update(this.announcement!.announcementId, {
         title: this.form.value.title, message: this.form.value.message,
-        isActive: this.form.value.isActive, targetAudience
+        isActive: this.form.value.isActive, targetEmployeeIds
       }).subscribe({
         next: (res) => this.actionComplete.emit({ success: true, message: res.message || 'Updated.' }),
         error: (err) => { this.errorMessage = err.error?.message || 'Failed.'; this.isSaving = false; }
       });
     } else {
       this.announcementService.create({
-        title: this.form.value.title, message: this.form.value.message, targetAudience
+        title: this.form.value.title, message: this.form.value.message, targetEmployeeIds
       }).subscribe({
         next: (res) => this.actionComplete.emit({ success: true, message: res.message || 'Created.' }),
         error: (err) => { this.errorMessage = err.error?.message || 'Failed.'; this.isSaving = false; }

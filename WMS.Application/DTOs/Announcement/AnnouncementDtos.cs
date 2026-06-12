@@ -10,7 +10,7 @@ namespace WMS.Application.DTOs.Announcement
         public bool IsActive { get; set; }
         public DateTime CreatedOn { get; set; }
         public string CreatorName { get; set; } = string.Empty;
-        public string TargetAudience { get; set; } = "All";
+        public List<int> TargetEmployeeIds { get; set; } = new List<int>();
     }
 
     public class CreateAnnouncementDto
@@ -21,7 +21,7 @@ namespace WMS.Application.DTOs.Announcement
         [Required]
         public string Message { get; set; } = string.Empty;
 
-        public string TargetAudience { get; set; } = "All";
+        public List<int> TargetEmployeeIds { get; set; } = new List<int>();
     }
 
     public class UpdateAnnouncementDto
@@ -33,6 +33,6 @@ namespace WMS.Application.DTOs.Announcement
         public string Message { get; set; } = string.Empty;
 
         public bool IsActive { get; set; }
-        public string TargetAudience { get; set; } = "All";
+        public List<int> TargetEmployeeIds { get; set; } = new List<int>();
     }
 }

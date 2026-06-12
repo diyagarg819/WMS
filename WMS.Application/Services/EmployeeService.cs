@@ -121,6 +121,22 @@ namespace WMS.Application.Services
                 return false;
             }
 
+            // Validate username uniqueness before doing any updates
+            UserLogin? existingLogin = null;
+            if (!string.IsNullOrWhiteSpace(request.Username))
+            {
+                existingLogin = await _userLoginRepository.GetByIdAsync(employeeId);
+                if (existingLogin != null && existingLogin.Username != request.Username)
+                {
+                    bool usernameTaken = await _userLoginRepository.UsernameExistsAsync(request.Username);
+                    if (usernameTaken)
+                    {
+                        _logger.LogWarning("Update employee failed — username already in use: {Username}", request.Username);
+                        return false;
+                    }
+                }
+            }
+
             employee.FirstName = request.FirstName;
             employee.LastName = request.LastName;
             employee.Email = request.Email;
@@ -135,38 +151,22 @@ namespace WMS.Application.Services
 
             await _employeeRepository.UpdateAsync(employee, userId);
 
-            // Update UserLogin credentials if username is provided
-            if (!string.IsNullOrWhiteSpace(request.Username))
+            // Update UserLogin credentials since validation passed
+            if (!string.IsNullOrWhiteSpace(request.Username) && existingLogin != null)
             {
-                // Find existing UserLogin by EmployeeId (UserId matches EmployeeId in our schema)
-                var existingLogin = await _userLoginRepository.GetByIdAsync(employeeId);
-
-                if (existingLogin != null)
+                if (existingLogin.Username != request.Username)
                 {
-                    // Check if new username is taken by someone else
-                    if (existingLogin.Username != request.Username)
-                    {
-                        bool usernameTaken = await _userLoginRepository.UsernameExistsAsync(request.Username);
-                        if (!usernameTaken)
-                        {
-                            existingLogin.Username = request.Username;
-                        }
-                        else
-                        {
-                            _logger.LogWarning("Update employee failed — username already in use: {Username}", request.Username);
-                            return false;
-                        }
-                    }
-
-                    // Update password if a new one is provided
-                    if (!string.IsNullOrWhiteSpace(request.Password))
-                    {
-                        existingLogin.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
-                    }
-                    existingLogin.RoleId = request.RoleId ?? existingLogin.RoleId;
-                    await _userLoginRepository.UpdateAsync(existingLogin);
-                    _logger.LogInformation("UserLogin updated for employee {EmployeeId}", employeeId);
+                    existingLogin.Username = request.Username;
                 }
+
+                // Update password if a new one is provided
+                if (!string.IsNullOrWhiteSpace(request.Password))
+                {
+                    existingLogin.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+                }
+                existingLogin.RoleId = request.RoleId ?? existingLogin.RoleId;
+                await _userLoginRepository.UpdateAsync(existingLogin);
+                _logger.LogInformation("UserLogin updated for employee {EmployeeId}", employeeId);
             }
 
             _logger.LogInformation("Employee updated: {EmployeeId}", employeeId);

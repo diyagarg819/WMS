@@ -64,9 +64,9 @@
         <ng-container matColumnDef="targetAudience">
           <th mat-header-cell *matHeaderCellDef> Audience </th>
           <td mat-cell *matCellDef="let element">
-            <span class="audience-tag" [ngClass]="{'audience-all': element.targetAudience === 'All', 'audience-specific': element.targetAudience !== 'All'}">
-              <mat-icon class="audience-icon">{{ element.targetAudience === 'All' ? 'groups' : 'person' }}</mat-icon>
-              {{ getAudienceDisplay(element.targetAudience) }}
+            <span class="audience-tag" [ngClass]="{'audience-all': !element.targetEmployeeIds || element.targetEmployeeIds.length === 0, 'audience-specific': element.targetEmployeeIds && element.targetEmployeeIds.length > 0}">
+              <mat-icon class="audience-icon">{{ (!element.targetEmployeeIds || element.targetEmployeeIds.length === 0) ? 'groups' : 'person' }}</mat-icon>
+              {{ getAudienceDisplay(element.targetEmployeeIds) }}
             </span>
           </td>
         </ng-container>

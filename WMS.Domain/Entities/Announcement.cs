@@ -26,8 +26,6 @@ namespace WMS.Domain.Entities
 
         public bool IsActive { get; set; } = true;
 
-        // Who should see this: "All", "Admin", "Manager", "Employee"
-        [MaxLength(20)]
-        public string TargetAudience { get; set; } = "All";
+        public ICollection<AnnouncementEmployee> TargetEmployees { get; set; } = new List<AnnouncementEmployee>();
     }
 }

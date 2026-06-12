@@ -69,11 +69,10 @@ export class AnnouncementListComponent implements OnInit {
     });
   }
 
-  getAudienceDisplay(targetAudience: string): string {
-    if (targetAudience === 'All') return 'All Employees';
-    const ids = targetAudience.split(',').map(id => parseInt(id.trim(), 10)).filter(id => !isNaN(id));
-    const names = ids.map(id => this.employeeMap.get(id) || `#${id}`).slice(0, 3);
-    const remaining = ids.length - 3;
+  getAudienceDisplay(targetEmployeeIds: number[]): string {
+    if (!targetEmployeeIds || targetEmployeeIds.length === 0) return 'All Employees';
+    const names = targetEmployeeIds.map(id => this.employeeMap.get(id) || `#${id}`).slice(0, 3);
+    const remaining = targetEmployeeIds.length - 3;
     return remaining > 0 ? `${names.join(', ')} +${remaining} more` : names.join(', ');
   }
 

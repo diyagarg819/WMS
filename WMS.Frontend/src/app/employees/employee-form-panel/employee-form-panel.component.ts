@@ -18,7 +18,7 @@ export class EmployeeFormPanelComponent implements OnInit, OnChanges {
   @Input() employee: Employee | null = null;
   
   @Output() close = new EventEmitter<void>();
-  @Output() saved = new EventEmitter<boolean>();
+  @Output() saved = new EventEmitter<boolean | string>();
 
   employeeForm!: FormGroup;
   isSaving = false;
@@ -78,7 +78,7 @@ export class EmployeeFormPanelComponent implements OnInit, OnChanges {
     this.employeeForm = this.fb.group({
       firstName: [this.employee?.firstName || '', [Validators.required]],
       lastName: [this.employee?.lastName || '', [Validators.required]],
-      email: [this.employee?.email || '', [Validators.required, Validators.email, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$')]],
+      email: [this.employee?.email || '', [Validators.required, Validators.email, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$')]],
       phoneNumber: [this.employee?.phoneNumber || '', [Validators.required, Validators.pattern('^\\d{10}$')]],
       gender: [this.employee?.gender || 'M', [Validators.required]],
       dob: [this.employee?.dob || '', [Validators.required, this.minimumAgeValidator(18)]],
@@ -120,9 +120,10 @@ export class EmployeeFormPanelComponent implements OnInit, OnChanges {
           this.isSaving = false;
           this.saved.emit(true);
         },
-        error: () => {
+        error: (err) => {
           this.isSaving = false;
-          this.saved.emit(false);
+          const msg = err.error?.message || err.error?.title || 'Failed to create employee.';
+          this.saved.emit(msg);
         }
       });
     } else {
@@ -138,9 +139,10 @@ export class EmployeeFormPanelComponent implements OnInit, OnChanges {
           this.isSaving = false;
           this.saved.emit(true);
         },
-        error: () => {
+        error: (err) => {
           this.isSaving = false;
-          this.saved.emit(false);
+          const msg = err.error?.message || err.error?.title || 'Failed to update employee.';
+          this.saved.emit(msg);
         }
       });
     }

@@ -24,7 +24,10 @@ namespace WMS.Api.Controllers
             [FromQuery] SearchRequestDto request,
             [FromQuery] bool? isActive = null)
         {
-            var result = await _service.GetAllAsync(request, isActive);
+            int currentUserId = int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int id) ? id : 0;
+            string role = User.FindFirst(ClaimTypes.Role)?.Value ?? "";
+
+            var result = await _service.GetAllAsync(request, isActive, currentUserId, role);
             return Ok(new ApiResponse<List<AnnouncementListDto>>(true, "OK", result));
         }
 

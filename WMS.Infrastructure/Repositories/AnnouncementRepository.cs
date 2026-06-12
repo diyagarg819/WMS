@@ -16,7 +16,10 @@ namespace WMS.Infrastructure.Repositories
 
         public async Task<List<Announcement>> GetAllAsync(string? searchTerm, bool? isActive)
         {
-            var query = _context.Announcements.Include(a => a.Creator).AsQueryable();
+            var query = _context.Announcements
+                .Include(a => a.Creator)
+                .Include(a => a.TargetEmployees)
+                .AsQueryable();
 
             if (isActive.HasValue)
                 query = query.Where(a => a.IsActive == isActive.Value);
@@ -31,7 +34,9 @@ namespace WMS.Infrastructure.Repositories
 
         public async Task<Announcement?> GetByIdAsync(int id)
         {
-            return await _context.Announcements.FindAsync(id);
+            return await _context.Announcements
+                .Include(a => a.TargetEmployees)
+                .FirstOrDefaultAsync(a => a.AnnouncementId == id);
         }
 
         public async Task AddAsync(Announcement announcement)

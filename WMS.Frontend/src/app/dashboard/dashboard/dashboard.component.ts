@@ -51,6 +51,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.isLoading = true;
     this.dashboardService.getDashboardData().subscribe({
       next: (res) => {
+        this.isLoading = false;
         if (res.success && res.data) {
           this.dashboardData = res.data;
           // Force view update so ViewChildren resolve before rendering
@@ -60,11 +61,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         } else {
           this.errorMessage = res.message || 'Failed to load dashboard.';
         }
-        this.isLoading = false;
       },
       error: (err) => {
-        this.errorMessage = err.error?.message || 'Error communicating with server.';
         this.isLoading = false;
+        this.errorMessage = err.error?.message || 'Error communicating with server.';
       }
     });
   }

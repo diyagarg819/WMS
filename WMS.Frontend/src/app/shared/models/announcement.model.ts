@@ -5,18 +5,18 @@ export interface AnnouncementRecord {
   isActive: boolean;
   createdOn: string;
   creatorName: string;
-  targetAudience: string;
+  targetEmployeeIds: number[];
 }
 
 export interface CreateAnnouncementRequest {
   title: string;
   message: string;
-  targetAudience: string;
+  targetEmployeeIds: number[];
 }
 
 export interface UpdateAnnouncementRequest {
   title: string;
   message: string;
   isActive: boolean;
-  targetAudience: string;
+  targetEmployeeIds: number[];
 }

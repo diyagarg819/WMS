@@ -97,11 +97,15 @@ export class EmployeeListComponent implements OnInit {
     setTimeout(() => this.selectedEmployee = null, 300);
   }
 
-  handleFormSubmit(success: boolean): void {
-    if (success) {
+  handleFormSubmit(result: boolean | string): void {
+    if (result === true) {
       this.showBanner('success', this.formMode === 'add' ? 'Employee created successfully' : 'Employee updated successfully');
       this.closePanel();
       this.loadEmployees();
+    } else if (typeof result === 'string') {
+      this.showBanner('error', result);
+    } else {
+      this.showBanner('error', 'An error occurred during save.');
     }
   }
 
