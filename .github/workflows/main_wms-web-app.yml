@@ -12,6 +12,7 @@ on:
       - 'WMS.Application/**'
       - 'WMS.Domain/**'
       - 'WMS.Infrastructure/**'
+      - '.github/workflows/main_wms-web-app.yml'
   workflow_dispatch:
 
 jobs:
