@@ -156,3 +156,10 @@ C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Api\obj\Debug\net8.0\WMS.Api.pdb
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Api\obj\Debug\net8.0\WMS.Api.genruntimeconfig.cache
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Api\obj\Debug\net8.0\ref\WMS.Api.dll
 C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Api\bin\Debug\net8.0\appsettings.Production.json
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Api\bin\Debug\net8.0\publish\web.config
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Api\bin\Debug\net8.0\publish\appsettings.Development.json
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Api\bin\Debug\net8.0\publish\appsettings.json
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Api\bin\Debug\net8.0\publish\appsettings.Production.json
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Api\bin\Debug\net8.0\publish\WMS.Api.deps.json
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Api\bin\Debug\net8.0\publish\WMS.Api.runtimeconfig.json
+C:\Users\Dell\Desktop\WMS\WMS.Solution\WMS.Api\bin\Debug\net8.0\publish\WMS.Api.staticwebassets.endpoints.json

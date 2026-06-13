@@ -1,7 +1,12 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{86641F12-4411-6132-56B2-0C2AA9B3F38A}|WMS.Api\\WMS.Api.csproj|c:\\users\\dell\\desktop\\wms\\wms.solution\\wms.api\\appsettings.production.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{86641F12-4411-6132-56B2-0C2AA9B3F38A}|WMS.Api\\WMS.Api.csproj|solutionrelative:wms.api\\appsettings.production.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,11 +14,24 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appsettings.Production.json",
+              "DocumentMoniker": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Api\\appsettings.Production.json",
+              "RelativeDocumentMoniker": "WMS.Api\\appsettings.Production.json",
+              "ToolTip": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Api\\appsettings.Production.json",
+              "RelativeToolTip": "WMS.Api\\appsettings.Production.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAD7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-06-12T13:18:45.638Z",
+              "EditorCaption": ""
             }
           ]
         }
