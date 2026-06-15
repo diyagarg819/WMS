@@ -145,7 +145,7 @@ body.dark-theme {
   }
 
   .mat-mdc-form-field-flex {
-    background-color: var(--input-bg) !important;
+    background-color: transparent !important;
   }
 
   .mat-mdc-input-element, .mat-mdc-select-value, .mat-mdc-select-value-text {
@@ -181,7 +181,9 @@ body.dark-theme {
     color: var(--text-color) !important;
   }
 
-  .mat-mdc-option:hover {
+  .mat-mdc-option:hover,
+  .mat-mdc-option[aria-selected="true"],
+  .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
     background-color: var(--hover-bg) !important;
   }
 
