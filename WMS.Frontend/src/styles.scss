@@ -260,15 +260,28 @@ body.dark-theme {
   }
 
   /* Buttons */
-  .mat-mdc-button, .mat-mdc-outlined-button {
+  .mat-mdc-button:not(:disabled), .mat-mdc-outlined-button:not(:disabled) {
     color: var(--text-color) !important;
   }
-  .mat-mdc-raised-button.mat-primary, .mat-mdc-flat-button.mat-primary {
+  .mat-mdc-raised-button.mat-primary:not(:disabled), .mat-mdc-flat-button.mat-primary:not(:disabled) {
     color: #ffffff !important;
   }
 
-  .mat-mdc-icon-button {
+  .mat-mdc-icon-button:not(:disabled) {
     color: var(--text-color) !important;
+  }
+
+  /* Disabled Buttons */
+  .mat-mdc-button:disabled, 
+  .mat-mdc-icon-button:disabled,
+  .mat-mdc-outlined-button:disabled {
+    color: rgba(255, 255, 255, 0.3) !important;
+  }
+
+  .mat-mdc-raised-button:disabled, 
+  .mat-mdc-flat-button:disabled {
+    background-color: rgba(255, 255, 255, 0.12) !important;
+    color: rgba(255, 255, 255, 0.3) !important;
   }
 
   /* Divider */
