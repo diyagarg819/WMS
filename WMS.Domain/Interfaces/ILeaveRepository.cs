@@ -6,7 +6,7 @@ namespace WMS.Domain.Interfaces
     {
         Task<List<Leave>> GetAllAsync(string? status, string? searchTerm);
         Task<List<Leave>> GetByDepartmentAsync(int departmentId, string? status, string? searchTerm);
-        Task<List<Leave>> GetByEmployeeAsync(int empId, string? status);
+        Task<List<Leave>> GetByEmployeeAsync(int empId, string? status, string? searchTerm);
         Task<Leave?> GetByIdAsync(int leaveId);
         Task<Leave> AddAsync(Leave leave);
         Task UpdateStatusWithAuditAsync(Leave leave, int updatedByUserId, string actionType);

@@ -27,8 +27,9 @@ namespace WMS.Infrastructure.Repositories
             {
                 string term = searchTerm.Trim().ToLower();
                 query = query.Where(l =>
-                    l.Employee!.FirstName.ToLower().Contains(term) ||
-                    l.Employee!.LastName.ToLower().Contains(term));
+                    (l.Employee != null && (l.Employee.FirstName.ToLower().Contains(term) || l.Employee.LastName.ToLower().Contains(term))) ||
+                    l.LeaveType.ToLower().Contains(term) ||
+                    (l.Reason != null && l.Reason.ToLower().Contains(term)));
             }
 
             return await query.OrderByDescending(l => l.AppliedOn).ToListAsync();
@@ -48,14 +49,15 @@ namespace WMS.Infrastructure.Repositories
             {
                 string term = searchTerm.Trim().ToLower();
                 query = query.Where(l =>
-                    l.Employee!.FirstName.ToLower().Contains(term) ||
-                    l.Employee!.LastName.ToLower().Contains(term));
+                    (l.Employee != null && (l.Employee.FirstName.ToLower().Contains(term) || l.Employee.LastName.ToLower().Contains(term))) ||
+                    l.LeaveType.ToLower().Contains(term) ||
+                    (l.Reason != null && l.Reason.ToLower().Contains(term)));
             }
 
             return await query.OrderByDescending(l => l.AppliedOn).ToListAsync();
         }
 
-        public async Task<List<Leave>> GetByEmployeeAsync(int empId, string? status)
+        public async Task<List<Leave>> GetByEmployeeAsync(int empId, string? status, string? searchTerm)
         {
             var query = _context.Leaves
                 .Include(l => l.Employee)
@@ -63,6 +65,14 @@ namespace WMS.Infrastructure.Repositories
 
             if (!string.IsNullOrWhiteSpace(status))
                 query = query.Where(l => l.Status == status);
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                string term = searchTerm.Trim().ToLower();
+                query = query.Where(l =>
+                    l.LeaveType.ToLower().Contains(term) ||
+                    (l.Reason != null && l.Reason.ToLower().Contains(term)));
+            }
 
             return await query.OrderByDescending(l => l.AppliedOn).ToListAsync();
         }

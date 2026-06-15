@@ -87,7 +87,7 @@ namespace WMS.Application.Services
         public async Task<List<LeaveRecordDto>> GetMyLeavesAsync(int empId, LeaveFilterDto filter)
         {
             var records = await _leaveRepository.GetByEmployeeAsync(
-                empId, filter.Status);
+                empId, filter.Status, filter.SearchTerm);
 
             return records.Select(MapToDto).ToList();
         }
