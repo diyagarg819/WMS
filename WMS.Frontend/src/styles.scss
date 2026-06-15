@@ -166,7 +166,7 @@ body.dark-theme {
     background-color: var(--card-bg) !important;
   }
 
-  .mat-mdc-option {
+  .mat-mdc-option, .mat-mdc-option .mdc-list-item__primary-text {
     color: var(--text-color) !important;
   }
 
@@ -231,7 +231,7 @@ body.dark-theme {
   }
 
   /* Chips */
-  .mat-mdc-chip {
+  .mat-mdc-chip, .mat-mdc-chip .mdc-evolution-chip__text-label {
     background-color: rgba(129, 140, 248, 0.15) !important;
     color: #a5b4fc !important;
   }

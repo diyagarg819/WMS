@@ -28,7 +28,7 @@
       </div>
       
       <div class="status-filter">
-        <mat-form-field appearance="outline" class="status-field">
+        <mat-form-field appearance="outline" class="status-field" subscriptSizing="dynamic">
           <mat-label>Status</mat-label>
           <mat-select [(ngModel)]="filter.status" (selectionChange)="onFilterChange()">
             <mat-option [value]="undefined">All</mat-option>
