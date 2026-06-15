@@ -264,6 +264,7 @@ body.dark-theme {
     color: var(--text-color) !important;
   }
   .mat-mdc-raised-button.mat-primary:not(:disabled), .mat-mdc-flat-button.mat-primary:not(:disabled) {
+    background-color: #4f46e5 !important;
     color: #ffffff !important;
   }
 

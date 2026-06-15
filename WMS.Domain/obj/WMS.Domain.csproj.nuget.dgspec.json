@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Domain\\WMS.Domain.csproj": {}
+    "c:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Domain\\WMS.Domain.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Domain\\WMS.Domain.csproj": {
+    "c:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Domain\\WMS.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Domain\\WMS.Domain.csproj",
+        "projectUniqueName": "c:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Domain\\WMS.Domain.csproj",
         "projectName": "WMS.Domain",
-        "projectPath": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Domain\\WMS.Domain.csproj",
+        "projectPath": "c:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Domain\\WMS.Domain.csproj",
         "packagesPath": "C:\\Users\\Dell\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Domain\\obj\\",
+        "outputPath": "c:\\Users\\Dell\\Desktop\\WMS\\WMS.Solution\\WMS.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
