@@ -35,7 +35,7 @@
     <div matListItemTitle>Departments</div>
   </a>
 
-  <a mat-list-item routerLink="/projects" routerLinkActive="active-link" *ngIf="authService.getRole() !== Role.Employee">
+  <a mat-list-item routerLink="/projects" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" *ngIf="authService.getRole() !== Role.Employee">
     <mat-icon matListItemIcon>work</mat-icon>
     <div matListItemTitle>Projects</div>
   </a>

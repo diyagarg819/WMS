@@ -57,6 +57,21 @@ export class AuthService {
     return roleStr as Role;
   }
 
+  // Get Username from token
+  getUsername(): string {
+    const token = localStorage.getItem('token');
+    if (!token) return 'User';
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || 
+             payload.name || 
+             payload.email || 
+             'User';
+    } catch (e) {
+      return 'User';
+    }
+  }
+
   // Get UserId from token
   getUserId(): number | null {
     const token = localStorage.getItem('token');

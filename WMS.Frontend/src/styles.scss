@@ -148,7 +148,7 @@ body.dark-theme {
     background-color: var(--input-bg) !important;
   }
 
-  .mat-mdc-input-element, .mat-mdc-select-value {
+  .mat-mdc-input-element, .mat-mdc-select-value, .mat-mdc-select-value-text {
     color: var(--input-text) !important;
   }
 
@@ -159,6 +159,17 @@ body.dark-theme {
 
   .mat-mdc-form-field-icon-suffix .mat-icon {
     color: var(--text-secondary) !important;
+  }
+
+  /* Checkboxes */
+  .mat-mdc-checkbox {
+    margin: 4px 0;
+  }
+  .mdc-checkbox .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate):not([data-indeterminate=true])~.mdc-checkbox__background {
+    border-color: var(--text-secondary) !important;
+  }
+  .mat-mdc-checkbox .mdc-form-field {
+    color: var(--text-color) !important;
   }
 
   /* Select Panels & Menu Panels */

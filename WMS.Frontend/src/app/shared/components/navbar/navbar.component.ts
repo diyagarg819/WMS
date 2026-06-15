@@ -14,7 +14,7 @@ export class NavbarComponent {
   isDarkMode$: any;
 
   constructor(
-    private authService: AuthService, 
+    public authService: AuthService, 
     private themeService: ThemeService,
     private router: Router
   ) {

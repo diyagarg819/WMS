@@ -47,11 +47,7 @@
 
       <ng-container matColumnDef="department">
         <th mat-header-cell *matHeaderCellDef> Department </th>
-        <td mat-cell *matCellDef="let emp"> 
-          <mat-chip-set>
-            <mat-chip>{{emp.departmentName || 'N/A'}}</mat-chip>
-          </mat-chip-set>
-        </td>
+        <td mat-cell *matCellDef="let emp"> {{emp.departmentName || 'N/A'}} </td>
       </ng-container>
 
       <ng-container matColumnDef="role">
