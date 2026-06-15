@@ -23,8 +23,6 @@ export class AttendanceListComponent implements OnInit {
     toDate: undefined
   };
 
-  selectedStatus: string = '';
-  statuses: string[] = ['Present', 'In Progress'];
 
   displayedColumns: string[] = ['attendanceDate', 'employeeName', 'checkIn', 'checkOut', 'totalHours', 'status', 'workMode'];
 
@@ -62,7 +60,7 @@ export class AttendanceListComponent implements OnInit {
       next: (res) => {
         if (res.success && res.data) {
           this.records = res.data;
-          this.applyStatusFilter();
+          this.filteredRecords = this.records;
         } else {
           this.showNotification('error', res.message || 'Failed to load attendance records.');
         }
@@ -79,13 +77,6 @@ export class AttendanceListComponent implements OnInit {
     return record.checkOut ? 'Present' : 'In Progress';
   }
 
-  applyStatusFilter(): void {
-    if (!this.selectedStatus) {
-      this.filteredRecords = this.records;
-    } else {
-      this.filteredRecords = this.records.filter(r => this.getStatus(r) === this.selectedStatus);
-    }
-  }
 
   onSearch(event: Event): void {
     const target = event.target as HTMLInputElement;
@@ -96,9 +87,6 @@ export class AttendanceListComponent implements OnInit {
     this.loadData();
   }
 
-  onStatusFilterChange(): void {
-    this.applyStatusFilter();
-  }
 
   openActionPanel(): void {
     this.showActionPanel = true;

@@ -28,13 +28,6 @@
       </div>
 
       <div class="filter-group">
-        <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>Status</mat-label>
-          <mat-select [(ngModel)]="selectedStatus" (selectionChange)="onStatusFilterChange()">
-            <mat-option value="">All</mat-option>
-            <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
-          </mat-select>
-        </mat-form-field>
 
         <mat-form-field appearance="outline" class="filter-field">
           <mat-label>From Date</mat-label>
