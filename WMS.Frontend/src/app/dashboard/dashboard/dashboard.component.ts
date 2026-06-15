@@ -3,6 +3,8 @@ import { DashboardService } from '../../shared/services/dashboard.service';
 import { DashboardResponse, DashboardChart } from '../../shared/models/dashboard.model';
 import { AuthService } from '../../shared/services/auth.service';
 import { Role } from '../../shared/enums/role.enum';
+import { ThemeService } from '../../shared/services/theme.service';
+import { Subscription } from 'rxjs';
 import Chart from 'chart.js/auto';
 
 @Component({
@@ -21,11 +23,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   private leaveChartInstance: Chart | null = null;
   private projectChartInstance: Chart | null = null;
+  private themeSub: Subscription | null = null;
+  private isDark = false;
 
   constructor(
     private dashboardService: DashboardService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private themeService: ThemeService
   ) {}
 
   get isAdmin(): boolean {
@@ -38,12 +43,24 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadDashboard();
+    this.themeSub = this.themeService.isDarkMode$.subscribe(isDark => {
+      this.isDark = isDark;
+      if (this.dashboardData) {
+        // slight delay to let DOM styles update before re-rendering
+        setTimeout(() => this.renderAllCharts(), 50);
+      }
+    });
   }
 
   ngAfterViewInit(): void {
-    // Attempt render if data came extremely fast
     if (this.dashboardData) {
       this.renderAllCharts();
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.themeSub) {
+      this.themeSub.unsubscribe();
     }
   }
 
@@ -72,9 +89,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   renderAllCharts(): void {
     if (!this.dashboardData || !this.dashboardData.charts) return;
 
-    const style = getComputedStyle(document.body);
-    const textColor = style.getPropertyValue('--text-color').trim() || '#1e293b';
-    const gridColor = style.getPropertyValue('--border-color').trim() || '#e2e8f0';
+    const textColor = this.isDark ? '#e2e8f0' : '#1e293b';
+    const gridColor = this.isDark ? '#334155' : '#e2e8f0';
 
     // 1. Leave Statistics Chart or Monthly Attendance
     const leaveData = this.dashboardData.charts.find(c => c.chartName === 'LeaveStatus');
