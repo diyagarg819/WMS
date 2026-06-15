@@ -36,8 +36,10 @@
 
           <mat-form-field appearance="outline" class="w-100 premium-input">
             <mat-label>Password</mat-label>
-            <input matInput type="password" formControlName="password" required>
-            <mat-icon matSuffix color="primary">lock_outline</mat-icon>
+            <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" required>
+            <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
+              <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
             <mat-error *ngIf="loginForm.get('password')?.hasError('required')">Password is required</mat-error>
           </mat-form-field>
 

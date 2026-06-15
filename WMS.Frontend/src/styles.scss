@@ -263,6 +263,9 @@ body.dark-theme {
   .mat-mdc-button, .mat-mdc-outlined-button {
     color: var(--text-color) !important;
   }
+  .mat-mdc-raised-button.mat-primary, .mat-mdc-flat-button.mat-primary {
+    color: #ffffff !important;
+  }
 
   .mat-mdc-icon-button {
     color: var(--text-color) !important;
