@@ -61,5 +61,15 @@ namespace WMS.Api.Controllers
                 ? Ok(new ApiResponse<object?>(true, result.Message))
                 : NotFound(new ApiResponse<object?>(false, result.Message));
         }
+
+        [HttpPut("{id}/toggle")]
+        [Authorize(Roles = "Admin,Manager")]
+        public async Task<IActionResult> Toggle(int id)
+        {
+            var result = await _service.ToggleStatusAsync(id);
+            return result.Success
+                ? Ok(new ApiResponse<object?>(true, result.Message))
+                : NotFound(new ApiResponse<object?>(false, result.Message));
+        }
     }
 }

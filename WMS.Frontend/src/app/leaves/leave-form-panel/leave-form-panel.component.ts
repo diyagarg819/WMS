@@ -27,7 +27,19 @@ export class LeaveFormPanelComponent implements OnInit {
       fromDate: ['', Validators.required],
       toDate: ['', Validators.required],
       reason: ['']
-    });
+    }, { validators: this.dateRangeValidator() });
+  }
+
+  dateRangeValidator(): import('@angular/forms').ValidatorFn {
+    return (control: import('@angular/forms').AbstractControl): import('@angular/forms').ValidationErrors | null => {
+      const from = control.get('fromDate')?.value;
+      const to = control.get('toDate')?.value;
+      
+      if (from && to && new Date(to) < new Date(from)) {
+        return { dateRangeInvalid: true };
+      }
+      return null;
+    };
   }
 
   ngOnInit(): void {

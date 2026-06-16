@@ -89,5 +89,16 @@ namespace WMS.Application.Services
             await _repository.DeleteAsync(id);
             return (true, "Announcement deleted.");
         }
+
+        public async Task<(bool Success, string Message)> ToggleStatusAsync(int id)
+        {
+            var announcement = await _repository.GetByIdAsync(id);
+            if (announcement == null)
+                return (false, "Announcement not found.");
+
+            announcement.IsActive = !announcement.IsActive;
+            await _repository.UpdateAsync(announcement);
+            return (true, "Announcement status toggled.");
+        }
     }
 }

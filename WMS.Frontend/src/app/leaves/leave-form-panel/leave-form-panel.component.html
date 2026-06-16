@@ -33,15 +33,14 @@
         </mat-error>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>To Date</mat-label>
-        <input matInput [matDatepicker]="toPicker" formControlName="toDate">
-        <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
-        <mat-datepicker #toPicker></mat-datepicker>
-        <mat-error *ngIf="leaveForm.get('toDate')?.hasError('required')">
-          To Date is required
-        </mat-error>
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>To Date</mat-label>
+          <input matInput [matDatepicker]="toPicker" formControlName="toDate" required>
+          <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+          <mat-datepicker #toPicker></mat-datepicker>
+          <mat-error *ngIf="leaveForm.get('toDate')?.hasError('required')">To Date is required</mat-error>
+          <mat-error *ngIf="leaveForm.hasError('dateRangeInvalid')">To Date must be on or after From Date</mat-error>
+        </mat-form-field>
     </div>
 
     <mat-form-field appearance="outline" class="w-100">

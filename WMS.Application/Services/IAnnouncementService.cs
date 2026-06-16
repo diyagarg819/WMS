@@ -9,5 +9,6 @@ namespace WMS.Application.Services
         Task<(bool Success, string Message)> CreateAsync(CreateAnnouncementDto request, int createdByUserId);
         Task<(bool Success, string Message)> UpdateAsync(int id, UpdateAnnouncementDto request);
         Task<(bool Success, string Message)> DeleteAsync(int id);
+        Task<(bool Success, string Message)> ToggleStatusAsync(int id);
     }
 }

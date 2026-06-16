@@ -79,7 +79,7 @@ export class EmployeeFormPanelComponent implements OnInit, OnChanges {
       firstName: [this.employee?.firstName || '', [Validators.required]],
       lastName: [this.employee?.lastName || '', [Validators.required]],
       email: [this.employee?.email || '', [Validators.required, Validators.email, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$')]],
-      phoneNumber: [this.employee?.phoneNumber || '', [Validators.required, Validators.pattern('^\\d{10}$')]],
+      phoneNumber: [this.employee?.phoneNumber || '', [Validators.required, Validators.pattern('^[0-9\\-\\+\\s()]{7,15}$')]],
       gender: [this.employee?.gender || 'M', [Validators.required]],
       dob: [this.employee?.dob || '', [Validators.required, this.minimumAgeValidator(18)]],
       doj: [this.employee?.doj || '', [Validators.required]],
